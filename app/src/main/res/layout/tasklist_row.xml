@@ -28,7 +28,7 @@
             android:paddingBottom="5dp">
 
             <TextView
-                android:id="@+id/task"
+                android:id="@+id/taskDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

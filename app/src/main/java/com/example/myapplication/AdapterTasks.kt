@@ -26,16 +26,20 @@ class AdapterTasks(val taskList: ArrayList<Task>) : RecyclerView.Adapter<Adapter
 
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        // Assign description to task based on stored array
         holder?.taskDesc?.text = taskList[position].desc
-    }
-
-    fun addItem() {
-        taskList.add(Task("New Task Added!")).also { notifyDataSetChanged()}
     }
 
     // Required viewholder class for Adapter
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
-        val taskDesc = itemView.findViewById<TextView>(R.id.task)
+        val taskDesc = itemView.findViewById<TextView>(R.id.taskDescription)
     }
+
+    // ########## Extra functions ##########
+    fun addItem(newTask: Task) {
+        taskList.add(newTask)
+        notifyItemInserted(taskList.lastIndex)
+    }
+
 }

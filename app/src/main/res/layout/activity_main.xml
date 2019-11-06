@@ -17,6 +17,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginBottom="75dp"
         android:background="#DDDDDD"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +48,7 @@
     </com.google.android.material.tabs.TabLayout>
 
     <Button
-        android:id="@+id/button_add"
+        android:id="@+id/buttonAdd"
         android:layout_width="56dp"
         android:layout_height="50dp"
         android:layout_marginStart="311dp"
