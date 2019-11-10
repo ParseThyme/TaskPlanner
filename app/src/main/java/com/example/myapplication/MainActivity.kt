@@ -9,20 +9,36 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.additem_view.*
-import java.util.*
+import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
-import kotlin.time.days
+import java.util.*
 
-// ########## Resources ##########
-// - RecyclerView:
-//      https://www.youtube.com/watch?v=jS0buQyfJfs
-// - Popup Dialog box:
-//      https://www.youtube.com/watch?v=2Nj6qCtaUqw
-// - Disabling button/enabling based on text field
-//      https://www.youtube.com/watch?v=Vy_4sZ6JVHM
+/** ########## Resources ##########
+- RecyclerView:
+   https://www.youtube.com/watch?v=jS0buQyfJfs
+- Popup Dialog box:
+   https://www.youtube.com/watch?v=2Nj6qCtaUqw
+- Disabling button/enabling based on text field
+   https://www.youtube.com/watch?v=Vy_4sZ6JVHM
+**/
 
-// val == assigned once, not changed
-// var == changeable, can be reassigned
+/**
+ val == assigned once, fixed
+ var == changeable, can be reassigned
+**/
+
+/** Equivalents:
+-------------------------------------
+ val textView = TextView(this)
+ textView.visibility = View.VISIBLE
+ textView.text = "test"
+--------------------------------------
+ val textView = TextView(this).apply {
+    visibility = View.VISIBLE
+    text = "test"
+ }
+--------------------------------------
+**/
 
 class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
@@ -33,9 +49,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Add content to task list
-        taskList.add(Task("Do some Android Programming"))
-        taskList.add(Task("Eat some food"))
+        // Add content to task list:
+        taskList.add(Task("Do some Android Programming", "Sun 10 Nov"))
+        taskList.add(Task("Eat some food", "Sun 10 Nov"))
 
         // Setup Manager
         taskListLayout.layoutManager = LinearLayoutManager(this)
@@ -58,22 +74,23 @@ class MainActivity : AppCompatActivity() {
             // Inflate dialog
             val addDialogView = LayoutInflater.from(this).inflate(R.layout.additem_view, null)
             // Build using alert dialog box
-            val addBuilder = AlertDialog.Builder(this)
-            addBuilder.setView(addDialogView)
+            val addBuilder = AlertDialog.Builder(this).apply {
+                setView(addDialogView)
+            }
             //addBuilder.setTitle("Add New Task")
             // Show dialog box
             val addDialogBox = addBuilder.show()
 
             // Input Validation:
             // 1. TextWatcher, ensure confirm button only enabled when task entered
-            addDialogBox.taskDescription.addTextChangedListener(object: TextWatcher {
+            addDialogBox.taskDesc.addTextChangedListener(object: TextWatcher {
                 // Unused
                 override fun afterTextChanged(s: Editable) {}
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
                 // Check when text is being changed
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    val taskEntry = addDialogBox.taskDescription.text.toString().trim() // Remove blank spaces before/after string
+                    val taskEntry = addDialogBox.taskDesc.text.toString().trim() // Remove blank spaces before/after string
 
                     // Toggle confirm button based on whether text is empty or not
                     addDialogBox.confirmButton.isEnabled = taskEntry.isNotEmpty()
@@ -81,17 +98,25 @@ class MainActivity : AppCompatActivity() {
             })
 
             // 2. Calendar date
-            // Ensure you can only select either today or future dates and allow only 1 month into future
-            val days = 7
-            addDialogBox.dateSelected.minDate = System.currentTimeMillis() - 1000
-            addDialogBox.dateSelected.maxDate = System.currentTimeMillis() + (1000*60*60*24 * days)
+            // Format: SUN 10 NOV
+            // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
+            val formatter = SimpleDateFormat("EEE d MMM")
+            // Ensure you can only select either today or future dates, customizable
+            val calMaxDays = 30
+            var cal = Calendar.getInstance()
+            // Set initial date to be today
+            var chosenDate = formatter.format(cal.timeInMillis)
+            addDialogBox.calendarView.minDate = cal.timeInMillis
+            // Add days to set end limit of calendar
+            cal.add(Calendar.DATE, calMaxDays)
+            addDialogBox.calendarView.maxDate = cal.timeInMillis
 
-            addDialogBox.dateSelected.setOnDateChangeListener {
-                view, year, month, dayOfMonth ->
-                // Months start from 0
-                val dateSelected = StringBuilder()
-                dateSelected.append(dayOfMonth).append("/").append(month + 1).append("/").append(year)
-                println(dateSelected)
+            // Update chosen date when user selects a differing date to default
+            addDialogBox.calendarView.setOnDateChangeListener {
+                view, year, month, day ->
+
+                cal.set(year, month, day)
+                chosenDate = formatter.format(cal.timeInMillis)
             }
 
             // Confirm button
@@ -100,10 +125,10 @@ class MainActivity : AppCompatActivity() {
                 addDialogBox.dismiss()
 
                 // Get task entry
-                val taskDesc = addDialogBox.taskDescription.text.toString().trim()
+                val taskDesc = addDialogBox.taskDesc.text.toString().trim()
 
                 // Create new entry and add to task list
-                val task = Task(taskDesc)
+                val task = Task(taskDesc, chosenDate)
                 taskAdapter.addItem(task)
             }
         }

@@ -28,7 +28,7 @@
             android:paddingBottom="5dp">
 
             <TextView
-                android:id="@+id/taskDescription"
+                android:id="@+id/taskDesc"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -37,14 +37,14 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                app:layout_constraintTop_toBottomOf="@+id/dateChosen" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/dateChosen"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="MMM DD"
-                android:textAllCaps="true"
+                android:textAllCaps="false"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
