@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.additem_view.*
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import kotlin.collections.ArrayList
 import java.util.*
 
@@ -50,8 +52,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Add content to task list:
-        taskList.add(Task("Do some Android Programming", "Sun 10 Nov"))
-        taskList.add(Task("Eat some food", "Sun 10 Nov"))
+        /*
+        taskAdapter.addItem(Task("Task 1", "Sun 10 Nov"))
+        taskAdapter.addItem(Task("Task 3", "Mon 11 Nov"))
+        taskAdapter.addItem(Task("Task 2", "Sun 10 Nov"))
+        */
 
         // Setup Manager
         taskListLayout.layoutManager = LinearLayoutManager(this)
@@ -107,6 +112,10 @@ class MainActivity : AppCompatActivity() {
             // Set initial date to be today
             var chosenDate = formatter.format(cal.timeInMillis)
             addDialogBox.calendarView.minDate = cal.timeInMillis
+
+            // Store default value for id/sorting purposes (min date)
+            var id = cal.timeInMillis
+
             // Add days to set end limit of calendar
             cal.add(Calendar.DATE, calMaxDays)
             addDialogBox.calendarView.maxDate = cal.timeInMillis
@@ -117,6 +126,9 @@ class MainActivity : AppCompatActivity() {
 
                 cal.set(year, month, day)
                 chosenDate = formatter.format(cal.timeInMillis)
+
+                // Update id to new selected date
+                id = cal.timeInMillis
             }
 
             // Confirm button
@@ -128,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                 val taskDesc = addDialogBox.taskDesc.text.toString().trim()
 
                 // Create new entry and add to task list
-                val task = Task(taskDesc, chosenDate)
+                val task = Task(taskDesc, chosenDate, id)
                 taskAdapter.addItem(task)
             }
         }
