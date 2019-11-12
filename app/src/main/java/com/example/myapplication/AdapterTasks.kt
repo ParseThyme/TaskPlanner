@@ -10,10 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.tasklist_row.view.*
 
 // Add Item tutorial: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/
+// ? ignore if null return/match
 
 class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter<AdapterTasks.ViewHolder>() {
     // Dates that tasks have been assigned to
-    var dates = ArrayList<String>()
+    var dates = ArrayList<Int>()
+
+    // Used for sorting when adding in new entries
+    var latestEntry:Int = 0
 
     // Number of items in table view
     override fun getItemCount(): Int {
@@ -34,7 +38,7 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
         val taskItem = taskList[position]
-        holder.bindTask(taskItem.desc, taskItem.date)
+        holder.bindTask(taskItem)
     }
 
     // Required viewholder class for Adapter
@@ -44,22 +48,67 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
         private val dateChosen = itemView.dateChosen
         private val dateCard = itemView.dateCard
 
-        fun bindTask(desc:String, date:String) {
-            taskDesc.text = desc
-            dateChosen.text = date
+        fun bindTask(newTask: Task) {
+            taskDesc.text = newTask.desc
+            dateChosen.text = newTask.date
+
+
+            if (newTask.hideDate)
+                toggleDateVisibility(false)
         }
 
-        fun hideDate(){
-            dateCard.visibility = View.GONE
+        private fun toggleDateVisibility(isVisible: Boolean){
+            /*
+            if (isVisible)
+                dateCard.visibility = View.VISIBLE
+            else
+                dateCard.visibility = View.INVISIBLE
+             */
+            if (isVisible)
+                dateCard.visibility = View.VISIBLE
+            else
+                dateChosen.text = "-"
         }
     }
 
     // ########## Extra functions ##########
     fun addItem(newTask: Task) {
-        taskList.add(newTask)
-        notifyItemInserted(taskList.size)
+        // ---------- Auto Sorting Entries ----------
+        // [1]. Task added is later date than latest entry, add to end
+        if (newTask.id > latestEntry) {
+            insert(newTask)
+            latestEntry = newTask.id
+            return
+        }
 
-        taskList.sortBy { it.id }
-        notifyDataSetChanged()
+        // [2]. Task is same as latest entry, add to end and hide date
+        if (newTask.id == latestEntry) {
+            newTask.hideDate = true
+            insert(newTask)
+            return
+        }
+
+        // [3]. Task added is an earlier date than the latest entry
+        if (newTask.id < latestEntry) {
+            // Start from end and go upwards to find position to insert it in
+            for (pos in taskList.lastIndex downTo 0 step 1) {
+                // Reached index where existing date found, follow logic in [2]
+                if (taskList[pos].id == newTask.id) {
+                    newTask.hideDate = true
+                    insert(newTask, pos + 1)
+                    return
+                }
+                // Reached index where date is earlier than inserted date, insert new date after
+                if (taskList[pos].id < newTask.id) {
+                    insert(newTask, pos + 1)
+                    return
+                }
+            }
+        }
+    }
+
+    private fun insert(task: Task, pos: Int = taskList.size) {
+        taskList.add(pos, task)
+        notifyItemInserted(pos)
     }
 }

@@ -105,16 +105,18 @@ class MainActivity : AppCompatActivity() {
             // 2. Calendar date
             // Format: SUN 10 NOV
             // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
-            val formatter = SimpleDateFormat("EEE d MMM")
+            val dateFormat = SimpleDateFormat("EEE d MMM")
+            val idFormat = SimpleDateFormat("yyyyMMdd")
+
             // Ensure you can only select either today or future dates, customizable
             val calMaxDays = 30
             var cal = Calendar.getInstance()
-            // Set initial date to be today
-            var chosenDate = formatter.format(cal.timeInMillis)
-            addDialogBox.calendarView.minDate = cal.timeInMillis
 
-            // Store default value for id/sorting purposes (min date)
-            var id = cal.timeInMillis
+            // Set initial date to be today
+            var taskDate = dateFormat.format(cal.timeInMillis)
+            addDialogBox.calendarView.minDate = cal.timeInMillis
+            // Set id for sorting purposes
+            var id = idFormat.format(cal.timeInMillis).toInt()
 
             // Add days to set end limit of calendar
             cal.add(Calendar.DATE, calMaxDays)
@@ -125,10 +127,8 @@ class MainActivity : AppCompatActivity() {
                 view, year, month, day ->
 
                 cal.set(year, month, day)
-                chosenDate = formatter.format(cal.timeInMillis)
-
-                // Update id to new selected date
-                id = cal.timeInMillis
+                taskDate = dateFormat.format(cal.timeInMillis)
+                id = idFormat.format(cal.timeInMillis).toInt()
             }
 
             // Confirm button
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                 val taskDesc = addDialogBox.taskDesc.text.toString().trim()
 
                 // Create new entry and add to task list
-                val task = Task(taskDesc, chosenDate, id)
+                val task = Task(id, taskDesc, taskDate)
                 taskAdapter.addItem(task)
             }
         }

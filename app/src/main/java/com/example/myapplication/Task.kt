@@ -1,7 +1,9 @@
 package com.example.myapplication
 
 data class Task(
+    val id: Int,
     val desc: String,
     val date: String,
-    val id: Long = 0
+
+    var hideDate: Boolean = false
 )
