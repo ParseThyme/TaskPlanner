@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +42,7 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
         holder.bindTask(taskItem)
     }
 
-    // Required viewholder class for Adapter
+    // Required Viewholder class for Adapter
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
         private val taskDesc = itemView.taskDesc
@@ -52,22 +53,14 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
             taskDesc.text = newTask.desc
             dateChosen.text = newTask.date
 
-
-            if (newTask.hideDate)
-                toggleDateVisibility(false)
+            toggleDateVisibility(newTask.hideDate)
         }
 
-        private fun toggleDateVisibility(isVisible: Boolean){
-            /*
-            if (isVisible)
-                dateCard.visibility = View.VISIBLE
-            else
+        private fun toggleDateVisibility(isHidden: Boolean){
+            if (isHidden)
                 dateCard.visibility = View.INVISIBLE
-             */
-            if (isVisible)
-                dateCard.visibility = View.VISIBLE
             else
-                dateChosen.text = "-"
+                dateCard.visibility = View.VISIBLE
         }
     }
 
@@ -76,8 +69,8 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
         // ---------- Auto Sorting Entries ----------
         // [1]. Task added is later date than latest entry, add to end
         if (newTask.id > latestEntry) {
-            insert(newTask)
             latestEntry = newTask.id
+            insert(newTask)
             return
         }
 
@@ -90,6 +83,8 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
 
         // [3]. Task added is an earlier date than the latest entry
         if (newTask.id < latestEntry) {
+            // Log.d("Test", "Reached")
+
             // Start from end and go upwards to find position to insert it in
             for (pos in taskList.lastIndex downTo 0 step 1) {
                 // Reached index where existing date found, follow logic in [2]

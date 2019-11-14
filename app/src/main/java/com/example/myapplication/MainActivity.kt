@@ -86,8 +86,11 @@ class MainActivity : AppCompatActivity() {
             // Show dialog box
             val addDialogBox = addBuilder.show()
 
+            addDialogBox.confirmButton.isEnabled = true
+
             // Input Validation:
             // 1. TextWatcher, ensure confirm button only enabled when task entered
+            /*
             addDialogBox.taskDesc.addTextChangedListener(object: TextWatcher {
                 // Unused
                 override fun afterTextChanged(s: Editable) {}
@@ -101,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                     addDialogBox.confirmButton.isEnabled = taskEntry.isNotEmpty()
                 }
             })
-
+            */
             // 2. Calendar date
             // Format: SUN 10 NOV
             // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
