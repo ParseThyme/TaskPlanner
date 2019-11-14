@@ -1,12 +1,9 @@
 package com.example.myapplication
 
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.tasklist_row.view.*
 
@@ -17,8 +14,8 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
     // Dates that tasks have been assigned to
     var dates = ArrayList<Int>()
 
-    // Used for sorting when adding in new entries
-    var latestEntry:Int = 0
+    // Used for sorting, default value ensures new min value is always replaced with first entry
+    var minDate:Int = 90000000
 
     // Number of items in table view
     override fun getItemCount(): Int {
@@ -65,39 +62,28 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
     }
 
     // ########## Extra functions ##########
-    fun addItem(newTask: Task) {
+    fun addItem(new: Task) {
         // ---------- Auto Sorting Entries ----------
-        // [1]. Task added is later date than latest entry, add to end
-        if (newTask.id > latestEntry) {
-            latestEntry = newTask.id
-            insert(newTask)
+        // [A]. Check for earliest date (Case [1] and [2] will never match if new.date < minDate)
+        if (new.id < minDate) {
+            // New date is earlier, make it the new min date and insert at the top
+            minDate = new.id
+            insert(new, 0)
             return
         }
 
-        // [2]. Task is same as latest entry, add to end and hide date
-        if (newTask.id == latestEntry) {
-            newTask.hideDate = true
-            insert(newTask)
-            return
-        }
-
-        // [3]. Task added is an earlier date than the latest entry
-        if (newTask.id < latestEntry) {
-            // Log.d("Test", "Reached")
-
-            // Start from end and go upwards to find position to insert it in
-            for (pos in taskList.lastIndex downTo 0 step 1) {
-                // Reached index where existing date found, follow logic in [2]
-                if (taskList[pos].id == newTask.id) {
-                    newTask.hideDate = true
-                    insert(newTask, pos + 1)
-                    return
-                }
-                // Reached index where date is earlier than inserted date, insert new date after
-                if (taskList[pos].id < newTask.id) {
-                    insert(newTask, pos + 1)
-                    return
-                }
+        // [B]. Otherwise start from latest entry and move upwards
+        for (pos in taskList.lastIndex downTo 0 step 1) {
+            // [1]. Matching date, append at end of matching position and hide date
+            if (new.id == taskList[pos].id) {
+                new.hideDate = true
+                insert(new, pos + 1)
+                return
+            }
+            // [2]. New date is later, insert after date that precedes it
+            if (new.id > taskList[pos].id) {
+                insert(new, pos + 1)
+                return
             }
         }
     }
