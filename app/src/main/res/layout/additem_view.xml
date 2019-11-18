@@ -73,6 +73,7 @@
         android:gravity="start|top"
         android:hint="@string/hint_task"
         android:inputType="text"
+        android:maxLength="35"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/textView4"
         app:layout_constraintEnd_toEndOf="parent"

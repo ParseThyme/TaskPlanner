@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Planner App</string>
 
-    <string name="placeholder">Lea nushe ri Pishfa lehati Yelet kai shtnesa Valva safa luli Teetha lethghraloo</string>
+    <string name="placeholderText">Lea nushe ri Pishfa lehati Yelet kai shtnesa Valva safa luli Teetha lethghraloo</string>
+    <string name="placeholderDate">Mon 18 Nov</string>
 
     <!-- Labels -->
     <string name="label_task">1. Enter new task</string>

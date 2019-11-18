@@ -5,5 +5,6 @@ data class Task(
     val desc: String,
     val date: String,
 
-    var hideDate: Boolean = false
+    var hideDate: Boolean = false,
+    var selected: Boolean = false
 )

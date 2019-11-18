@@ -4,14 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.additem_view.*
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
 import kotlin.collections.ArrayList
 import java.util.*
 
@@ -44,8 +42,8 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
-    private val taskList = ArrayList<Task>()
-    private val taskAdapter = AdapterTasks(taskList)
+    private val tasks = ArrayList<Task>()
+    private val taskAdapter = AdapterTasks(tasks)
 
     // Debugging:
     private var validateInput = false
@@ -56,23 +54,33 @@ class MainActivity : AppCompatActivity() {
 
         // Add content to task list:
         /*
-        taskAdapter.addItem(Task("Task 1", "Sun 10 Nov"))
-        taskAdapter.addItem(Task("Task 3", "Mon 11 Nov"))
-        taskAdapter.addItem(Task("Task 2", "Sun 10 Nov"))
+        taskAdapter.addItem(Task(0, "Task 1", "Sun 10 Nov"))
+        taskAdapter.addItem(Task(1, "Task 3", "Mon 11 Nov"))
+        taskAdapter.addItem(Task(2, "Task 2", "Sun 10 Nov"))
         */
 
         // Setup Manager
-        taskListLayout.layoutManager = LinearLayoutManager(this)
+        taskList.layoutManager = LinearLayoutManager(this)
         // Setup Adapter. Table to render out items on list
-        taskListLayout.adapter = taskAdapter
+        taskList.adapter = taskAdapter
 
-        // Setup toolbar at bottom
-        setupToolbar()
+        runSetup()
     }
 
-    private fun setupToolbar() {
-        // Add new task button
+    private fun runSetup() {
+        // ########## Setting up toolbar buttons ##########
         setupAddNewTask()
+
+        // Clear task list
+        buttonClear.setOnClickListener {
+            // ToDo: Add confirm box (are you sure?)
+            taskAdapter.clearList()
+        }
+
+        // Delete items
+        buttonDelete.setOnClickListener {
+            taskAdapter.deleteItems()
+        }
     }
 
     private fun setupAddNewTask() {
