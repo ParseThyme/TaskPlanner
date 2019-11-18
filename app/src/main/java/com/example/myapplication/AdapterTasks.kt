@@ -60,21 +60,23 @@ class AdapterTasks(
             taskDesc.text = newTask.desc
             taskDate.text = newTask.date
 
+            // Toggle date visibility
             showHideDate(newTask.hideDate)
-            toggleSelected(newTask.selected)
+
+            // Toggle checkbox depending whether previously selected
+            checkBox.isChecked = newTask.selected
 
             // Setup toggle functionality
             checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                // Update only when state has changed and internally value needs to match
+                // Update number selected if values are different (manual check vs internal update)
                 if (newTask.selected != isChecked) {
                     newTask.selected = isChecked
 
+                    // Increment when selected and decrement when de-selected
                     if (isChecked)
                         numSelected++
                     else
                         numSelected--
-
-                    Log.d("Test", "Selected: $numSelected")
                 }
             }
         }
@@ -84,11 +86,6 @@ class AdapterTasks(
                 date.visibility = View.INVISIBLE
             else
                 date.visibility = View.VISIBLE
-        }
-
-        private fun toggleSelected(isSelected: Boolean) {
-            checkBox.isChecked = isSelected
-            Log.d("Test", "Selected: $numSelected")
         }
     }
 
@@ -123,30 +120,62 @@ class AdapterTasks(
         if (numSelected == 0)
             return
 
-        var iterator = taskList.iterator()
-        while (iterator.hasNext()) {
-            val task:Task = iterator.next()
+        var start = 0
+        var end: Int = taskList.size - 1
 
-            if (task.selected) {
-                numSelected--
-                task.selected = false
-                iterator.remove()
+        // Loop until all selected tasks are removed
+        while (numSelected != 0) {
+            // 1st loop = from 0 to tasList last index
+            for (index in start..end) {
+                // Task to delete found
+                if (taskList[index].selected) {
+
+                    // [1]. If it has a visible date (Deleting top-most task with date attached)
+                    if (!taskList[index].hideDate) {
+                        // Check below to see if there's another task with the same date
+                        if (index != end && taskList[index + 1].hideDate) {
+                            // If there is, toggle the one below to show its date. If not do nothing
+                            taskList[index + 1].hideDate = false
+                            notifyItemChanged(index + 1)
+                        }
+                    }
+
+                    // [2]. If task is the min date (topmost task), update min date to next one
+                    if (index == 0) {
+                        // [A]. It is the only task in the list, reset to default value
+                        if (taskList.size == 1)
+                            minDate = baseMinDate
+
+                        // [B]. If next task is a differing date, assign it to new min date
+                        if (taskList[index + 1].id != minDate)
+                            minDate = taskList[index + 1].id
+                    }
+
+                    // Deselect it then remove it
+                    taskList[index].selected = false
+                    taskList.removeAt(index)
+                    notifyItemRemoved(index)
+
+                    // Update starting index to be current index (so we skip already visited tasks)
+                    start = index
+                    end--
+
+                    // Reduce count left to delete and then reset
+                    numSelected--
+                    break
+                }
             }
-
-            if (numSelected == 0)
-                break
         }
-
-        notifyDataSetChanged()
-
     }
 
     fun clearList() {
         // Empty entire task list
         taskList.clear()
         notifyDataSetChanged()
-        // Reset min date
+
+        // Reset min date and clear all selected
         minDate = baseMinDate
+        numSelected = 0
     }
 
     private fun insert(task: Task, pos: Int = taskList.size) {
@@ -154,8 +183,3 @@ class AdapterTasks(
         notifyItemInserted(pos)
     }
 }
-
-/**
- * Ideas:
- * 
- */
