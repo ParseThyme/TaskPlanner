@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.additem_view.*
+import kotlinx.android.synthetic.main.view_additem.*
+import kotlinx.android.synthetic.main.view_additem.taskDesc
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 import java.util.*
@@ -48,54 +51,83 @@ class MainActivity : AppCompatActivity() {
     // Debugging:
     private var validateInput = false
 
+    // Selecting tasks
+    var numSelected: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // Add content to task list:
-        /*
-        taskAdapter.addItem(Task(0, "Task 1", "Sun 10 Nov"))
-        taskAdapter.addItem(Task(1, "Task 3", "Mon 11 Nov"))
-        taskAdapter.addItem(Task(2, "Task 2", "Sun 10 Nov"))
-        */
 
         // Setup Manager
         taskList.layoutManager = LinearLayoutManager(this)
         // Setup Adapter. Table to render out items on list
         taskList.adapter = taskAdapter
 
+        // Add custom toolbar at top
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar!!.title = ""
+
         runSetup()
     }
 
+    // ########## Setup related functions ##########
     private fun runSetup() {
-        // ########## Setting up toolbar buttons ##########
+        // [1]. Click listener
+        setupClickListener()
+
+        // [2A]. Button - Add task
         setupAddNewTask()
 
-        // Clear task list
-        buttonClear.setOnClickListener {
-            // ToDo: Add confirm box (are you sure?)
-            taskAdapter.clearList()
-        }
-
-        // Delete items
+        // [2B]. Button - Delete task(s)
         buttonDelete.setOnClickListener {
-            taskAdapter.deleteItems()
+            taskAdapter.deleteTasks()
+            numSelected = 0 // Every time delete called, all selections are cleared
+            checkNumSelected()
         }
     }
 
+    private fun setupClickListener() {
+        taskAdapter.setOnItemClickListener(object: AdapterTasks.ClickListener {
+            override fun onClick(pos: Int, aView: View) {
+                numSelected = taskAdapter.toggleTask(pos)
+                checkNumSelected()
+            }
+        })
+    }
+
     private fun setupAddNewTask() {
+        // Format for printed date + internal id
+        // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
+        val dateFormat = SimpleDateFormat("EEE d MMM")
+        val idFormat = SimpleDateFormat("yyyyMMdd")
+
+        // Ensure you can only select either today or future dates, customizable
+        val calMaxDays = 30
+
+        // Setup calendar variable
+        val cal = Calendar.getInstance()
+        // Set initial date to be today, calculate min and max date
+        val startDate = dateFormat.format(cal.timeInMillis)
+        val startId = idFormat.format(cal.timeInMillis).toInt()
+        val minDate = cal.timeInMillis
+        // Add extra days to get max date
+        cal.add(Calendar.DATE, calMaxDays)
+        val maxDate = cal.timeInMillis
+
         // Add item (Open dialog box for new entry)
         buttonAdd.setOnClickListener {
-
             // Inflate dialog
-            val addDialogView = LayoutInflater.from(this).inflate(R.layout.additem_view, null)
+            val addDialogView = LayoutInflater.from(this).inflate(R.layout.view_additem, null)
             // Build using alert dialog box
             val addBuilder = AlertDialog.Builder(this).apply {
                 setView(addDialogView)
             }
             //addBuilder.setTitle("Add New Task")
-            // Show dialog box
-            val addDialogBox = addBuilder.show()
+            // Show dialog box and apply minDate and maxDate
+            val addDialogBox = addBuilder.show().apply {
+                calendarView.minDate = minDate
+                calendarView.maxDate = maxDate
+            }
 
             // Input Validation:
             // 1. TextWatcher, ensure confirm button only enabled when task entered
@@ -113,31 +145,14 @@ class MainActivity : AppCompatActivity() {
                     addDialogBox.confirmButton.isEnabled = taskEntry.isNotEmpty()
                 }
             })
-            } else {
+            } else
                 addDialogBox.confirmButton.isEnabled = true
-            }
 
-            // 2. Calendar date
-            // Format: SUN 10 NOV
-            // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
-            val dateFormat = SimpleDateFormat("EEE d MMM")
-            val idFormat = SimpleDateFormat("yyyyMMdd")
+            // Set initial date and id matching to today
+            var taskDate = startDate
+            var id = startId
 
-            // Ensure you can only select either today or future dates, customizable
-            val calMaxDays = 30
-            var cal = Calendar.getInstance()
-
-            // Set initial date to be today
-            var taskDate = dateFormat.format(cal.timeInMillis)
-            addDialogBox.calendarView.minDate = cal.timeInMillis
-            // Set id for sorting purposes
-            var id = idFormat.format(cal.timeInMillis).toInt()
-
-            // Add days to set end limit of calendar
-            cal.add(Calendar.DATE, calMaxDays)
-            addDialogBox.calendarView.maxDate = cal.timeInMillis
-
-            // Update chosen date when user selects a differing date to default
+            // Override chosen date when user selects a differing date to default
             addDialogBox.calendarView.setOnDateChangeListener {
                 view, year, month, day ->
 
@@ -151,13 +166,31 @@ class MainActivity : AppCompatActivity() {
                 // Close dialog box
                 addDialogBox.dismiss()
 
-                // Get task entry
+                // Get task description entry and create new task entry
                 val taskDesc = addDialogBox.taskDesc.text.toString().trim()
-
-                // Create new entry and add to task list
                 val task = Task(id, taskDesc, taskDate)
-                taskAdapter.addItem(task)
+
+                // Add new entry
+                taskAdapter.addTask(task)
             }
         }
     }
+
+    // ########## Internal functions ##########
+    private fun checkNumSelected() {
+        // Toggle depending on whether there is none selected or more than one
+        if (numSelected == 0) {
+            supportActionBar?.title = ""
+        } else {
+            supportActionBar?.title = "Selected: [$numSelected]"
+        }
+    }
 }
+
+/** TODO:
+ * Sub-menu for functions: Clear all/Complete all
+ * Display number of tasks selected on top.
+ * Enable/disable delete/complete buttons (if 0 then disable, otherwise enable)
+ * Functionality for "Mark Complete" button
+ * Button: Select All
+ **/

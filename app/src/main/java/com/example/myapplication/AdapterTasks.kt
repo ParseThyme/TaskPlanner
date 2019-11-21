@@ -1,24 +1,20 @@
 package com.example.myapplication
 
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.tasklist_row.view.*
 
 // Add Item tutorial: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/
 // ? ignore if null return/match
 
-// OnClick tutorial: https://www.andreasjakl.com/recyclerview-kotlin-style-click-listener-android/
+// OnClick: https://stackoverflow.com/questions/54219825/android-kotlin-how-to-add-click-listener-to-recyclerview-adapter
 
-class AdapterTasks(
-    private val taskList: ArrayList<Task>) :
-    RecyclerView.Adapter<AdapterTasks.ViewHolder>()
-{
-    // Selected tasks (mark as complete or delete
+// Unit == equivalent to void return type in Java
+
+class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter<ViewHolderTasks>() {
+
+    // Selected tasks (mark as complete or delete)
     var numSelected:Int = 0
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
@@ -26,71 +22,25 @@ class AdapterTasks(
     var minDate:Int = baseMinDate
 
     // Number of items in table view
-    override fun getItemCount(): Int {
-        return taskList.size
-    }
+    override fun getItemCount(): Int { return taskList.size }
 
     // Creating cell
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Use parent parameter for layout inflater, create cell via main_row layout file
-        val layoutInflater = LayoutInflater.from(parent?.context)
-        val row = layoutInflater.inflate(R.layout.tasklist_row, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderTasks {
+        // Use inflate function found in Util
+        val inflatedView = parent.inflate(R.layout.row_tasklist, false)
 
-        // Return wiewholder containing cell layout
-        return ViewHolder(row)
+        // Return viewholder containing cell layout and clickListener
+        return ViewHolderTasks(inflatedView, clickListener)
     }
 
     // When cell made
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolderTasks, position: Int) {
         // Assign description and date to task based on stored array
-        val taskItem = taskList[position]
-        holder.bindTask(taskItem)
+        holder.bind(taskList[position])
     }
 
-    // ########## Required Viewholder class for Adapter ##########
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        // Defining reference to task description text in layout
-        private val taskDesc = itemView.taskDesc
-        private val taskDate = itemView.taskDate
-        private val date = itemView.date
-
-        private val checkBox = itemView.taskToggle
-
-        fun bindTask(newTask: Task) {
-            taskDesc.text = newTask.desc
-            taskDate.text = newTask.date
-
-            // Toggle date visibility
-            showHideDate(newTask.hideDate)
-
-            // Toggle checkbox depending whether previously selected
-            checkBox.isChecked = newTask.selected
-
-            // Setup toggle functionality
-            checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                // Update number selected if values are different (manual check vs internal update)
-                if (newTask.selected != isChecked) {
-                    newTask.selected = isChecked
-
-                    // Increment when selected and decrement when de-selected
-                    if (isChecked)
-                        numSelected++
-                    else
-                        numSelected--
-                }
-            }
-        }
-
-        private fun showHideDate(isHidden: Boolean){
-            if (isHidden)
-                date.visibility = View.INVISIBLE
-            else
-                date.visibility = View.VISIBLE
-        }
-    }
-
-    // ########## Extra functions ##########
-    fun addItem(new: Task) {
+    // ########## Button callable functions ##########
+    fun addTask(new: Task) {
         // ---------- Auto Sorting Entries ----------
         // [A]. Check for earliest date (Case [1] and [2] will never match if new.date < minDate)
         if (minDate > new.id) {
@@ -116,7 +66,13 @@ class AdapterTasks(
         }
     }
 
-    fun deleteItems() {
+    fun deleteTasks() {
+        // Clearing entire list
+        if (numSelected == taskList.size) {
+            clearTasks()
+            return
+        }
+
         if (numSelected == 0)
             return
 
@@ -147,7 +103,7 @@ class AdapterTasks(
                             minDate = baseMinDate
 
                         // [B]. If next task is a differing date, assign it to new min date
-                        if (taskList[index + 1].id != minDate)
+                        else if (taskList[index + 1].id != minDate)
                             minDate = taskList[index + 1].id
                     }
 
@@ -168,7 +124,28 @@ class AdapterTasks(
         }
     }
 
-    fun clearList() {
+    fun toggleTask(position: Int) :Int {
+        // Get referenced task item
+        val task:Task = taskList[position]
+
+        // Switch its state to the opposite (selected/deselected)
+        task.selected = !task.selected
+        notifyItemChanged(position)
+
+        // Increment/Decrement internal counts
+        val isSelected = task.selected
+        if (isSelected) {
+            Log.d("Test", "Selected: [${task.date}] = ${task.desc}")
+            numSelected++
+        } else {
+            Log.d("Test", "Deselected: [${task.date}] = ${task.desc}")
+            numSelected--
+        }
+
+        return numSelected
+    }
+
+    fun clearTasks() {
         // Empty entire task list
         taskList.clear()
         notifyDataSetChanged()
@@ -178,6 +155,13 @@ class AdapterTasks(
         numSelected = 0
     }
 
+
+    // ########## onClick functionality/variables ##########
+    lateinit var clickListener: ClickListener
+    fun setOnItemClickListener(newCL: ClickListener) { clickListener = newCL }
+    interface ClickListener { fun onClick(pos: Int, aView: View) }
+
+    // ########## Internal functions ##########
     private fun insert(task: Task, pos: Int = taskList.size) {
         taskList.add(pos, task)
         notifyItemInserted(pos)

@@ -70,6 +70,7 @@
         android:layout_marginRight="30dp"
         android:layout_marginBottom="5dp"
         android:ems="10"
+        android:focusableInTouchMode="true"
         android:gravity="start|top"
         android:hint="@string/hint_task"
         android:inputType="text"
