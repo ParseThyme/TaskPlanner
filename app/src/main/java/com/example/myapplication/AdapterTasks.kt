@@ -69,7 +69,13 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
     fun deleteTasks() {
         // Clearing entire list
         if (numSelected == taskList.size) {
-            clearTasks()
+            // Empty entire task list
+            taskList.clear()
+            notifyDataSetChanged()
+
+            // Reset min date and clear all selected
+            minDate = baseMinDate
+            numSelected = 0
             return
         }
 
@@ -134,27 +140,19 @@ class AdapterTasks(private val taskList: ArrayList<Task>) : RecyclerView.Adapter
 
         // Increment/Decrement internal counts
         val isSelected = task.selected
-        if (isSelected) {
-            Log.d("Test", "Selected: [${task.date}] = ${task.desc}")
-            numSelected++
-        } else {
-            Log.d("Test", "Deselected: [${task.date}] = ${task.desc}")
-            numSelected--
-        }
+        if (isSelected) { numSelected++ } else { numSelected-- }
 
         return numSelected
     }
 
-    fun clearTasks() {
-        // Empty entire task list
-        taskList.clear()
-        notifyDataSetChanged()
+    fun selectAll() {
+        for (index in 0 until taskList.size) {
+            taskList[index].selected = true
+            notifyItemChanged(index)
+        }
 
-        // Reset min date and clear all selected
-        minDate = baseMinDate
-        numSelected = 0
+        numSelected = taskList.size
     }
-
 
     // ########## onClick functionality/variables ##########
     lateinit var clickListener: ClickListener

@@ -8,9 +8,10 @@
     <string name="label_task">1. Enter new task</string>
     <string name="label_date">2. Select date</string>
 
-    <!-- Hints -->
-    <string name="hint_task">New Task</string>
-
     <!-- Buttons -->
-    <string name="button_new_task">Add New Task</string>
+    <string name="add_task">Add Task</string>
+    <string name="new_task">New Task</string>
+    <string name="select_all">Select All</string>
+    <string name="delete">Delete</string>
+    <string name="complete">Mark Complete</string>
 </resources>

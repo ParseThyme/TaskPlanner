@@ -3,6 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
-    android:elevation="4dp"
+    android:textSize = "16sp"
+    android:textColor = "#FFFFFF"
     >
 </androidx.appcompat.widget.Toolbar>
+
+    <!-- Toolbar guide: https://www.androidly.net/260/android-toolbar-using-kotlin -->

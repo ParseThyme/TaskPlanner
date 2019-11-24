@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toolbar
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.view_additem.*
@@ -23,6 +26,8 @@ import java.util.*
    https://www.youtube.com/watch?v=2Nj6qCtaUqw
 - Disabling button/enabling based on text field
    https://www.youtube.com/watch?v=Vy_4sZ6JVHM
+- Bottom Navigation
+    https://android--code.blogspot.com/2018/03/android-kotlin-bottom-navigation-bar.html
 **/
 
 /**
@@ -51,39 +56,77 @@ class MainActivity : AppCompatActivity() {
     // Debugging:
     private var validateInput = false
 
+    // Navigation menu options
+    private lateinit var taskAdd: MenuItem
+    private lateinit var taskDelete: MenuItem
+    private lateinit var taskComplete: MenuItem
+    private lateinit var taskSelectAll: MenuItem
+
     // Selecting tasks
-    var numSelected: Int = 0
+    private var numSelected: Int = 0
+    private var mode: Mode = Mode.ADD
+
+    // Navigation bars
+    lateinit var toolbar: ActionBar
+    val mainTitle = "My Task List"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Setup Manager
+        // Setup Manager and Adapter (Table to render out items on list)
         taskList.layoutManager = LinearLayoutManager(this)
-        // Setup Adapter. Table to render out items on list
         taskList.adapter = taskAdapter
-
-        // Add custom toolbar at top
-        setSupportActionBar(findViewById(R.id.toolbar))
-        supportActionBar!!.title = ""
 
         runSetup()
     }
 
     // ########## Setup related functions ##########
     private fun runSetup() {
-        // [1]. Click listener
+        // Variable references
+        setupLateInit()
+
+        // [1]. Toolbar at top
+        setupToolbar()
+
+        // [2]. Click listener for task list
         setupClickListener()
 
-        // [2A]. Button - Add task
-        setupAddNewTask()
+        // [3]. At start only show New Task button
+        setMode(Mode.ADD)
 
-        // [2B]. Button - Delete task(s)
-        buttonDelete.setOnClickListener {
-            taskAdapter.deleteTasks()
-            numSelected = 0 // Every time delete called, all selections are cleared
-            checkNumSelected()
+        // [4]. Set behaviour when clicking on bottom navigation toolbar
+        bottomBar.setOnNavigationItemSelectedListener {
+            when(it.itemId) {
+                R.id.menuAdd -> {
+                    addNewTask()
+                    true
+                }
+                R.id.menuDelete -> {
+                    taskAdapter.deleteTasks()
+                    numSelected = 0
+                    checkNumSelected()
+                    true
+                }
+                R.id.menuSelectAll -> {
+                    taskAdapter.selectAll()
+                    numSelected = taskList.size
+                    checkNumSelected()
+                    true
+                }
+                R.id.menuComplete -> {
+                    true
+                }
+                else -> false
+            }
         }
+    }
+
+    private fun setupToolbar() {
+        // Add custom toolbar at top
+        setSupportActionBar(findViewById(R.id.topBar))
+        toolbar = supportActionBar!!
+        updateTopToolbar(mainTitle)
     }
 
     private fun setupClickListener() {
@@ -95,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun setupAddNewTask() {
+    private fun addNewTask() {
         // Format for printed date + internal id
         // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
         val dateFormat = SimpleDateFormat("EEE d MMM")
@@ -115,23 +158,22 @@ class MainActivity : AppCompatActivity() {
         val maxDate = cal.timeInMillis
 
         // Add item (Open dialog box for new entry)
-        buttonAdd.setOnClickListener {
-            // Inflate dialog
-            val addDialogView = LayoutInflater.from(this).inflate(R.layout.view_additem, null)
-            // Build using alert dialog box
-            val addBuilder = AlertDialog.Builder(this).apply {
-                setView(addDialogView)
-            }
-            //addBuilder.setTitle("Add New Task")
-            // Show dialog box and apply minDate and maxDate
-            val addDialogBox = addBuilder.show().apply {
-                calendarView.minDate = minDate
-                calendarView.maxDate = maxDate
-            }
+        // Inflate dialog
+        val addDialogView = LayoutInflater.from(this).inflate(R.layout.view_additem, null)
+        // Build using alert dialog box
+        val addBuilder = AlertDialog.Builder(this).apply {
+            setView(addDialogView)
+        }
+        //addBuilder.setTitle("Add New Task")
+        // Show dialog box and apply minDate and maxDate
+        val addDialogBox = addBuilder.show().apply {
+            calendarView.minDate = minDate
+            calendarView.maxDate = maxDate
+        }
 
-            // Input Validation:
-            // 1. TextWatcher, ensure confirm button only enabled when task entered
-            if (validateInput) {
+        // Input Validation:
+        // 1. TextWatcher, ensure confirm button only enabled when task entered
+        if (validateInput) {
             addDialogBox.taskDesc.addTextChangedListener(object: TextWatcher {
                 // Unused
                 override fun afterTextChanged(s: Editable) {}
@@ -145,47 +187,84 @@ class MainActivity : AppCompatActivity() {
                     addDialogBox.confirmButton.isEnabled = taskEntry.isNotEmpty()
                 }
             })
-            } else
-                addDialogBox.confirmButton.isEnabled = true
+        } else
+            addDialogBox.confirmButton.isEnabled = true
 
-            // Set initial date and id matching to today
-            var taskDate = startDate
-            var id = startId
+        // Set initial date and id matching to today
+        var taskDate = startDate
+        var id = startId
 
-            // Override chosen date when user selects a differing date to default
-            addDialogBox.calendarView.setOnDateChangeListener {
+        // Override chosen date when user selects a differing date to default
+        addDialogBox.calendarView.setOnDateChangeListener {
                 view, year, month, day ->
 
-                cal.set(year, month, day)
-                taskDate = dateFormat.format(cal.timeInMillis)
-                id = idFormat.format(cal.timeInMillis).toInt()
+            cal.set(year, month, day)
+            taskDate = dateFormat.format(cal.timeInMillis)
+            id = idFormat.format(cal.timeInMillis).toInt()
+        }
+
+        // Confirm button
+        addDialogBox.confirmButton.setOnClickListener {
+            // Close dialog box
+            addDialogBox.dismiss()
+
+            // Get task description entry and create new task entry
+            val taskDesc = addDialogBox.taskDesc.text.toString().trim()
+            val task = Task(id, taskDesc, taskDate)
+
+            // Add new entry
+            taskAdapter.addTask(task)
+        }
+    }
+
+    private fun setupLateInit() {
+        taskAdd = bottomBar.menu.findItem(R.id.menuAdd)
+        taskDelete = bottomBar.menu.findItem(R.id.menuDelete)
+        taskComplete = bottomBar.menu.findItem(R.id.menuComplete)
+        taskSelectAll = bottomBar.menu.findItem(R.id.menuSelectAll)
+    }
+
+    // ########## Change values/display ##########
+    private fun setMode(newMode: Mode) {
+        when (newMode) {
+            Mode.ADD -> {
+                taskAdd.isVisible = true
+
+                taskDelete.isVisible = false
+                taskComplete.isVisible = false
+                taskSelectAll.isVisible = false
             }
+            Mode.SELECTION -> {
+                taskDelete.isVisible = true
+                taskComplete.isVisible = true
+                taskSelectAll.isVisible = true
 
-            // Confirm button
-            addDialogBox.confirmButton.setOnClickListener {
-                // Close dialog box
-                addDialogBox.dismiss()
-
-                // Get task description entry and create new task entry
-                val taskDesc = addDialogBox.taskDesc.text.toString().trim()
-                val task = Task(id, taskDesc, taskDate)
-
-                // Add new entry
-                taskAdapter.addTask(task)
+                taskAdd.isVisible = false
             }
         }
+    }
+
+    private fun updateTopToolbar(newTitle: String) {
+        toolbar.title = newTitle
     }
 
     // ########## Internal functions ##########
     private fun checkNumSelected() {
-        // Toggle depending on whether there is none selected or more than one
+        // Return to add mode
         if (numSelected == 0) {
-            supportActionBar?.title = ""
+            updateTopToolbar(mainTitle)
+            setMode(Mode.ADD)
         } else {
-            supportActionBar?.title = "Selected: [$numSelected]"
+            // Entering select mode for first time
+            if (mode == Mode.ADD) { setMode(Mode.SELECTION) }
+
+            // Display number selected
+            updateTopToolbar("Selected: [$numSelected]")
         }
     }
 }
+
+enum class Mode { ADD, SELECTION }
 
 /** TODO:
  * Sub-menu for functions: Clear all/Complete all
