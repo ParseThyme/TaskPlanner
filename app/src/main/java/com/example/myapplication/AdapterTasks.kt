@@ -20,9 +20,29 @@ class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<Adap
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         private val desc = itemView.desc
+        private val selectedIcon = itemView.selected
 
         fun bind(task: Task) {
             desc.text = task.desc
+
+            // Toggle selected icon
+            toggleSelected(task.selected)
+        }
+
+        // ########## Toggling functionality ##########
+        private fun toggleSelected(isSelected: Boolean) {
+            if (isSelected)
+                selectedIcon.visibility = View.VISIBLE
+            else
+                selectedIcon.visibility = View.GONE
         }
     }
 }
+
+// ########## Data Type ##########
+data class Task (
+    val desc : String = "",
+    //val time : String = ""
+
+    val selected : Boolean = false
+)

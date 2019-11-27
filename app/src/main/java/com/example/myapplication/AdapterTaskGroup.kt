@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.rv_taskgroup.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
-    : RecyclerView.Adapter<ViewHolderTaskGroup>() {
+    : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Selected tasks (mark as complete or delete)
     var numSelected:Int = 0
@@ -19,19 +19,18 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
 
     // Adapter referencing child tasks
 
-
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
 
     // Creating cell
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderTaskGroup {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Use inflate function found in Util then return containing cell layout and clickListener
         val inflatedView = parent.inflate(R.layout.rv_taskgroup, false)
-        return ViewHolderTaskGroup(inflatedView, clickListener)
+        return ViewHolder(inflatedView, clickListener)
     }
 
     // When cell made
-    override fun onBindViewHolder(holder: ViewHolderTaskGroup, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
         holder.bind(taskGroupList[position])
     }
@@ -167,8 +166,42 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
     }
     */
 
+    // ########## ViewHolder ##########
+    inner class ViewHolder(itemView: View, private val clickListener: AdapterTaskGroup.ClickListener):
+        RecyclerView.ViewHolder(itemView), View.OnClickListener
+    {
+        // Defining reference to task description text in layout
+        private val tasksRV = itemView.taskGroupRV
+        private val dateLabel = itemView.dateLabel
+
+        private lateinit var taskAdapter: AdapterTasks
+
+        fun bind(taskGroup: TaskGroup) {
+            dateLabel.text = taskGroup.date
+
+            // Store reference to task adapter and assign its layout manager + adapter
+            taskAdapter = AdapterTasks(taskGroup.tasks)
+            tasksRV.apply {
+                layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
+                adapter = taskAdapter
+            }
+        }
+
+        // ########## onClick functionality/variables ##########
+        init { itemView.setOnClickListener(this) }
+        override fun onClick(v: View) { clickListener.onClick(adapterPosition, v) }
+    }
+
     // ########## onClick functionality/variables ##########
     private lateinit var clickListener: ClickListener
     fun setOnItemClickListener(newCL: ClickListener) { clickListener = newCL }
     interface ClickListener { fun onClick(pos: Int, aView: View) }
 }
+
+// ########## Data Type ##########
+data class TaskGroup (
+    val date: String = "",
+    val tasks: ArrayList<Task> = arrayListOf(),
+
+    val id: Int = 0
+)
