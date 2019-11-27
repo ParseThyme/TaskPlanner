@@ -1,28 +1,35 @@
-package com.example.myapplication.Adapters
+package com.example.myapplication.adapters
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.Interfaces.ItemClickListener
 import com.example.myapplication.R
+import com.example.myapplication.data_classes.Task
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskentry.view.*
 
-class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<AdapterTasks.ViewHolder>(){
+// val itemClickedListener: (Task) -> Unit
+// Code above takes in a lambda function as a parameter
+// Unit == no return type (same as void)
+
+class AdapterTasks(private val taskList : List<Task>, private val clickListener: (Int, Task) -> Unit) :
+    RecyclerView.Adapter<AdapterTasks.ViewHolder>()
+{
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v =  parent.inflate(R.layout.rv_taskentry, false)
-        return ViewHolder(v, clickListener)
+        return ViewHolder(v)
     }
 
     override fun getItemCount(): Int { return taskList.size }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(taskList[position])
+        holder.bind(taskList[position], clickListener)
     }
 
-    fun toggleTask(position: Int) : Boolean{
+    fun toggleTask(position: Int) : Boolean {
         // Get referenced task item
-        val task:Task = taskList[position]
+        val task: Task = taskList[position]
 
         // Switch its state to the opposite (selected/deselected)
         task.selected = !task.selected
@@ -32,16 +39,24 @@ class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<Adap
     }
 
     // ########## ViewHolder ##########
-    inner class ViewHolder(itemView : View, private val clickListener: ItemClickListener)
-        : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        private val desc = itemView.desc
+    inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val selectedIcon = itemView.selected
 
-        fun bind(task: Task) {
-            desc.text = task.desc
+        fun bind(task: Task, clickListener: (Int, Task) -> Unit) {
+            itemView.desc.text = task.desc
 
             // Toggle selected icon
             toggleSelected(task.selected)
+
+            this.itemView.setOnClickListener {
+                // When clicked, swap its state and select/deselect it
+                task.selected = !task.selected
+                toggleSelected(task.selected)
+                notifyItemChanged(adapterPosition)
+
+                // Call main click listener function (implemented in main activity)
+                clickListener(adapterPosition, task)
+            }
         }
 
         // ########## Toggling functionality ##########
@@ -51,21 +66,5 @@ class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<Adap
             else
                 selectedIcon.visibility = View.GONE
         }
-
-        // ########## onClick functionality/variables ##########
-        init { itemView.setOnClickListener(this) }
-        override fun onClick(v: View) { clickListener.onClick(adapterPosition, v) }
     }
-
-    // ########## onClick functionality/variables ##########
-    private lateinit var clickListener: ItemClickListener
-    fun setOnItemClickListener(newCL: ItemClickListener) { clickListener = newCL }
 }
-
-// ########## Data Type ##########
-data class Task (
-    val desc : String = "",
-    //val time : String = ""
-
-    var selected : Boolean = false
-)

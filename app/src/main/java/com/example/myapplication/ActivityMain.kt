@@ -1,33 +1,37 @@
 package com.example.myapplication
 
+import com.example.myapplication.adapters.AdapterTaskGroup
+import com.example.myapplication.data_classes.Task
+import com.example.myapplication.data_classes.TaskGroup
+
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.size
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myapplication.Adapters.AdapterTaskGroup
-import com.example.myapplication.Adapters.AdapterTasks
-import com.example.myapplication.Adapters.TaskGroup
-import com.example.myapplication.Interfaces.ItemClickListener
+
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.widget.Toast
+
+import java.text.SimpleDateFormat
+import java.util.*
+
+import kotlin.collections.ArrayList
+
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.view_additem.*
 import kotlinx.android.synthetic.main.view_additem.desc
-import java.text.SimpleDateFormat
-import kotlin.collections.ArrayList
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
     private val taskGroupList = ArrayList<TaskGroup>()
-    private val taskGroupAdapter =
-        AdapterTaskGroup(taskGroupList)
+    private val taskClickedFunction = { position : Int, task : Task -> taskClicked(position, task) }
+    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFunction)
 
     // Debugging:
     private var validateInput = false
@@ -78,13 +82,10 @@ class MainActivity : AppCompatActivity() {
         // [1]. Toolbar at top
         setupToolbar()
 
-        // [2]. Click listener for task list
-        setupClickListener()
-
-        // [3]. At start only show New Task button
+        // [2]. At start only show New Task button
         setMode(Mode.ADD)
 
-        // [4]. Set behaviour when clicking on bottom navigation toolbar
+        // [3]. Set behaviour when clicking on bottom navigation toolbar
         bottomBar.setOnNavigationItemSelectedListener {
             when(it.itemId) {
                 R.id.menuAdd -> {
@@ -116,10 +117,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.topBar))
         toolbar = supportActionBar!!
         updateTopToolbar(mainTitle)
-    }
-
-    private fun setupClickListener() {
-
     }
 
     private fun addNewTask() {
@@ -203,6 +200,17 @@ class MainActivity : AppCompatActivity() {
         taskDelete = bottomBar.menu.findItem(R.id.menuDelete)
         taskComplete = bottomBar.menu.findItem(R.id.menuComplete)
         taskSelectAll = bottomBar.menu.findItem(R.id.menuSelectAll)
+    }
+
+    // ########## OnClick ##########
+    private fun taskClicked (position: Int, task: Task) {
+        // Update counts based on whether task selected/deselected
+        if (task.selected)
+            numSelected++
+        else
+            numSelected--
+
+        checkNumSelected()
     }
 
     // ########## Change values/display ##########
