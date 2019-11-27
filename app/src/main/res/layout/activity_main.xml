@@ -11,13 +11,13 @@
         layout="@layout/toolbar_main"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/taskList"
+        app:layout_constraintBottom_toTopOf="@+id/dateGroupRV"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/taskList"
+        android:id="@+id/dateGroupRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="50dp"
@@ -45,8 +45,8 @@
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/taskList"
-        app:layout_constraintTop_toBottomOf="@+id/taskList"
+        app:layout_constraintStart_toStartOf="@+id/dateGroupRV"
+        app:layout_constraintTop_toBottomOf="@+id/dateGroupRV"
         app:menu="@menu/navigation_tasklist_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

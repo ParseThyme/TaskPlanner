@@ -4,54 +4,26 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toolbar
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.size
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.view_additem.*
-import kotlinx.android.synthetic.main.view_additem.taskDesc
+import kotlinx.android.synthetic.main.view_additem.desc
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 import java.util.*
 
-/** ########## Resources ##########
-- RecyclerView:
-   https://www.youtube.com/watch?v=jS0buQyfJfs
-- Popup Dialog box:
-   https://www.youtube.com/watch?v=2Nj6qCtaUqw
-- Disabling button/enabling based on text field
-   https://www.youtube.com/watch?v=Vy_4sZ6JVHM
-- Bottom Navigation
-    https://android--code.blogspot.com/2018/03/android-kotlin-bottom-navigation-bar.html
-**/
-
-/**
- val == assigned once, fixed
- var == changeable, can be reassigned
-**/
-
-/** Equivalents:
--------------------------------------
- val textView = TextView(this)
- textView.visibility = View.VISIBLE
- textView.text = "test"
---------------------------------------
- val textView = TextView(this).apply {
-    visibility = View.VISIBLE
-    text = "test"
- }
---------------------------------------
-**/
-
 class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
-    private val tasks = ArrayList<Task>()
-    private val taskAdapter = AdapterTasks(tasks)
+    private val taskGroupList = ArrayList<TaskGroup>()
+    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList)
 
     // Debugging:
     private var validateInput = false
@@ -74,9 +46,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Setup Manager and Adapter (Table to render out items on list)
-        taskList.layoutManager = LinearLayoutManager(this)
-        taskList.adapter = taskAdapter
+        // Assign layout manager and adapter to recycler view
+        dateGroupRV.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = taskGroupAdapter
+        }
+
+        // Divider between date categories
+        val divider = DividerItemDecoration(dateGroupRV.context, DividerItemDecoration.VERTICAL)
+        dateGroupRV.addItemDecoration(divider)
+
+        /*
+        taskGroupAdapter.addTask(2, "Fri 29 Nov", "Volunteering")
+        taskGroupAdapter.addTask(0,"Wed 27 Nov", "Do some programming")
+        taskGroupAdapter.addTask(1,"Thu 28 Nov", "Play some Diablo")
+        taskGroupAdapter.addTask(0,"Wed 27 Nov", "Eat some food")
+        */
 
         runSetup()
     }
@@ -103,14 +88,14 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menuDelete -> {
-                    taskAdapter.deleteTasks()
+                    // taskGroupAdapter.deleteTasks()
                     numSelected = 0
                     checkNumSelected()
                     true
                 }
                 R.id.menuSelectAll -> {
-                    taskAdapter.selectAll()
-                    numSelected = taskList.size
+                    // taskGroupAdapter.selectAll()
+                    numSelected = dateGroupRV.size
                     checkNumSelected()
                     true
                 }
@@ -130,9 +115,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListener() {
-        taskAdapter.setOnItemClickListener(object: AdapterTasks.ClickListener {
+        taskGroupAdapter.setOnItemClickListener(object: AdapterTaskGroup.ClickListener {
             override fun onClick(pos: Int, aView: View) {
-                numSelected = taskAdapter.toggleTask(pos)
+                // numSelected = taskGroupAdapter.toggleTask(pos)
                 checkNumSelected()
             }
         })
@@ -174,14 +159,14 @@ class MainActivity : AppCompatActivity() {
         // Input Validation:
         // 1. TextWatcher, ensure confirm button only enabled when task entered
         if (validateInput) {
-            addDialogBox.taskDesc.addTextChangedListener(object: TextWatcher {
+            addDialogBox.desc.addTextChangedListener(object: TextWatcher {
                 // Unused
                 override fun afterTextChanged(s: Editable) {}
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
                 // Check when text is being changed
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    val taskEntry = addDialogBox.taskDesc.text.toString().trim() // Remove blank spaces before/after string
+                    val taskEntry = addDialogBox.desc.text.toString().trim() // Remove blank spaces before/after string
 
                     // Toggle confirm button based on whether text is empty or not
                     addDialogBox.confirmButton.isEnabled = taskEntry.isNotEmpty()
@@ -208,12 +193,9 @@ class MainActivity : AppCompatActivity() {
             // Close dialog box
             addDialogBox.dismiss()
 
-            // Get task description entry and create new task entry
-            val taskDesc = addDialogBox.taskDesc.text.toString().trim()
-            val task = Task(id, taskDesc, taskDate)
-
-            // Add new entry
-            taskAdapter.addTask(task)
+            // Get task description entry, create task entry and add to adapter
+            val taskDesc = addDialogBox.desc.text.toString().trim()
+            taskGroupAdapter.addTask(id, taskDate, taskDesc)
         }
     }
 
@@ -265,11 +247,3 @@ class MainActivity : AppCompatActivity() {
 }
 
 enum class Mode { ADD, SELECTION }
-
-/** TODO:
- * Sub-menu for functions: Clear all/Complete all
- * Display number of tasks selected on top.
- * Enable/disable delete/complete buttons (if 0 then disable, otherwise enable)
- * Functionality for "Mark Complete" button
- * Button: Select All
- **/
