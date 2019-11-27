@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -13,6 +12,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.size
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myapplication.Adapters.AdapterTaskGroup
+import com.example.myapplication.Adapters.AdapterTasks
+import com.example.myapplication.Adapters.TaskGroup
+import com.example.myapplication.Interfaces.ItemClickListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.view_additem.*
 import kotlinx.android.synthetic.main.view_additem.desc
@@ -23,7 +26,8 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
     private val taskGroupList = ArrayList<TaskGroup>()
-    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList)
+    private val taskGroupAdapter =
+        AdapterTaskGroup(taskGroupList)
 
     // Debugging:
     private var validateInput = false
@@ -115,12 +119,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListener() {
-        taskGroupAdapter.setOnItemClickListener(object: AdapterTaskGroup.ClickListener {
-            override fun onClick(pos: Int, aView: View) {
-                // numSelected = taskGroupAdapter.toggleTask(pos)
-                checkNumSelected()
-            }
-        })
+
     }
 
     private fun addNewTask() {

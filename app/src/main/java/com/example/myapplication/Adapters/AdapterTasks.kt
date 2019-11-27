@@ -1,15 +1,17 @@
-package com.example.myapplication
+package com.example.myapplication.Adapters
 
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Interfaces.ItemClickListener
+import com.example.myapplication.R
+import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskentry.view.*
 
 class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<AdapterTasks.ViewHolder>(){
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v =  parent.inflate(R.layout.rv_taskentry, false)
-        return ViewHolder(v)
+        return ViewHolder(v, clickListener)
     }
 
     override fun getItemCount(): Int { return taskList.size }
@@ -18,7 +20,20 @@ class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<Adap
         holder.bind(taskList[position])
     }
 
-    inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
+    fun toggleTask(position: Int) : Boolean{
+        // Get referenced task item
+        val task:Task = taskList[position]
+
+        // Switch its state to the opposite (selected/deselected)
+        task.selected = !task.selected
+        notifyItemChanged(position)
+
+        return task.selected
+    }
+
+    // ########## ViewHolder ##########
+    inner class ViewHolder(itemView : View, private val clickListener: ItemClickListener)
+        : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val desc = itemView.desc
         private val selectedIcon = itemView.selected
 
@@ -36,7 +51,15 @@ class AdapterTasks(private val taskList : List<Task>): RecyclerView.Adapter<Adap
             else
                 selectedIcon.visibility = View.GONE
         }
+
+        // ########## onClick functionality/variables ##########
+        init { itemView.setOnClickListener(this) }
+        override fun onClick(v: View) { clickListener.onClick(adapterPosition, v) }
     }
+
+    // ########## onClick functionality/variables ##########
+    private lateinit var clickListener: ItemClickListener
+    fun setOnItemClickListener(newCL: ItemClickListener) { clickListener = newCL }
 }
 
 // ########## Data Type ##########
@@ -44,5 +67,5 @@ data class Task (
     val desc : String = "",
     //val time : String = ""
 
-    val selected : Boolean = false
+    var selected : Boolean = false
 )

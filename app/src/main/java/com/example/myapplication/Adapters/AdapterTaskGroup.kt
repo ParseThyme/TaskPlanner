@@ -1,10 +1,13 @@
-package com.example.myapplication
+package com.example.myapplication.Adapters
 
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Interfaces.ItemClickListener
+import com.example.myapplication.R
+import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskgroup.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
@@ -26,7 +29,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Use inflate function found in Util then return containing cell layout and clickListener
         val inflatedView = parent.inflate(R.layout.rv_taskgroup, false)
-        return ViewHolder(inflatedView, clickListener)
+        return ViewHolder(inflatedView)
     }
 
     // When cell made
@@ -66,7 +69,13 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
     }
 
     private fun addNewTaskGroup(pos: Int, date: String, newTask: Task, id: Int) {
-        taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask), id))
+        taskGroupList.add(pos,
+            TaskGroup(
+                date,
+                arrayListOf(newTask),
+                id
+            )
+        )
         notifyItemInserted(pos)
     }
 
@@ -141,21 +150,6 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
         }
     }
 
-    fun toggleTask(position: Int) :Int {
-        // Get referenced task item
-        val task:Task = taskList[position]
-
-        // Switch its state to the opposite (selected/deselected)
-        task.selected = !task.selected
-        notifyItemChanged(position)
-
-        // Increment/Decrement internal counts
-        val isSelected = task.selected
-        if (isSelected) { numSelected++ } else { numSelected-- }
-
-        return numSelected
-    }
-
     fun selectAll() {
         for (index in 0 until taskList.size) {
             taskList[index].selected = true
@@ -167,9 +161,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
     */
 
     // ########## ViewHolder ##########
-    inner class ViewHolder(itemView: View, private val clickListener: AdapterTaskGroup.ClickListener):
-        RecyclerView.ViewHolder(itemView), View.OnClickListener
-    {
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
         private val tasksRV = itemView.taskGroupRV
         private val dateLabel = itemView.dateLabel
@@ -177,25 +169,29 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>)
         private lateinit var taskAdapter: AdapterTasks
 
         fun bind(taskGroup: TaskGroup) {
+            // Assign date label
             dateLabel.text = taskGroup.date
 
             // Store reference to task adapter and assign its layout manager + adapter
             taskAdapter = AdapterTasks(taskGroup.tasks)
+
+            taskAdapter.setOnItemClickListener(object: ItemClickListener {
+                override fun onClick(pos: Int, aView: View) {
+                    taskAdapter.toggleTask(pos)
+
+
+                    // Increment/Decrement internal counts
+                    // if (isSelected) { numSelected++ } else { numSelected-- }
+                    // checkNumSelected()
+                }
+            })
+
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
                 adapter = taskAdapter
             }
         }
-
-        // ########## onClick functionality/variables ##########
-        init { itemView.setOnClickListener(this) }
-        override fun onClick(v: View) { clickListener.onClick(adapterPosition, v) }
     }
-
-    // ########## onClick functionality/variables ##########
-    private lateinit var clickListener: ClickListener
-    fun setOnItemClickListener(newCL: ClickListener) { clickListener = newCL }
-    interface ClickListener { fun onClick(pos: Int, aView: View) }
 }
 
 // ########## Data Type ##########
