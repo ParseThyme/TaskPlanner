@@ -11,18 +11,16 @@ import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskgroup.view.*
 
-class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>, private val clickListener: (Int, Task) -> Unit)
+class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
+                       private val clickListener: (Int, Task) -> Unit)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
-    // Selected tasks (mark as complete or delete)
+    // Total task count (from entire recycler view)
     private var taskCount = 0
-    private var numSelected = 0
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
     private val baseMinDate = 90000000
     private var minDate = baseMinDate
-
-    // Adapter referencing child tasks
 
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
@@ -42,30 +40,27 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>, private 
 
     // ########## Adding new task/task group ##########
     fun addTask(newId: Int, newDate: String, newDesc: String) {
-        val newTask = Task(newDesc)
         taskCount++
 
         // ---------- Auto Sorting Entries ----------
         // [A]. Check for earliest date
-        if (minDate > newId) {
+        if (newId < minDate) {
             // New date is earlier, make it the new min date and insert new group at the top
             minDate = newId
-            addNewTaskGroup(0, newDate, newTask, newId)
+            addNewTaskGroup(0, newDate, Task(newDesc), newId)
             return
         }
 
         // [B]. Otherwise start from latest entry and move upwards
         for (pos in taskGroupList.lastIndex downTo 0 step 1) {
             // [1]. Matching date, append to existing list of tasks
-            if (taskGroupList[pos].id == newId) {
-                Log.d("Test", "Matching date")
-                addToTaskGroup(pos, newTask)
+            if (newId == taskGroupList[pos].id) {
+                addToTaskGroup(pos, Task(newDesc))
                 return
             }
             // [2]. Date reached is earlier, create new date category with new task
-            if (taskGroupList[pos].id < newId) {
-                // insert(new, pos + 1)
-                addNewTaskGroup(pos + 1, newDate, newTask, newId)
+            if (newId > taskGroupList[pos].id) {
+                addNewTaskGroup(pos + 1, newDate, Task(newDesc), newId)
                 return
             }
         }
@@ -77,86 +72,76 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>, private 
     }
 
     private fun addToTaskGroup(pos: Int, newTask: Task) {
-        taskGroupList[pos].tasks.add(newTask)
+        taskGroupList[pos].taskList.add(newTask)
         notifyItemChanged(pos)
     }
 
-    /*
     // ########## Deleting task entries ##########
-    fun deleteTasks() {
-        // Clearing entire list
-        if (numSelected == taskCount) {
-            // Empty everything
-            taskCount = 0
+    fun deleteTasks(selected : Int, deleteAll : Boolean = false) {
+        // [1]. Clearing entire list
+        if (deleteAll) {
+            // Empty everything and reset values
             taskGroupList.clear()
             notifyDataSetChanged()
-
-            // Reset min date and clear all selected
+            taskCount = 0
             minDate = baseMinDate
-            numSelected = 0
             return
         }
 
-        if (numSelected == 0)
-            return
+        // [2]. Deleting specifically selected tasks
+        var count = 0
+        val end = taskGroupList.size - 1
 
-        var start = 0
-        var end: Int = taskList.size - 1
+        for (groupNum in end downTo 0) {
+            val group = taskGroupList[groupNum]
+            if (group.numSelected > 0) {
+                // Go through task list in group, deleting selected tasks
+                for (taskNum in group.taskList.size - 1 downTo 0) {
+                    val currTask = group.taskList[taskNum]
+                    if (currTask.selected) {
+                        group.taskList.remove(currTask)
+                        notifyItemChanged(groupNum)
 
-        // Loop until all selected tasks are removed
-        while (numSelected != 0) {
-            // 1st loop = from 0 to tasList last index
-            for (index in start..end) {
-                // Task to delete found
-                if (taskList[index].selected) {
+                        // Update counters, number selected in current group and overall counter
+                        group.numSelected--
+                        taskCount--
+                        count++
 
-                    // [1]. If it has a visible date (Deleting top-most task with date attached)
-                    if (!taskList[index].hideDate) {
-                        // Check below to see if there's another task with the same date
-                        if (index != end && taskList[index + 1].hideDate) {
-                            // If there is, toggle the one below to show its date. If not do nothing
-                            taskList[index + 1].hideDate = false
-                            notifyItemChanged(index + 1)
+                        // Delete entire group itself once the task count reaches 0
+                        if (group.taskList.size == 0) {
+                            // Update minDate if removed date was the minimum one
+                            if (group.id == minDate)
+                                minDate = taskGroupList[groupNum + 1].id
+
+                            taskGroupList.removeAt(groupNum)
+                            notifyItemRemoved(groupNum)
                         }
+
+                        // Exit entire function if all selected tasks have been removed
+                        if (count == selected)
+                            return
+
+                        // Exit early once numSelected = 0 (no more selected tasks in this group)
+                        if (group.numSelected == 0)
+                            break
                     }
-
-                    // [2]. If task is the min date (topmost task), update min date to next one
-                    if (index == 0) {
-                        // [A]. It is the only task in the list, reset to default value
-                        if (taskList.size == 1)
-                            minDate = baseMinDate
-
-                        // [B]. If next task is a differing date, assign it to new min date
-                        else if (taskList[index + 1].id != minDate)
-                            minDate = taskList[index + 1].id
-                    }
-
-                    // Deselect it then remove it
-                    taskList[index].selected = false
-                    taskList.removeAt(index)
-                    notifyItemRemoved(index)
-
-                    // Update starting index to be current index (so we skip already visited tasks)
-                    start = index
-                    end--
-
-                    // Reduce count left to delete and then reset
-                    numSelected--
-                    break
                 }
             }
         }
     }
 
-    fun selectAll() {
-        for (index in 0 until taskList.size) {
-            taskList[index].selected = true
-            notifyItemChanged(index)
-        }
+    fun toggleSelectAll(selectAll : Boolean = true) {
+        val end = taskGroupList.size - 1
+        for (groupNum in end downTo 0) {
+            val group = taskGroupList[groupNum]
 
-        numSelected = taskList.size
+            for (taskNum in group.taskList.size - 1 downTo 0) {
+                group.taskList[taskNum].selected = selectAll
+            }
+            group.numSelected = group.taskList.size
+            notifyItemChanged(groupNum)
+        }
     }
-    */
 
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -171,7 +156,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>, private 
             dateLabel.text = taskGroup.date
 
             // Store reference to task adapter
-            taskAdapter = AdapterTasks(taskGroup.tasks, clickListener)
+            taskAdapter = AdapterTasks(taskGroup, clickListener)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)

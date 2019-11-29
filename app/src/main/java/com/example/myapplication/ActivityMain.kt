@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
@@ -43,12 +44,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskSelectAll: MenuItem
 
     // Selecting tasks
-    private var numSelected: Int = 0
+    private var allSelected = false
+    private var taskCount: Int = 0
+    private var selected: Int = 0
     private var mode: Mode = Mode.ADD
 
     // Navigation bars
-    lateinit var toolbar: ActionBar
-    val mainTitle = "My Task List"
+    private lateinit var toolbar: ActionBar
+    private val mainTitle = "My Task List"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         /*
         taskGroupAdapter.addTask(2, "Fri 29 Nov", "Volunteering")
         taskGroupAdapter.addTask(0,"Wed 27 Nov", "Do some programming")
-        taskGroupAdapter.addTask(1,"Thu 28 Nov", "Play some Diablo")
+        taskGroupAdapter.addTask(1,"Thu 28 Nov", "Play some Diablo III")
         taskGroupAdapter.addTask(0,"Wed 27 Nov", "Eat some food")
         */
 
@@ -93,15 +96,26 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menuDelete -> {
-                    // taskGroupAdapter.deleteTasks()
-                    numSelected = 0
-                    checkNumSelected()
+                    // Check if deleting all or deleting specific amount
+                    if (selected == taskCount) {
+                        taskGroupAdapter.deleteTasks(0, true)
+                        taskCount = 0
+                    } else {
+                        taskGroupAdapter.deleteTasks(selected)
+                        taskCount -= selected
+                    }
+
+                    // Clear selections and return to add mode
+                    setMode(Mode.ADD)
+                    selected = 0
                     true
                 }
                 R.id.menuSelectAll -> {
-                    // taskGroupAdapter.selectAll()
-                    numSelected = dateGroupRV.size
-                    checkNumSelected()
+                    if (selected != taskCount) {
+                        taskGroupAdapter.toggleSelectAll()
+                        selected = taskCount
+                        updateTopToolbar("Selected: [$selected]")
+                    }
                     true
                 }
                 R.id.menuComplete -> {
@@ -192,6 +206,8 @@ class MainActivity : AppCompatActivity() {
             // Get task description entry, create task entry and add to adapter
             val taskDesc = addDialogBox.desc.text.toString().trim()
             taskGroupAdapter.addTask(id, taskDate, taskDesc)
+
+            taskCount++
         }
     }
 
@@ -205,25 +221,44 @@ class MainActivity : AppCompatActivity() {
     // ########## OnClick ##########
     private fun taskClicked (position: Int, task: Task) {
         // Update counts based on whether task selected/deselected
-        if (task.selected)
-            numSelected++
-        else
-            numSelected--
+        if (task.selected) {
+            selected++
 
-        checkNumSelected()
+            // Selected first task, change to selection mode
+            if (selected == 1)
+                setMode(Mode.SELECTION)
+        }
+        else {
+            selected--
+
+            // Deselect last task, return to add mode
+            if (selected == 0) {
+                setMode(Mode.ADD)
+                updateTopToolbar(mainTitle)
+                return
+            }
+        }
+
+        // Update toolbar value print for any values above 0
+        updateTopToolbar("Selected: [$selected]")
     }
 
     // ########## Change values/display ##########
     private fun setMode(newMode: Mode) {
+        mode = newMode
         when (newMode) {
             Mode.ADD -> {
-                taskAdd.isVisible = true
+                updateTopToolbar(mainTitle)
 
                 taskDelete.isVisible = false
                 taskComplete.isVisible = false
                 taskSelectAll.isVisible = false
+
+                taskAdd.isVisible = true
             }
             Mode.SELECTION -> {
+                updateTopToolbar("Selected: [$selected]")
+
                 taskDelete.isVisible = true
                 taskComplete.isVisible = true
                 taskSelectAll.isVisible = true
@@ -238,19 +273,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ########## Internal functions ##########
-    private fun checkNumSelected() {
-        // Return to add mode
-        if (numSelected == 0) {
-            updateTopToolbar(mainTitle)
-            setMode(Mode.ADD)
-        } else {
-            // Entering select mode for first time
-            if (mode == Mode.ADD) { setMode(Mode.SELECTION) }
-
-            // Display number selected
-            updateTopToolbar("Selected: [$numSelected]")
-        }
-    }
 }
 
 enum class Mode { ADD, SELECTION }

@@ -1,11 +1,13 @@
 package com.example.myapplication.adapters
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
+import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskentry.view.*
 
@@ -13,7 +15,7 @@ import kotlinx.android.synthetic.main.rv_taskentry.view.*
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
 
-class AdapterTasks(private val taskList : List<Task>, private val clickListener: (Int, Task) -> Unit) :
+class AdapterTasks(private val group : TaskGroup, private val clickListener: (Int, Task) -> Unit) :
     RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,21 +23,10 @@ class AdapterTasks(private val taskList : List<Task>, private val clickListener:
         return ViewHolder(v)
     }
 
-    override fun getItemCount(): Int { return taskList.size }
+    override fun getItemCount(): Int { return group.taskList.size }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(taskList[position], clickListener)
-    }
-
-    fun toggleTask(position: Int) : Boolean {
-        // Get referenced task item
-        val task: Task = taskList[position]
-
-        // Switch its state to the opposite (selected/deselected)
-        task.selected = !task.selected
-        notifyItemChanged(position)
-
-        return task.selected
+        holder.bind(group.taskList[position], clickListener)
     }
 
     // ########## ViewHolder ##########
@@ -53,6 +44,14 @@ class AdapterTasks(private val taskList : List<Task>, private val clickListener:
                 task.selected = !task.selected
                 toggleSelected(task.selected)
                 notifyItemChanged(adapterPosition)
+
+                // If update count in group to notify number selected
+                if (task.selected)
+                    group.numSelected++
+                else
+                    group.numSelected--
+
+                Log.d("Test", "${group.date} = [${group.numSelected}]")
 
                 // Call main click listener function (implemented in main activity)
                 clickListener(adapterPosition, task)
