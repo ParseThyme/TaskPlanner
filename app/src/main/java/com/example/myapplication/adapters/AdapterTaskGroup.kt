@@ -12,7 +12,7 @@ import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskgroup.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
-                       private val clickListener: (Int, Task) -> Unit)
+                       private val clickListener: (Task) -> Unit)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Total task count (from entire recycler view)
@@ -151,7 +151,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
 
         private lateinit var taskAdapter: AdapterTasks
 
-        fun bind(taskGroup: TaskGroup, clickListener: (Int, Task) -> Unit) {
+        fun bind(taskGroup: TaskGroup, clickListener: (Task) -> Unit) {
             // Assign date label
             dateLabel.text = taskGroup.date
 

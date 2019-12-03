@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.rv_taskentry.view.*
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
 
-class AdapterTasks(private val group : TaskGroup, private val clickListener: (Int, Task) -> Unit) :
+class AdapterTasks(private val group : TaskGroup, private val clickListener: (Task) -> Unit) :
     RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,7 +33,7 @@ class AdapterTasks(private val group : TaskGroup, private val clickListener: (In
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val selectedIcon = itemView.selected
 
-        fun bind(task: Task, clickListener: (Int, Task) -> Unit) {
+        fun bind(task: Task, clickListener: (Task) -> Unit) {
             itemView.desc.text = task.desc
 
             // Toggle selected icon
@@ -54,7 +54,7 @@ class AdapterTasks(private val group : TaskGroup, private val clickListener: (In
                 Log.d("Test", "${group.date} = [${group.numSelected}]")
 
                 // Call main click listener function (implemented in main activity)
-                clickListener(adapterPosition, task)
+                clickListener(task)
             }
         }
 

@@ -29,29 +29,39 @@ import kotlinx.android.synthetic.main.view_additem.*
 import kotlinx.android.synthetic.main.view_additem.desc
 
 class MainActivity : AppCompatActivity() {
-    // TaskList (Center Area)
-    private val taskGroupList = ArrayList<TaskGroup>()
-    private val taskClickedFunction = { position : Int, task : Task -> taskClicked(position, task) }
-    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFunction)
-
     // Debugging:
     private var validateInput = false
 
-    // Navigation menu options
+    // TaskList (Center Area)
+    private val taskGroupList = ArrayList<TaskGroup>()
+    private val taskClickedFunction = { task : Task -> taskClicked(task) }
+    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFunction)
+
+    // Selecting tasks
+    private var taskCount: Int = 0
+    private var selected: Int = 0
+    private var mode: Mode = Mode.ADD
+
+    // Navigation TopBar
+    private lateinit var toolbar: ActionBar
+    private val mainTitle = "My Task List"
+    // Navigation bottom menu options
     private lateinit var taskAdd: MenuItem
     private lateinit var taskDelete: MenuItem
     private lateinit var taskComplete: MenuItem
     private lateinit var taskSelectAll: MenuItem
 
-    // Selecting tasks
-    private var allSelected = false
-    private var taskCount: Int = 0
-    private var selected: Int = 0
-    private var mode: Mode = Mode.ADD
-
-    // Navigation bars
-    private lateinit var toolbar: ActionBar
-    private val mainTitle = "My Task List"
+    // Add new task formats + variables
+    // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
+    private val dateFormat = SimpleDateFormat("EEE d MMM")
+    private val idFormat = SimpleDateFormat("yyyyMMdd")
+    // Ensure you can only select either today or future dates, ToDo: Customizable
+    private val calMaxDays = 30
+    // Calendar limits + starting values
+    private var startDate: String = ""
+    private var startId: Int = 0
+    private var minDate: Long = 0
+    private var maxDate: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Setup related functions ##########
     private fun runSetup() {
-        // Variable references
+        // Initialize variable references
         setupLateInit()
 
         // [1]. Toolbar at top
@@ -134,28 +144,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addNewTask() {
-        // Format for printed date + internal id
-        // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
-        val dateFormat = SimpleDateFormat("EEE d MMM")
-        val idFormat = SimpleDateFormat("yyyyMMdd")
-
-        // Ensure you can only select either today or future dates, customizable
-        val calMaxDays = 30
-
-        // Setup calendar variable
+        // Setup new calendar instance
         val cal = Calendar.getInstance()
-        // Set initial date to be today, calculate min and max date
-        val startDate = dateFormat.format(cal.timeInMillis)
-        val startId = idFormat.format(cal.timeInMillis).toInt()
-        val minDate = cal.timeInMillis
-        // Add extra days to get max date
-        cal.add(Calendar.DATE, calMaxDays)
-        val maxDate = cal.timeInMillis
 
         // Add item (Open dialog box for new entry)
-        // Inflate dialog
+        // 1. Inflate dialog
         val addDialogView = LayoutInflater.from(this).inflate(R.layout.view_additem, null)
-        // Build using alert dialog box
+        // 2. Build using alert dialog box
         val addBuilder = AlertDialog.Builder(this).apply {
             setView(addDialogView)
         }
@@ -206,20 +201,29 @@ class MainActivity : AppCompatActivity() {
             // Get task description entry, create task entry and add to adapter
             val taskDesc = addDialogBox.desc.text.toString().trim()
             taskGroupAdapter.addTask(id, taskDate, taskDesc)
-
             taskCount++
         }
     }
 
     private fun setupLateInit() {
+        // Bottom toolbar variables
         taskAdd = bottomBar.menu.findItem(R.id.menuAdd)
         taskDelete = bottomBar.menu.findItem(R.id.menuDelete)
         taskComplete = bottomBar.menu.findItem(R.id.menuComplete)
         taskSelectAll = bottomBar.menu.findItem(R.id.menuSelectAll)
+
+        // Add new task variables
+        val cal = Calendar.getInstance()
+        startDate = dateFormat.format(cal.timeInMillis)
+        startId = idFormat.format(cal.timeInMillis).toInt()
+        minDate = cal.timeInMillis
+        // Add extra days to get max date
+        cal.add(Calendar.DATE, calMaxDays)
+        maxDate = cal.timeInMillis
     }
 
     // ########## OnClick ##########
-    private fun taskClicked (position: Int, task: Task) {
+    private fun taskClicked (task: Task) {
         // Update counts based on whether task selected/deselected
         if (task.selected) {
             selected++
