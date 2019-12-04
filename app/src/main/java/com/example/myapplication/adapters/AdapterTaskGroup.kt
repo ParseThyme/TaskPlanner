@@ -138,6 +138,8 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             for (taskNum in group.taskList.size - 1 downTo 0) {
                 group.taskList[taskNum].selected = selectAll
             }
+
+            group.allSelected = true
             group.numSelected = group.taskList.size
             notifyItemChanged(groupNum)
         }

@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menuComplete -> {
+                    // ToDo
                     true
                 }
                 else -> false
@@ -223,6 +224,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ########## OnClick ##########
+    private fun dateClicked(group: TaskGroup) {
+        
+    }
+
     private fun taskClicked (task: Task) {
         // Update counts based on whether task selected/deselected
         if (task.selected) {
@@ -253,7 +258,6 @@ class MainActivity : AppCompatActivity() {
         when (newMode) {
             Mode.ADD -> {
                 updateTopToolbar(mainTitle)
-
                 taskDelete.isVisible = false
                 taskComplete.isVisible = false
                 taskSelectAll.isVisible = false
@@ -262,7 +266,6 @@ class MainActivity : AppCompatActivity() {
             }
             Mode.SELECTION -> {
                 updateTopToolbar("Selected: [$selected]")
-
                 taskDelete.isVisible = true
                 taskComplete.isVisible = true
                 taskSelectAll.isVisible = true
