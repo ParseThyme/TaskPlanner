@@ -1,6 +1,5 @@
 package com.example.myapplication.adapters
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +11,8 @@ import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskgroup.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
-                       private val clickListener: (Task) -> Unit)
+                       private val taskClickListener: (Task) -> Unit,
+                       private val dateClickListener: (Int) -> Unit)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Total task count (from entire recycler view)
@@ -35,7 +35,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
-        holder.bind(taskGroupList[position], clickListener)
+        holder.bind(taskGroupList[position], taskClickListener, dateClickListener)
     }
 
     // ########## Adding new task/task group ##########
@@ -130,7 +130,39 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         }
     }
 
-    fun toggleSelectAll(selectAll : Boolean = true) {
+    fun toggleGroup(groupNum : Int) : Int {
+        var difference: Int = 0
+        val group: TaskGroup = taskGroupList[groupNum]
+
+        if (group.allSelected) {
+            for (i in 0 until group.taskList.size)
+                group.taskList[i].selected = false
+
+            group.numSelected = 0
+            group.allSelected = false
+            difference = -(group.taskList.size)
+        }
+        else {
+            for (i in 0 until group.taskList.size) {
+                val task: Task = group.taskList[i]
+                if (!task.selected) {
+                    difference += 1
+                    group.numSelected += 1
+                    task.selected = true
+
+                    if (group.numSelected == group.taskList.size) {
+                        group.allSelected = true
+                        break
+                    }
+                }
+            }
+        }
+
+        notifyItemChanged(groupNum)
+        return difference
+    }
+
+    fun toggleAll(selectAll : Boolean = true) {
         val end = taskGroupList.size - 1
         for (groupNum in end downTo 0) {
             val group = taskGroupList[groupNum]
@@ -151,14 +183,19 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         private val tasksRV = itemView.taskGroupRV
         private val dateLabel = itemView.dateLabel
 
-        private lateinit var taskAdapter: AdapterTasks
-
-        fun bind(taskGroup: TaskGroup, clickListener: (Task) -> Unit) {
+        fun bind(group: TaskGroup,
+                 taskClickListener: (Task) -> Unit,
+                 dateClickListener: (Int) -> Unit) {
             // Assign date label
-            dateLabel.text = taskGroup.date
+            dateLabel.text = group.date
+
+            this.itemView.setOnClickListener {
+                // When date label clicked, call click listener function
+                dateClickListener(adapterPosition)
+            }
 
             // Store reference to task adapter
-            taskAdapter = AdapterTasks(taskGroup, clickListener)
+            val taskAdapter = AdapterTasks(group, taskClickListener)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)

@@ -3,7 +3,6 @@ package com.example.myapplication.adapters
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
@@ -15,7 +14,7 @@ import kotlinx.android.synthetic.main.rv_taskentry.view.*
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
 
-class AdapterTasks(private val group : TaskGroup, private val clickListener: (Task) -> Unit) :
+class AdapterTasks(private val group: TaskGroup, private val clickListener: (Task) -> Unit) :
     RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,11 +45,16 @@ class AdapterTasks(private val group : TaskGroup, private val clickListener: (Ta
                 notifyItemChanged(adapterPosition)
 
                 // If update count in group to notify number selected
-                if (task.selected)
+                if (task.selected) {
                     group.numSelected++
-                else
-                    group.numSelected--
+                    if (group.numSelected == group.taskList.size)
+                        group.allSelected = true
+                } else {
+                    if (group.numSelected == group.taskList.size)
+                        group.allSelected = false
 
+                    group.numSelected--
+                }
                 Log.d("Test", "${group.date} = [${group.numSelected}]")
 
                 // Call main click listener function (implemented in main activity)

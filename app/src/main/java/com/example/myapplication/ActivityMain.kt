@@ -34,8 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     // TaskList (Center Area)
     private val taskGroupList = ArrayList<TaskGroup>()
-    private val taskClickedFunction = { task : Task -> taskClicked(task) }
-    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFunction)
+    private val taskClickedFn = { task : Task -> taskClicked(task) }
+    private val dateClickedFn = { group: Int -> dateClicked(group) }
+    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn)
 
     // Selecting tasks
     private var taskCount: Int = 0
@@ -122,9 +123,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menuSelectAll -> {
                     if (selected != taskCount) {
-                        taskGroupAdapter.toggleSelectAll()
+                        taskGroupAdapter.toggleAll()
                         selected = taskCount
-                        updateTopToolbar("Selected: [$selected]")
+                        updateSelectedCountDisplay()
                     }
                     true
                 }
@@ -224,8 +225,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ########## OnClick ##########
-    private fun dateClicked(group: TaskGroup) {
-        
+    private fun dateClicked(groupNum: Int) {
+        val difference: Int = taskGroupAdapter.toggleGroup(groupNum)
+        selected += difference
+
+        // Entering select mode
+        if (selected > 0)
+            setMode(Mode.SELECTION)
+
+        updateSelectedCountDisplay()
     }
 
     private fun taskClicked (task: Task) {
@@ -237,19 +245,11 @@ class MainActivity : AppCompatActivity() {
             if (selected == 1)
                 setMode(Mode.SELECTION)
         }
-        else {
+        else
             selected--
 
-            // Deselect last task, return to add mode
-            if (selected == 0) {
-                setMode(Mode.ADD)
-                updateTopToolbar(mainTitle)
-                return
-            }
-        }
-
         // Update toolbar value print for any values above 0
-        updateTopToolbar("Selected: [$selected]")
+        updateSelectedCountDisplay()
     }
 
     // ########## Change values/display ##########
@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity() {
                 taskAdd.isVisible = true
             }
             Mode.SELECTION -> {
-                updateTopToolbar("Selected: [$selected]")
+                updateSelectedCountDisplay()
                 taskDelete.isVisible = true
                 taskComplete.isVisible = true
                 taskSelectAll.isVisible = true
@@ -277,6 +277,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateTopToolbar(newTitle: String) {
         toolbar.title = newTitle
+    }
+
+    private fun updateSelectedCountDisplay() {
+        // No tasks selected, return to add mode
+        if (selected == 0) {
+            setMode(Mode.ADD)
+            updateTopToolbar(mainTitle)
+            return
+        } else
+            updateTopToolbar("Selected: [$selected]")
     }
 
     // ########## Internal functions ##########
