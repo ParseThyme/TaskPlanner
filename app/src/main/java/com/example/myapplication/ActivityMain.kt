@@ -1,16 +1,5 @@
 package com.example.myapplication
 
-import com.example.myapplication.adapters.AdapterTaskGroup
-import com.example.myapplication.data_classes.Task
-import com.example.myapplication.data_classes.TaskGroup
-
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.size
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,25 +7,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
-
-import java.text.SimpleDateFormat
-import java.util.*
-
-import kotlin.collections.ArrayList
-
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myapplication.adapters.AdapterTaskGroup
+import com.example.myapplication.data_classes.Task
+import com.example.myapplication.data_classes.TaskGroup
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.view_additem.*
-import kotlinx.android.synthetic.main.view_additem.desc
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class MainActivity : AppCompatActivity() {
     // Debugging:
     private var validateInput = false
 
     // TaskList (Center Area)
-    private val taskGroupList = ArrayList<TaskGroup>()
+    private var taskGroupList = ArrayList<TaskGroup>()
     private val taskClickedFn = { task : Task -> taskClicked(task) }
     private val dateClickedFn = { group: Int -> dateClicked(group) }
-    private val taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn)
+    private lateinit var taskGroupAdapter: AdapterTaskGroup
 
     // Selecting tasks
     private var taskCount: Int = 0
@@ -64,9 +58,16 @@ class MainActivity : AppCompatActivity() {
     private var minDate: Long = 0
     private var maxDate: Long = 0
 
+    private lateinit var saveLoad: SaveLoad
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Check for existing saved data, attempt to load it then create the adapter
+        saveLoad = SaveLoad(this)
+        taskGroupList = saveLoad.loadTaskGroupList()
+        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn)
 
         // Assign layout manager and adapter to recycler view
         dateGroupRV.apply {
@@ -77,13 +78,6 @@ class MainActivity : AppCompatActivity() {
         // Divider between date categories
         val divider = DividerItemDecoration(dateGroupRV.context, DividerItemDecoration.VERTICAL)
         dateGroupRV.addItemDecoration(divider)
-
-        /*
-        taskGroupAdapter.addTask(2, "Fri 29 Nov", "Volunteering")
-        taskGroupAdapter.addTask(0,"Wed 27 Nov", "Do some programming")
-        taskGroupAdapter.addTask(1,"Thu 28 Nov", "Play some Diablo III")
-        taskGroupAdapter.addTask(0,"Wed 27 Nov", "Eat some food")
-        */
 
         runSetup()
     }
@@ -108,17 +102,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menuDelete -> {
                     // Check if deleting all or deleting specific amount
-                    if (selected == taskCount) {
-                        taskGroupAdapter.deleteTasks(0, true)
-                        taskCount = 0
-                    } else {
-                        taskGroupAdapter.deleteTasks(selected)
-                        taskCount -= selected
-                    }
+                    taskGroupAdapter.deleteTasks(selected)
+                    taskCount -= selected
 
                     // Clear selections and return to add mode
                     setMode(Mode.ADD)
                     selected = 0
+                    updateSave()
                     true
                 }
                 R.id.menuSelectAll -> {
@@ -204,6 +194,8 @@ class MainActivity : AppCompatActivity() {
             val taskDesc = addDialogBox.desc.text.toString().trim()
             taskGroupAdapter.addTask(id, taskDate, taskDesc)
             taskCount++
+
+            updateSave()
         }
     }
 
@@ -290,6 +282,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ########## Internal functions ##########
+    private fun updateSave() {
+        saveLoad.saveTaskGroupList(taskGroupList)
+    }
+
+    private fun deleteSave() {
+        saveLoad.clearAllData()
+    }
 }
 
 enum class Mode { ADD, SELECTION }

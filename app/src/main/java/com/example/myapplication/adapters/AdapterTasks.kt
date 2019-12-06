@@ -45,17 +45,10 @@ class AdapterTasks(private val group: TaskGroup, private val clickListener: (Tas
                 notifyItemChanged(adapterPosition)
 
                 // If update count in group to notify number selected
-                if (task.selected) {
+                if (task.selected)
                     group.numSelected++
-                    if (group.numSelected == group.taskList.size)
-                        group.allSelected = true
-                } else {
-                    if (group.numSelected == group.taskList.size)
-                        group.allSelected = false
-
+                else
                     group.numSelected--
-                }
-                Log.d("Test", "${group.date} = [${group.numSelected}]")
 
                 // Call main click listener function (implemented in main activity)
                 clickListener(task)

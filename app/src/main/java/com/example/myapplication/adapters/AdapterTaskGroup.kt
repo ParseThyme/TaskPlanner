@@ -1,5 +1,7 @@
 package com.example.myapplication.adapters
 
+import android.os.Debug
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -7,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
+import com.example.myapplication.data_classes.allSelected
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.rv_taskgroup.view.*
 
@@ -19,8 +22,22 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     private var taskCount = 0
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
-    private val baseMinDate = 90000000
-    private var minDate = baseMinDate
+    private val baseMinDate: Int = 90000000
+    private var minDate: Int = 0
+
+    init {
+        // Updating values based on previously saved list
+        if (taskGroupList.size > 0) {
+            for (group in taskGroupList)
+                taskCount += group.taskList.size
+
+            minDate = taskGroupList[0].id
+        }
+        else {
+            Log.d("Test", "Empty")
+            minDate = baseMinDate
+        }
+    }
 
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
@@ -77,9 +94,9 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     // ########## Deleting task entries ##########
-    fun deleteTasks(selected : Int, deleteAll : Boolean = false) {
+    fun deleteTasks(selected : Int) {
         // [1]. Clearing entire list
-        if (deleteAll) {
+        if (selected == taskCount) {
             // Empty everything and reset values
             taskGroupList.clear()
             notifyDataSetChanged()
@@ -134,12 +151,11 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         var difference: Int = 0
         val group: TaskGroup = taskGroupList[groupNum]
 
-        if (group.allSelected) {
+        if (allSelected(group)) {
             for (i in 0 until group.taskList.size)
                 group.taskList[i].selected = false
 
             group.numSelected = 0
-            group.allSelected = false
             difference = -(group.taskList.size)
         }
         else {
@@ -151,7 +167,6 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                     task.selected = true
 
                     if (group.numSelected == group.taskList.size) {
-                        group.allSelected = true
                         break
                     }
                 }
@@ -171,7 +186,6 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                 group.taskList[taskNum].selected = selectAll
             }
 
-            group.allSelected = true
             group.numSelected = group.taskList.size
             notifyItemChanged(groupNum)
         }

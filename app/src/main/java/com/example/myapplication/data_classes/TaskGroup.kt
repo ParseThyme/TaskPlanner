@@ -9,6 +9,12 @@ data class TaskGroup (
     val id: Int = 0,
 
     // When tasks selected
-    var numSelected: Int = 0,
-    var allSelected: Boolean = false
+    var numSelected: Int = 0
 )
+
+fun allSelected(taskGroup: TaskGroup) : Boolean {
+    if (taskGroup.numSelected == taskGroup.taskList.size)
+        return true
+
+    return false
+}
