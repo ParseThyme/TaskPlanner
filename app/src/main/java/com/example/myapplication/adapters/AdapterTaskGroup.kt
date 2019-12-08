@@ -18,8 +18,9 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                        private val dateClickListener: (Int) -> Unit)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
-    // Total task count (from entire recycler view)
-    private var taskCount = 0
+    // Total task count (from entire recycler view). Public get, private set
+    var taskCount = 0
+        private set
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
     private val baseMinDate: Int = 90000000

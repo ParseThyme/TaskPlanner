@@ -112,9 +112,9 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menuSelectAll -> {
-                    if (selected != taskCount) {
+                    if (selected != taskGroupAdapter.taskCount) {
                         taskGroupAdapter.toggleAll()
-                        selected = taskCount
+                        selected = taskGroupAdapter.taskCount
                         updateSelectedCountDisplay()
                     }
                     true
@@ -193,7 +193,6 @@ class MainActivity : AppCompatActivity() {
             // Get task description entry, create task entry and add to adapter
             val taskDesc = addDialogBox.desc.text.toString().trim()
             taskGroupAdapter.addTask(id, taskDate, taskDesc)
-            taskCount++
 
             updateSave()
         }
