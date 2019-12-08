@@ -50,7 +50,15 @@ class SaveLoad(context: Context) {
     fun loadTaskGroupList() : ArrayList<TaskGroup> {
         val json: String? = sharedPref.getString(taskGroupList, null)
         // Using util function to convert data to json (see util class)
-        return Gson().fromJson(json)
+        val savedData: ArrayList<TaskGroup> = Gson().fromJson(json)
+
+        // Check for existing data, if so return it
+        if (!savedData.isNullOrEmpty()) {
+            return savedData
+        }
+
+        // Otherwise return new list
+        return ArrayList()
     }
 
     /*
