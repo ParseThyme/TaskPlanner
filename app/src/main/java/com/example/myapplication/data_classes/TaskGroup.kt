@@ -12,7 +12,7 @@ data class TaskGroup (
     var numSelected: Int = 0
 )
 
-fun allSelected(taskGroup: TaskGroup) : Boolean {
+fun groupSelected(taskGroup: TaskGroup) : Boolean {
     if (taskGroup.numSelected == taskGroup.taskList.size)
         return true
 

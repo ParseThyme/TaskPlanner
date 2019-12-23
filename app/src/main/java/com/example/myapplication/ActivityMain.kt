@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskDelete: MenuItem
     private lateinit var taskSelectAll: MenuItem
 
-
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = settings.calendarRange
     // Calendar limits + starting values
@@ -82,10 +81,7 @@ class MainActivity : AppCompatActivity() {
         // [1]. Toolbar at top
         setupToolbar()
 
-        // [2]. At start only show New Task button
-        // setMode(Mode.ADD)
-
-        // [3]. Set behaviour when clicking on bottom navigation toolbar
+        // ToDo Remove: [2]. Set behaviour when clicking on bottom navigation toolbar
         bottomBar.setOnNavigationItemSelectedListener {
             when(it.itemId) {
                 R.id.menuAdd -> {
@@ -121,7 +117,6 @@ class MainActivity : AppCompatActivity() {
 
                 // Clear selections and return to add mode
                 setMode(Mode.ADD)
-                selected = 0
                 updateSave()
                 true
             }
@@ -130,6 +125,9 @@ class MainActivity : AppCompatActivity() {
                     taskGroupAdapter.toggleAll()
                     selected = taskGroupAdapter.taskCount
                     updateSelectedCountDisplay()
+                } else {
+                    taskGroupAdapter.toggleAll(false)
+                    setMode(Mode.ADD)
                 }
                 true
             }
@@ -248,6 +246,7 @@ class MainActivity : AppCompatActivity() {
         mode = newMode
         when (newMode) {
             Mode.ADD -> {
+                selected = 0
                 updateTopToolbar(mainTitle)
                 taskDelete.isVisible = false
                 taskSelectAll.isVisible = false

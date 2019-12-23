@@ -9,7 +9,7 @@ import com.example.myapplication.R
 import com.example.myapplication.Settings
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
-import com.example.myapplication.data_classes.allSelected
+import com.example.myapplication.data_classes.groupSelected
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
@@ -20,7 +20,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Total task count (from entire recycler view). Public get, private set
-    var taskCount = 0
+    var taskCount: Int = 0
         private set
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
@@ -153,7 +153,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         var difference = 0
         val group: TaskGroup = taskGroupList[groupNum]
 
-        if (allSelected(group)) {
+        if (groupSelected(group)) {
             for (i in 0 until group.taskList.size)
                 group.taskList[i].selected = false
 
@@ -184,11 +184,16 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         for (groupNum in end downTo 0) {
             val group = taskGroupList[groupNum]
 
-            for (taskNum in group.taskList.size - 1 downTo 0) {
+            // Go through each individual task and select/deselect it
+            for (taskNum in group.taskList.size - 1 downTo 0)
                 group.taskList[taskNum].selected = selectAll
-            }
 
-            group.numSelected = group.taskList.size
+            // Depending on overall call, either set num selected to group count or 0
+            if (selectAll)
+                group.numSelected = group.taskList.size
+            else
+                group.numSelected = 0
+
             notifyItemChanged(groupNum)
         }
     }
