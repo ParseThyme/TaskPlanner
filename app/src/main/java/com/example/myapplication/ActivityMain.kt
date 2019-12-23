@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskAdd: MenuItem
     private lateinit var taskDelete: MenuItem
     private lateinit var taskSelectAll: MenuItem
+
 
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = settings.calendarRange
@@ -81,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         setupToolbar()
 
         // [2]. At start only show New Task button
-        setMode(Mode.ADD)
+        // setMode(Mode.ADD)
 
         // [3]. Set behaviour when clicking on bottom navigation toolbar
         bottomBar.setOnNavigationItemSelectedListener {
@@ -90,35 +92,50 @@ class MainActivity : AppCompatActivity() {
                     addNewTask()
                     true
                 }
-                R.id.menuDelete -> {
-                    // Check if deleting all or deleting specific amount
-                    taskGroupAdapter.deleteTasks(selected)
-                    taskCount -= selected
-
-                    // Clear selections and return to add mode
-                    setMode(Mode.ADD)
-                    selected = 0
-                    updateSave()
-                    true
-                }
-                R.id.menuSelectAll -> {
-                    if (selected != taskGroupAdapter.taskCount) {
-                        taskGroupAdapter.toggleAll()
-                        selected = taskGroupAdapter.taskCount
-                        updateSelectedCountDisplay()
-                    }
-                    true
-                }
                 else -> false
             }
         }
     }
 
+    // Main toolbar (top)
     private fun setupToolbar() {
         // Add custom toolbar at top
         setSupportActionBar(findViewById(R.id.topBar))
         toolbar = supportActionBar!!
         updateTopToolbar(mainTitle)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_topbar_menu, menu)
+        taskDelete = menu!!.findItem(R.id.delete)
+        taskSelectAll = menu!!.findItem(R.id.selectAll)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.delete -> {
+                // Check if deleting all or deleting specific amount
+                taskGroupAdapter.deleteTasks(selected)
+                taskCount -= selected
+
+                // Clear selections and return to add mode
+                setMode(Mode.ADD)
+                selected = 0
+                updateSave()
+                true
+            }
+            R.id.selectAll -> {
+                if (selected != taskGroupAdapter.taskCount) {
+                    taskGroupAdapter.toggleAll()
+                    selected = taskGroupAdapter.taskCount
+                    updateSelectedCountDisplay()
+                }
+                true
+            }
+            else -> false
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun addNewTask() {
@@ -187,8 +204,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupLateInit() {
         // Bottom toolbar variables
         taskAdd = bottomBar.menu.findItem(R.id.menuAdd)
-        taskDelete = bottomBar.menu.findItem(R.id.menuDelete)
-        taskSelectAll = bottomBar.menu.findItem(R.id.menuSelectAll)
 
         // Add new task variables
         val cal = Calendar.getInstance()
