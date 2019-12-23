@@ -5,8 +5,8 @@
     <string name="placeholderDate">Mon 18 Nov</string>
 
     <!-- Labels -->
-    <string name="label_task">1. Enter new task</string>
-    <string name="label_date">2. Select date</string>
+    <string name="label_task">Enter new task</string>
+    <string name="label_date">Select date</string>
 
     <!-- Buttons -->
     <string name="add_task">Add Task</string>

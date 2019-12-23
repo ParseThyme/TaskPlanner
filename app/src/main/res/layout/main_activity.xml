@@ -20,22 +20,31 @@
         android:id="@+id/dateGroupRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="50dp"
         android:background="#D6D6D6"
         android:paddingTop="2dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/addTaskBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topBar">
+        app:layout_constraintTop_toBottomOf="@+id/topBar" />
 
-    </androidx.recyclerview.widget.RecyclerView>
+    <include
+        android:id="@+id/addTaskBar"
+        layout="@layout/main_bottombar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/bottomBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateGroupRV" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="#727272"
+        android:visibility="visible"
         app:itemIconSize="24dp"
         app:itemIconTint="@android:color/background_light"
         app:itemTextAppearance="@style/Toolbar.BottomNavigation"
@@ -46,7 +55,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/dateGroupRV"
-        app:layout_constraintTop_toBottomOf="@+id/dateGroupRV"
-        app:menu="@menu/navigation_tasklist_add" />
+        app:layout_constraintTop_toBottomOf="@+id/addTaskBar"
+        app:menu="@menu/main_bottombar_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

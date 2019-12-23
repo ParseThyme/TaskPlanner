@@ -3,4 +3,7 @@
     <color name="colorPrimary">#566DCA</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#000000</color>
+
+    <color name="taskBGDefault">#FFFFFF</color>
+    <color name="taskTextDefault">#FFFFFF</color>
 </resources>

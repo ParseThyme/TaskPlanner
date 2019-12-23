@@ -20,6 +20,9 @@ import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
+    // Settings
+    private val settings: Settings = Settings()
+
     // TaskList (Center Area)
     private var taskGroupList = ArrayList<TaskGroup>()
     private val taskClickedFn = { task : Task -> taskClicked(task) }
@@ -36,11 +39,10 @@ class MainActivity : AppCompatActivity() {
     // Navigation bottom menu options
     private lateinit var taskAdd: MenuItem
     private lateinit var taskDelete: MenuItem
-    private lateinit var taskComplete: MenuItem
     private lateinit var taskSelectAll: MenuItem
 
     // Ensure you can only select either today or future dates, ToDo: Customizable
-    private val calMaxDays = 30
+    private val calMaxDays = settings.calendarRange
     // Calendar limits + starting values
     private var startDate: String = ""
     private var startId: Int = 0
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -105,10 +107,6 @@ class MainActivity : AppCompatActivity() {
                         selected = taskGroupAdapter.taskCount
                         updateSelectedCountDisplay()
                     }
-                    true
-                }
-                R.id.menuComplete -> {
-                    // ToDo
                     true
                 }
                 else -> false
@@ -190,7 +188,6 @@ class MainActivity : AppCompatActivity() {
         // Bottom toolbar variables
         taskAdd = bottomBar.menu.findItem(R.id.menuAdd)
         taskDelete = bottomBar.menu.findItem(R.id.menuDelete)
-        taskComplete = bottomBar.menu.findItem(R.id.menuComplete)
         taskSelectAll = bottomBar.menu.findItem(R.id.menuSelectAll)
 
         // Add new task variables
@@ -238,7 +235,6 @@ class MainActivity : AppCompatActivity() {
             Mode.ADD -> {
                 updateTopToolbar(mainTitle)
                 taskDelete.isVisible = false
-                taskComplete.isVisible = false
                 taskSelectAll.isVisible = false
 
                 taskAdd.isVisible = true
@@ -246,7 +242,6 @@ class MainActivity : AppCompatActivity() {
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
                 taskDelete.isVisible = true
-                taskComplete.isVisible = true
                 taskSelectAll.isVisible = true
 
                 taskAdd.isVisible = false
@@ -272,7 +267,8 @@ class MainActivity : AppCompatActivity() {
     private fun loadSave() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
-        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn)
+        // settings = saveLoad.loadSettings()
+        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn, settings)
     }
 
     private fun updateSave() {

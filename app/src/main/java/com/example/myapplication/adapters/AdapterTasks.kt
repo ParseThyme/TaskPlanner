@@ -1,10 +1,11 @@
 package com.example.myapplication.adapters
 
-import android.util.Log
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.Settings
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.inflate
@@ -14,8 +15,10 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
 
-class AdapterTasks(private val group: TaskGroup, private val clickListener: (Task) -> Unit) :
-    RecyclerView.Adapter<AdapterTasks.ViewHolder>()
+class AdapterTasks(private val group: TaskGroup,
+                   private val clickListener: (Task) -> Unit,
+                   private val settings: Settings)
+    : RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v =  parent.inflate(R.layout.task_entry_rv, false)
@@ -30,7 +33,9 @@ class AdapterTasks(private val group: TaskGroup, private val clickListener: (Tas
 
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        private val selectedIcon = itemView.selected
+        // private val selectedIcon = itemView.selected
+        private val card = itemView.card
+        private val text = itemView.desc
 
         fun bind(task: Task, clickListener: (Task) -> Unit) {
             itemView.desc.text = task.desc
@@ -66,10 +71,21 @@ class AdapterTasks(private val group: TaskGroup, private val clickListener: (Tas
 
         // ########## Toggling functionality ##########
         private fun toggleSelected(isSelected: Boolean) {
+            /*
             if (isSelected)
                 selectedIcon.visibility = View.VISIBLE
             else
                 selectedIcon.visibility = View.GONE
+            */
+
+            if (isSelected) {
+                card.setCardBackgroundColor(settings.taskSelectedBGColor)
+                text.setTextColor(settings.taskSelectedTextColor)
+            }
+            else {
+                card.setCardBackgroundColor(Color.WHITE)
+                text.setTextColor(Color.BLACK)
+            }
         }
     }
 }

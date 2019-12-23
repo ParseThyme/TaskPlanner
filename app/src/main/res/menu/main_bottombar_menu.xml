@@ -12,8 +12,4 @@
         android:id="@+id/menuSelectAll"
         android:icon="@drawable/ic_select_all"
         android:title="@string/select_all" />
-    <item
-        android:id="@+id/menuComplete"
-        android:icon="@drawable/ic_mark_complete"
-        android:title="@string/complete" />
 </menu>

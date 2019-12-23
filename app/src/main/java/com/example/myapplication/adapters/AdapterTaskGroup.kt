@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.Settings
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.data_classes.allSelected
@@ -14,7 +15,8 @@ import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClickListener: (Task) -> Unit,
-                       private val dateClickListener: (Int) -> Unit)
+                       private val dateClickListener: (Int) -> Unit,
+                       private val settings: Settings)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Total task count (from entire recycler view). Public get, private set
@@ -52,7 +54,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
-        holder.bind(taskGroupList[position], taskClickListener, dateClickListener)
+        holder.bind(taskGroupList[position], taskClickListener, dateClickListener, settings)
     }
 
     // ########## Adding new task/task group ##########
@@ -199,7 +201,8 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
 
         fun bind(group: TaskGroup,
                  taskClickListener: (Task) -> Unit,
-                 dateClickListener: (Int) -> Unit) {
+                 dateClickListener: (Int) -> Unit,
+                 settings: Settings) {
             // Assign date label
             dateLabel.text = group.date
 
@@ -209,7 +212,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             }
 
             // Store reference to task adapter
-            val taskAdapter = AdapterTasks(group, taskClickListener)
+            val taskAdapter = AdapterTasks(group, taskClickListener, settings)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
