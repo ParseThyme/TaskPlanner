@@ -6,17 +6,14 @@ import com.example.myapplication.data_classes.TaskGroup
 import com.google.gson.Gson
 
 class SaveLoad(context: Context) {
-    private val prefName = "SavedData"
-    private val taskGroupList = "TaskGroupList"
-
-    private val sharedPref: SharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
+    private val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
     private val editor: SharedPreferences.Editor = sharedPref.edit()
 
     fun saveTaskGroupList(listToSave: ArrayList<TaskGroup>) {
         // Create gson to convert data to json format
         val json: String = Gson().toJson(listToSave)
         // Place data in editor then apply
-        editor.putString(taskGroupList, json)
+        editor.putString(spTaskGroupList, json)
         editor.apply()
     }
 
@@ -48,7 +45,7 @@ class SaveLoad(context: Context) {
     */
 
     fun loadTaskGroupList() : ArrayList<TaskGroup> {
-        val json: String? = sharedPref.getString(taskGroupList, null)
+        val json: String? = sharedPref.getString(spTaskGroupList, null)
         // Using util function to convert data to json (see util class)
         val savedData: ArrayList<TaskGroup> = Gson().fromJson(json)
 
@@ -80,8 +77,10 @@ class SaveLoad(context: Context) {
         editor.apply()
     }
 
+    /*
     fun deleteData(keyName: String) {
         editor.remove(keyName)
         editor.apply()
     }
+    */
 }

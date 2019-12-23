@@ -8,7 +8,7 @@ import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.inflate
-import kotlinx.android.synthetic.main.rv_taskentry.view.*
+import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 // val itemClickedListener: (Task) -> Unit
 // Code above takes in a lambda function as a parameter
@@ -18,7 +18,7 @@ class AdapterTasks(private val group: TaskGroup, private val clickListener: (Tas
     RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v =  parent.inflate(R.layout.rv_taskentry, false)
+        val v =  parent.inflate(R.layout.task_entry_rv, false)
         return ViewHolder(v)
     }
 
@@ -38,6 +38,15 @@ class AdapterTasks(private val group: TaskGroup, private val clickListener: (Tas
             // Toggle selected icon
             toggleSelected(task.selected)
 
+            // When held down
+            /* ToDo
+            this.itemView.setOnLongClickListener {
+                // Open edit dialogue
+                // Enable changing task's description & date
+            }
+            */
+
+            // Task Clicked
             this.itemView.setOnClickListener {
                 // When clicked, swap its state and select/deselect it
                 task.selected = !task.selected

@@ -1,6 +1,5 @@
 package com.example.myapplication.adapters
 
-import android.os.Debug
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.data_classes.allSelected
 import com.example.myapplication.inflate
-import kotlinx.android.synthetic.main.rv_taskgroup.view.*
+import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClickListener: (Task) -> Unit,
@@ -46,7 +45,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     // Creating cell
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Use inflate function found in Util then return containing cell layout and clickListener
-        val inflatedView = parent.inflate(R.layout.rv_taskgroup, false)
+        val inflatedView = parent.inflate(R.layout.task_group_rv, false)
         return ViewHolder(inflatedView)
     }
 
@@ -149,7 +148,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     fun toggleGroup(groupNum : Int) : Int {
-        var difference: Int = 0
+        var difference = 0
         val group: TaskGroup = taskGroupList[groupNum]
 
         if (allSelected(group)) {

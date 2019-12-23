@@ -3,10 +3,8 @@ package com.example.myapplication
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -15,17 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.AdapterTaskGroup
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.view_additem.*
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.additem_view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
-    // Debugging:
-    private var validateInput = false
-
     // TaskList (Center Area)
     private var taskGroupList = ArrayList<TaskGroup>()
     private val taskClickedFn = { task : Task -> taskClicked(task) }
@@ -39,17 +33,12 @@ class MainActivity : AppCompatActivity() {
 
     // Navigation TopBar
     private lateinit var toolbar: ActionBar
-    private val mainTitle = "My Task List"
     // Navigation bottom menu options
     private lateinit var taskAdd: MenuItem
     private lateinit var taskDelete: MenuItem
     private lateinit var taskComplete: MenuItem
     private lateinit var taskSelectAll: MenuItem
 
-    // Add new task formats + variables
-    // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
-    private val dateFormat = SimpleDateFormat("EEE d MMM")
-    private val idFormat = SimpleDateFormat("yyyyMMdd")
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = 30
     // Calendar limits + starting values
@@ -58,16 +47,15 @@ class MainActivity : AppCompatActivity() {
     private var minDate: Long = 0
     private var maxDate: Long = 0
 
+    // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.main_activity)
 
         // Check for existing saved data, attempt to load it then create the adapter
-        saveLoad = SaveLoad(this)
-        taskGroupList = saveLoad.loadTaskGroupList()
-        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn)
+        loadSave()
 
         // Assign layout manager and adapter to recycler view
         dateGroupRV.apply {
@@ -141,7 +129,7 @@ class MainActivity : AppCompatActivity() {
 
         // Add item (Open dialog box for new entry)
         // 1. Inflate dialog
-        val addDialogView = LayoutInflater.from(this).inflate(R.layout.view_additem, null)
+        val addDialogView = LayoutInflater.from(this).inflate(R.layout.additem_view, null)
         // 2. Build using alert dialog box
         val addBuilder = AlertDialog.Builder(this).apply {
             setView(addDialogView)
@@ -277,17 +265,25 @@ class MainActivity : AppCompatActivity() {
             updateTopToolbar(mainTitle)
             return
         } else
-            updateTopToolbar("Selected: [$selected]")
+            updateTopToolbar("Selected: $selected")
     }
 
     // ########## Internal functions ##########
+    private fun loadSave() {
+        saveLoad = SaveLoad(this)
+        taskGroupList = saveLoad.loadTaskGroupList()
+        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn)
+    }
+
     private fun updateSave() {
         saveLoad.saveTaskGroupList(taskGroupList)
     }
 
+    /*
     private fun deleteSave() {
         saveLoad.clearAllData()
     }
+    */
 }
 
 enum class Mode { ADD, SELECTION }
