@@ -30,18 +30,6 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <include
-        android:id="@+id/addTaskBar"
-        layout="@layout/main_bottombar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/bottomBarOld"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateGroupRV"
-        tools:visibility="gone" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
@@ -51,15 +39,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateGroupRV">
 
-        <Spinner
-            android:id="@+id/dates"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/datesCard"
+            android:layout_width="80dp"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
-            app:layout_constraintBottom_toBottomOf="@+id/taskCard"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            app:cardBackgroundColor="#D3D3D3"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/taskCard"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/taskCard" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/changeDateBtn"
+                style="text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:drawableStart="@drawable/ic_date"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/placeholderDate"
+                android:textAllCaps="false"
+                android:textSize="12sp" />
+
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/taskCard"
@@ -74,51 +82,33 @@
             app:cardBackgroundColor="#D3D3D3"
             app:cardCornerRadius="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/addTaskButton"
-            app:layout_constraintStart_toEndOf="@+id/dates"
+            app:layout_constraintEnd_toStartOf="@id/newTaskBtn"
+            app:layout_constraintStart_toEndOf="@+id/datesCard"
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
-                android:id="@+id/desc"
+                android:id="@+id/taskDesc"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
+                android:layout_height="match_parent"
                 android:hint="@string/label_task"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
 
         <ImageButton
-            android:id="@+id/addTaskButton"
+            android:id="@+id/newTaskBtn"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
             android:background="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:tint="@android:color/holo_green_dark"
+            app:layout_constraintBottom_toBottomOf="@+id/taskCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/taskCard"
             app:layout_constraintTop_toTopOf="@+id/taskCard"
             app:srcCompat="@drawable/ic_add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomBarOld"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:background="#727272"
-        android:visibility="gone"
-        app:itemIconSize="24dp"
-        app:itemIconTint="@android:color/background_light"
-        app:itemTextAppearance="@style/Toolbar.BottomNavigation"
-        app:itemTextAppearanceActive="@style/Toolbar.BottomNavigation"
-        app:itemTextAppearanceInactive="@style/Toolbar.BottomNavigation"
-        app:itemTextColor="#FFFFFF"
-        app:labelVisibilityMode="unlabeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/dateGroupRV"
-        app:layout_constraintTop_toBottomOf="@+id/addTaskBar"
-        app:menu="@menu/main_bottombar_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

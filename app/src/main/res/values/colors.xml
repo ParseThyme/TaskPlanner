@@ -5,5 +5,5 @@
     <color name="colorAccent">#000000</color>
 
     <color name="taskBGDefault">#FFFFFF</color>
-    <color name="taskTextDefault">#FFFFFF</color>
+    <color name="taskTextDefault">#000000</color>
 </resources>
