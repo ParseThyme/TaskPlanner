@@ -6,6 +6,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Spinner
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
     private var taskGroupList = ArrayList<TaskGroup>()
     private val taskClickedFn = { task : Task -> taskClicked(task) }
-    private val dateClickedFn = { group: Int -> dateClicked(group) }
+    private val dateClickedFn = { group: Int -> groupClicked(group) }
     private lateinit var taskGroupAdapter: AdapterTaskGroup
 
     // Selecting tasks
@@ -36,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private var mode: Mode = Mode.ADD
 
     // Navigation TopBar
-    private lateinit var toolbar: ActionBar
+    private lateinit var topBar: ActionBar
     // Navigation bottom menu options
     private lateinit var taskAdd: MenuItem
     private lateinit var taskDelete: MenuItem
@@ -50,8 +52,14 @@ class MainActivity : AppCompatActivity() {
     private var minDate: Long = 0
     private var maxDate: Long = 0
 
+    // Selectable dates
+    private var dateList: ArrayList<String> = ArrayList()
+    private lateinit var dates: Spinner
+
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
+
+    // ########## Main functions ##########
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,16 +81,58 @@ class MainActivity : AppCompatActivity() {
         runSetup()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_topbar_menu, menu)
+
+        // Create references to topBar menu options
+        taskDelete = menu!!.findItem(R.id.delete)
+        taskSelectAll = menu!!.findItem(R.id.selectAll)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.delete -> {
+                taskGroupAdapter.deleteTasks(selected)
+                taskCount -= selected
+
+                // Clear selections and return to add mode
+                setMode(Mode.ADD)
+                updateSave()
+                true
+            }
+            R.id.selectAll -> {
+                // If not all selected, select all
+                if (selected != taskGroupAdapter.taskCount) {
+                    taskGroupAdapter.toggleAll()
+                    selected = taskGroupAdapter.taskCount
+                    updateSelectedCountDisplay()
+                }
+                // All selected, deselect all and return to add mode
+                else {
+                    taskGroupAdapter.toggleAll(false)
+                    setMode(Mode.ADD)
+                }
+                true
+            }
+            else -> false
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     // ########## Setup related functions ##########
     private fun runSetup() {
-        // Initialize variable references
+        // [1]. Initialize variable references
         setupLateInit()
 
-        // [1]. Toolbar at top
-        setupToolbar()
+        // [2]. Add custom toolbar at top
+        setSupportActionBar(findViewById(R.id.mainBar))
+        topBar = supportActionBar!!
+        updateTopBar(mainTitle)
 
         // ToDo Remove: [2]. Set behaviour when clicking on bottom navigation toolbar
-        bottomBar.setOnNavigationItemSelectedListener {
+        bottomBarOld.setOnNavigationItemSelectedListener {
             when(it.itemId) {
                 R.id.menuAdd -> {
                     addNewTask()
@@ -93,47 +143,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Main toolbar (top)
-    private fun setupToolbar() {
-        // Add custom toolbar at top
-        setSupportActionBar(findViewById(R.id.topBar))
-        toolbar = supportActionBar!!
-        updateTopToolbar(mainTitle)
-    }
+    private fun setupLateInit() {
+        // ToDo Clickable date button to change date display
+        dates = addTaskBar.findViewById(R.id.dates)
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_topbar_menu, menu)
-        taskDelete = menu!!.findItem(R.id.delete)
-        taskSelectAll = menu!!.findItem(R.id.selectAll)
-        return true
-    }
+        // Bottom toolbar variables
+        taskAdd = bottomBarOld.menu.findItem(R.id.menuAdd)
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.delete -> {
-                // Check if deleting all or deleting specific amount
-                taskGroupAdapter.deleteTasks(selected)
-                taskCount -= selected
-
-                // Clear selections and return to add mode
-                setMode(Mode.ADD)
-                updateSave()
-                true
-            }
-            R.id.selectAll -> {
-                if (selected != taskGroupAdapter.taskCount) {
-                    taskGroupAdapter.toggleAll()
-                    selected = taskGroupAdapter.taskCount
-                    updateSelectedCountDisplay()
-                } else {
-                    taskGroupAdapter.toggleAll(false)
-                    setMode(Mode.ADD)
-                }
-                true
-            }
-            else -> false
-        }
-        return super.onOptionsItemSelected(item)
+        // Add new task variables
+        val cal = Calendar.getInstance()
+        startDate = dateFormat.format(cal.timeInMillis)
+        startId = idFormat.format(cal.timeInMillis).toInt()
+        minDate = cal.timeInMillis
+        // Add extra days to get max date
+        cal.add(Calendar.DATE, calMaxDays)
+        maxDate = cal.timeInMillis
     }
 
     private fun addNewTask() {
@@ -199,30 +223,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupLateInit() {
-        // Bottom toolbar variables
-        taskAdd = bottomBar.menu.findItem(R.id.menuAdd)
-
-        // Add new task variables
-        val cal = Calendar.getInstance()
-        startDate = dateFormat.format(cal.timeInMillis)
-        startId = idFormat.format(cal.timeInMillis).toInt()
-        minDate = cal.timeInMillis
-        // Add extra days to get max date
-        cal.add(Calendar.DATE, calMaxDays)
-        maxDate = cal.timeInMillis
+    // ########## OnClick ##########
+    fun dateClicked(view: View) {
+        // Generate array of dates
+        // Add dates to drop down list
     }
 
-    // ########## OnClick ##########
-    private fun dateClicked(groupNum: Int) {
+    private fun groupClicked(groupNum: Int) {
         val difference: Int = taskGroupAdapter.toggleGroup(groupNum)
         selected += difference
 
-        // Entering select mode
+        // Changing modes depending on selection/deselection
         if (selected > 0)
             setMode(Mode.SELECTION)
-
-        updateSelectedCountDisplay()
+        else
+            setMode(Mode.ADD)
     }
 
     private fun taskClicked (task: Task) {
@@ -230,15 +245,21 @@ class MainActivity : AppCompatActivity() {
         if (task.selected) {
             selected++
 
-            // Selected first task, change to selection mode
+            // Selected 0 -> 1, change to selection mode. Otherwise update as usual
             if (selected == 1)
                 setMode(Mode.SELECTION)
+            else
+                updateSelectedCountDisplay()
         }
-        else
+        else {
             selected--
 
-        // Update toolbar value print for any values above 0
-        updateSelectedCountDisplay()
+            // Selected tasks 1 -> 0, return to add mode. Otherwise update as usual
+            if (selected == 0)
+                setMode(Mode.ADD)
+            else
+                updateSelectedCountDisplay()
+        }
     }
 
     // ########## Change values/display ##########
@@ -246,36 +267,34 @@ class MainActivity : AppCompatActivity() {
         mode = newMode
         when (newMode) {
             Mode.ADD -> {
+                // Set none selected and show main title
                 selected = 0
-                updateTopToolbar(mainTitle)
+                updateTopBar(mainTitle)
+
+                // Disable modification options
                 taskDelete.isVisible = false
                 taskSelectAll.isVisible = false
 
-                taskAdd.isVisible = true
+                // Enable ability to add new tasks
+                addTaskBar.visibility = View.VISIBLE
+                bottomBarOld.visibility = View.VISIBLE
             }
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
+
+                // Show modification options
                 taskDelete.isVisible = true
                 taskSelectAll.isVisible = true
 
-                taskAdd.isVisible = false
+                // Disable ability to add new tasks
+                addTaskBar.visibility = View.GONE
+                bottomBarOld.visibility = View.GONE
             }
         }
     }
 
-    private fun updateTopToolbar(newTitle: String) {
-        toolbar.title = newTitle
-    }
-
-    private fun updateSelectedCountDisplay() {
-        // No tasks selected, return to add mode
-        if (selected == 0) {
-            setMode(Mode.ADD)
-            updateTopToolbar(mainTitle)
-            return
-        } else
-            updateTopToolbar("Selected: $selected")
-    }
+    private fun updateTopBar(newTitle: String) { topBar.title = newTitle }
+    private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
 
     // ########## Internal functions ##########
     private fun loadSave() {
