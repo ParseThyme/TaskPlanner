@@ -98,7 +98,8 @@ class AdapterTasks(private val group: TaskGroup,
                 // Apply button, apply changes
                 taskEditView.applyBtn.setOnClickListener {
                     taskEditDialog.dismiss()
-                    itemView.desc.text = taskEditView.task.text
+                    task.desc = taskEditView.task.text.toString()
+                    itemView.desc.text = task.desc
                 }
             }
 
