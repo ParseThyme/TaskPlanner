@@ -3,7 +3,7 @@ package com.example.myapplication
 import java.text.SimpleDateFormat
 
 // Remove at end
-const val validateInput = false
+const val validateInput = true
 
 // SharedPreferences (Saving/Loading data)
 const val spName: String = "SavedData"

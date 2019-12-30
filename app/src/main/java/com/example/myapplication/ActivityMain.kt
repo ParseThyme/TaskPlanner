@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -159,6 +160,7 @@ class MainActivity : AppCompatActivity() {
             // Clear task entry and clear focus
             taskDesc.setText("")
             taskDesc.clearFocus()
+            taskDesc.hideKeyboard()
 
             updateSave()
         }
@@ -181,19 +183,25 @@ class MainActivity : AppCompatActivity() {
         // Input Validation:
         // 1. TextWatcher, ensure confirm button only enabled when task entered
         if (validateInput) {
+            newTaskBtn.isEnabled = false
+            newTaskBtn.setColorFilter(Color.GRAY)
+
             taskDesc.addTextChangedListener(object: TextWatcher {
-                // Unused
-                override fun afterTextChanged(s: Editable) { taskDesc.clearFocus() }
+                override fun afterTextChanged(s: Editable) { }
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
                 // Check when text is being changed
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     // Toggle confirm button based on whether text is empty or not
                     newTaskBtn.isEnabled = taskDesc.text.isNotEmpty()
+
+                    if (newTaskBtn.isEnabled)
+                        newTaskBtn.setColorFilter(Color.GREEN)
+                    else
+                        newTaskBtn.setColorFilter(Color.GRAY)
                 }
             })
-        } else
-            newTaskBtn.isEnabled = true
+        }
     }
 
     // ########## OnClick ##########

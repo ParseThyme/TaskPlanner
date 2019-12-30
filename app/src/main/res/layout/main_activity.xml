@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#D6D6D6"
     tools:context=".MainActivity">
 
     <include
@@ -20,7 +21,6 @@
         android:id="@+id/dateGroupRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#D6D6D6"
         android:paddingTop="2dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/bottomBar"
@@ -34,6 +34,7 @@
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="#747474"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +48,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            app:cardBackgroundColor="#D3D3D3"
+            app:cardBackgroundColor="#FFFFFF"
             app:cardCornerRadius="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/taskCard"
@@ -80,7 +81,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
-            app:cardBackgroundColor="#D3D3D3"
+            app:cardBackgroundColor="#FFFFFF"
             app:cardCornerRadius="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/newTaskBtn"
@@ -93,6 +94,7 @@
                 android:layout_height="match_parent"
                 android:hint="@string/label_task"
                 android:inputType="textPersonName"
+                android:maxLength="31"
                 android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
 
@@ -103,7 +105,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
             android:background="@android:color/transparent"
-            android:tint="@android:color/holo_green_dark"
+            android:tint="@android:color/holo_green_light"
             app:layout_constraintBottom_toBottomOf="@+id/taskCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/taskCard"
