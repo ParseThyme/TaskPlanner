@@ -31,6 +31,7 @@ inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, 
  - Bottom Navigation: https://android--code.blogspot.com/2018/03/android-kotlin-bottom-navigation-bar.html
  - Saving data (sharedPreferences): http://www.kotlincodes.com/kotlin/shared-preferences-with-kotlin/
  - Hide Keyboard: https://stackoverflow.com/questions/41790357/close-hide-the-android-soft-keyboard-with-kotlin
+ - Function parameter: https://stackoverflow.com/questions/41887584/passing-function-as-parameter-in-kotlin
  **/
 
 /** ########## Notes: ##########

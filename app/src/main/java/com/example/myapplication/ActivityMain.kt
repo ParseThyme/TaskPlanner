@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                 // Clear selections and return to add mode
                 setMode(Mode.ADD)
                 updateSave()
-                true
             }
             R.id.selectAll -> {
                 // If not all selected, select all
@@ -108,9 +107,7 @@ class MainActivity : AppCompatActivity() {
                     taskGroupAdapter.toggleAll(false)
                     setMode(Mode.ADD)
                 }
-                true
             }
-            else -> false
         }
         return super.onOptionsItemSelected(item)
     }
@@ -178,6 +175,7 @@ class MainActivity : AppCompatActivity() {
         // Reset date back to starting date
         taskDate = startDate
 
+        // Apply starting date to be today's date at bottom bar
         changeDateBtn.text = taskDate
 
         // Input Validation:
@@ -275,7 +273,7 @@ class MainActivity : AppCompatActivity() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
-        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn, settings)
+        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn, { updateSave() }, settings)
     }
 
     private fun updateSave() {

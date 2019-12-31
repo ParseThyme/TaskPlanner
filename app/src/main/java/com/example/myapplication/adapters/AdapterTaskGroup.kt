@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.task_group_rv.view.*
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClickListener: (Task) -> Unit,
                        private val dateClickListener: (Int) -> Unit,
+                       private val saveFunction: () -> Unit,
                        private val settings: Settings)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
@@ -54,7 +55,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
-        holder.bind(taskGroupList[position], taskClickListener, dateClickListener, settings)
+        holder.bind(taskGroupList[position], taskClickListener, dateClickListener, saveFunction, settings)
     }
 
     // ########## Adding new task/task group ##########
@@ -207,6 +208,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         fun bind(group: TaskGroup,
                  taskClickListener: (Task) -> Unit,
                  dateClickListener: (Int) -> Unit,
+                 saveFunction: () -> Unit,
                  settings: Settings) {
             // Assign date label
             dateLabel.text = group.date
@@ -217,7 +219,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             }
 
             // Store reference to task adapter
-            val taskAdapter = AdapterTasks(group, taskClickListener, settings)
+            val taskAdapter = AdapterTasks(group, taskClickListener, saveFunction, settings)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)

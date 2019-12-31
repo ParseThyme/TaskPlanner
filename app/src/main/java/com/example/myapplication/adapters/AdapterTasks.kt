@@ -14,9 +14,9 @@ import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.inflate
 import com.example.myapplication.validateInput
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.task_edit_alertdialog.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
+
 
 // val itemClickedListener: (Task) -> Unit
 // Code above takes in a lambda function as a parameter
@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 class AdapterTasks(private val group: TaskGroup,
                    private val clickListener: (Task) -> Unit,
+                   private val saveFunction: () -> Unit,
                    private val settings: Settings)
     : RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
@@ -35,7 +36,7 @@ class AdapterTasks(private val group: TaskGroup,
     override fun getItemCount(): Int { return group.taskList.size }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(group.taskList[position], clickListener)
+        holder.bind(group.taskList[position], clickListener, saveFunction)
     }
 
     // ########## ViewHolder ##########
@@ -44,7 +45,9 @@ class AdapterTasks(private val group: TaskGroup,
         private val card = itemView.card
         private val text = itemView.desc
 
-        fun bind(task: Task, clickListener: (Task) -> Unit) {
+        fun bind(task: Task,
+                 taskClicked: (Task) -> Unit,
+                 updateSave: () -> Unit) {
             itemView.desc.text = task.desc
 
             // Toggle selected icon
@@ -64,42 +67,34 @@ class AdapterTasks(private val group: TaskGroup,
                 // Show dialog
                 val taskEditDialog = taskEditBuilder.show()
 
-                // Set current task as hint text
+                // Set current task as hint text and fill in current task, placing cursor at end
                 taskEditView.task.hint = itemView.desc.text
-
-                // Input Validation:
-                // Same logic as found in ActivityMain (input validation)
-                if (validateInput) {
-                    taskEditView.applyBtn.isEnabled = false
-                    taskEditView.applyBtn.setColorFilter(Color.GRAY)
-
-                    taskEditView.task.addTextChangedListener(object: TextWatcher {
-                        override fun afterTextChanged(s: Editable) { }
-                        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-                        // Check when text is being changed
-                        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                            // Toggle confirm button based on whether text is empty or not
-                            taskEditView.applyBtn.isEnabled = taskEditView.task.text.isNotEmpty()
-
-                            if (taskEditView.applyBtn.isEnabled)
-                                taskEditView.applyBtn.setColorFilter(Color.GREEN)
-                            else
-                                taskEditView.applyBtn.setColorFilter(Color.GRAY)
-                        }
-                    })
-                }
+                taskEditView.task.setText(itemView.desc.text.toString())
+                taskEditView.task.setSelection(itemView.desc.text.toString().length)
 
                 // Cancel button, close dialog
-                taskEditView.cancelBtn.setOnClickListener {
-                    taskEditDialog.dismiss()
-                }
+                taskEditView.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }
 
-                // Apply button, apply changes
+                // Apply button, make changes if edit made
                 taskEditView.applyBtn.setOnClickListener {
+                    var updated: Boolean = false
+                    val edit:String = taskEditView.task.text.toString()
+
+                    // Check if task edit is new
+                    if (edit != task.desc) {
+                        updated = true
+
+                        // Apply text change to selected task label and internally
+                        task.desc = taskEditView.task.text.toString()
+                        itemView.desc.text = task.desc
+                    }
+
+                    if (updated) {
+                        // Notify main activity to save change made
+                        updateSave()
+                    }
+
                     taskEditDialog.dismiss()
-                    task.desc = taskEditView.task.text.toString()
-                    itemView.desc.text = task.desc
                 }
             }
 
@@ -117,7 +112,7 @@ class AdapterTasks(private val group: TaskGroup,
                     group.numSelected--
 
                 // Call main click listener function (implemented in main activity)
-                clickListener(task)
+                taskClicked(task)
             }
         }
 
