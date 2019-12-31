@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.main_activity.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 class MainActivity : AppCompatActivity() {
     // Settings
     private val settings: Settings = Settings()
@@ -44,11 +43,9 @@ class MainActivity : AppCompatActivity() {
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = settings.calendarRange
     // Calendar limits + starting values
-    private var taskDate: String = ""
+    private var date: String = ""
     private var startDate: String = ""
-    private var dateID: Int = 0
-    private var minDate: Long = 0
-    private var maxDate: Long = 0
+    private var id: Int = 0
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
         // Create references to topBar menu options
         taskDelete = menu!!.findItem(R.id.delete)
-        taskSelectAll = menu!!.findItem(R.id.selectAll)
+        taskSelectAll = menu.findItem(R.id.selectAll)
 
         return true
     }
@@ -88,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.delete -> {
-                taskGroupAdapter.deleteTasks(selected)
+                taskGroupAdapter.deleteSelected(selected)
                 taskCount -= selected
 
                 // Clear selections and return to add mode
@@ -125,20 +122,20 @@ class MainActivity : AppCompatActivity() {
         // Setup listener for date picker dialog
         val cal = Calendar.getInstance()
         val dateSetListener =
-            DatePickerDialog.OnDateSetListener { view, year, month, day ->
-                cal.set(Calendar.YEAR, year)
-                cal.set(Calendar.MONTH, month)
-                cal.set(Calendar.DAY_OF_MONTH, day)
+            DatePickerDialog.OnDateSetListener { _, y, m, d ->
+                cal.set(Calendar.YEAR, y)
+                cal.set(Calendar.MONTH, m)
+                cal.set(Calendar.DAY_OF_MONTH, d)
 
-                taskDate = dateFormat.format(cal.timeInMillis)
-                dateID = idFormat.format(cal.timeInMillis).toInt()
-                changeDateBtn.text = taskDate
+                date = dateFormat.format(cal.timeInMillis)
+                id = idFormat.format(cal.timeInMillis).toInt()
+                changeDateBtn.text = date
             }
 
         // ########## Buttons ##########
         // A. Update date button
         changeDateBtn.setOnClickListener {
-            var dialog = DatePickerDialog(this, dateSetListener,
+            val dialog = DatePickerDialog(this, dateSetListener,
                 cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
             )
 
@@ -152,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         newTaskBtn.setOnClickListener {
             // Get task description entry, create task entry and add to adapter
             val desc = taskDesc.text.toString().trim()
-            taskGroupAdapter.addTask(dateID, taskDate, desc)
+            taskGroupAdapter.addTask(id, date, desc)
 
             // Clear task entry and clear focus
             taskDesc.setText("")
@@ -167,19 +164,19 @@ class MainActivity : AppCompatActivity() {
         // Add new task variables
         val cal = Calendar.getInstance()
         startDate = dateFormat.format(cal.timeInMillis)
-        dateID = idFormat.format(cal.timeInMillis).toInt()
+        id = idFormat.format(cal.timeInMillis).toInt()
         minDate = cal.timeInMillis
         // Add extra days to get max date
         cal.add(Calendar.DATE, calMaxDays)
         maxDate = cal.timeInMillis
         // Reset date back to starting date
-        taskDate = startDate
+        date = startDate
 
         // Apply starting date to be today's date at bottom bar
-        changeDateBtn.text = taskDate
+        changeDateBtn.text = date
 
         // Input Validation:
-        // 1. TextWatcher, ensure confirm button only enabled when task entered
+        // TextWatcher. Ensure confirm button only enabled when task entered (can't submit blank tasks)
         if (validateInput) {
             newTaskBtn.isEnabled = false
             newTaskBtn.setColorFilter(Color.GRAY)

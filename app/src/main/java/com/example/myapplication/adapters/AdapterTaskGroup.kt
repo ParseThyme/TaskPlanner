@@ -20,6 +20,14 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                        private val settings: Settings)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
+    // Date changed for task
+    private val changeDateListener = {
+        // Params:
+            task: Task, newDate: String, oldID: Int, newID: Int
+        // Function to call:
+        -> changeGroup(task, newDate, oldID, newID)
+    }
+
     // Total task count (from entire recycler view). Public get, private set
     var taskCount: Int = 0
         private set
@@ -58,29 +66,29 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         holder.bind(taskGroupList[position], taskClickListener, dateClickListener, saveFunction, settings)
     }
 
-    // ########## Adding new task/task group ##########
-    fun addTask(newId: Int, newDate: String, newDesc: String) {
+    // ########## Group related functionality ##########
+    fun addTask(id: Int, date: String, desc: String) {
         taskCount++
 
         // ---------- Auto Sorting Entries ----------
         // [A]. Check for earliest date
-        if (newId < minDate) {
+        if (id < minDate) {
             // New date is earlier, make it the new min date and insert new group at the top
-            minDate = newId
-            addNewTaskGroup(0, newDate, Task(newDesc), newId)
+            minDate = id
+            addNewTaskGroup(0, date, Task(desc), id)
             return
         }
 
         // [B]. Otherwise start from latest entry and move upwards
         for (pos in taskGroupList.lastIndex downTo 0 step 1) {
             // [1]. Matching date, append to existing list of tasks
-            if (newId == taskGroupList[pos].id) {
-                addToTaskGroup(pos, Task(newDesc))
+            if (id == taskGroupList[pos].id) {
+                addToTaskGroup(pos, Task(desc))
                 return
             }
             // [2]. Date reached is earlier, create new date category with new task
-            if (newId > taskGroupList[pos].id) {
-                addNewTaskGroup(pos + 1, newDate, Task(newDesc), newId)
+            if (id > taskGroupList[pos].id) {
+                addNewTaskGroup(pos + 1, date, Task(desc), id)
                 return
             }
         }
@@ -96,8 +104,8 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         notifyItemChanged(pos)
     }
 
-    // ########## Deleting task entries ##########
-    fun deleteTasks(selected : Int) {
+    // ########## Modifying task entries ##########
+    fun deleteSelected(selected : Int) {
         // [1]. Clearing entire list
         if (selected == taskCount) {
             // Empty everything and reset values
@@ -199,6 +207,32 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         }
     }
 
+    private fun changeGroup(task: Task, newDate: String, oldID: Int, newID: Int) {
+        // "Move" to new position (add new task). -- to balance out addition made in addTask()
+        addTask(newID, newDate, task.desc)
+        taskCount--
+
+        // Find old group and remove it at the old position
+        for (index in 0 until taskGroupList.size) {
+            val group = taskGroupList[index]
+            if (group.id == oldID) {
+                group.taskList.remove(task)
+
+                // Remove group if its list is exhausted
+                if (group.taskList.size == 0) {
+                    // Update minDate if removed date was the minimum one
+                    if (group.id == minDate)
+                        minDate = taskGroupList[index + 1].id
+
+                    taskGroupList.removeAt(index)
+                    notifyItemRemoved(index)
+                }
+                else { notifyItemChanged(index) }
+                break
+            }
+        }
+    }
+
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
@@ -213,13 +247,11 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             // Assign date label
             dateLabel.text = group.date
 
-            this.itemView.setOnClickListener {
-                // When date label clicked, call click listener function
-                dateClickListener(adapterPosition)
-            }
+            // When date label clicked, call ActivityMain click listener function
+            this.itemView.setOnClickListener { dateClickListener(adapterPosition) }
 
             // Store reference to task adapter
-            val taskAdapter = AdapterTasks(group, taskClickListener, saveFunction, settings)
+            val taskAdapter = AdapterTasks(group, taskClickListener, changeDateListener, saveFunction, settings)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)

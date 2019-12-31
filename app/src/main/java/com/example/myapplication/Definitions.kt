@@ -15,3 +15,6 @@ const val mainTitle = "My Task List"
 // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
 val dateFormat = SimpleDateFormat("EEE MMM d")
 val idFormat = SimpleDateFormat("yyyyMMdd")
+
+var minDate: Long = 0
+var maxDate: Long = 0
