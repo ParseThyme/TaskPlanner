@@ -101,7 +101,7 @@ class AdapterTasks(private val group: TaskGroup,
                     cal.set(Calendar.DAY_OF_MONTH, day)
 
                     // Change displayed date
-                    newDate = dateFormat.format(cal.timeInMillis)
+                    newDate = createDateLabel(cal)
                     newID = idFormat.format(cal.timeInMillis).toInt()
                     taskEditView.editDateBtn.text = newDate
                 }
@@ -150,7 +150,6 @@ class AdapterTasks(private val group: TaskGroup,
                     if (task.selected) {
                         task.selected = !task.selected
                         toggleSelected(task.selected)
-                        notifyItemChanged(adapterPosition)
                         group.numSelected--
 
                         // Call listener function in main activity

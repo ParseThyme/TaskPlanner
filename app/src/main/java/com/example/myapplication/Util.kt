@@ -8,6 +8,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.LayoutRes
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.util.*
+import java.util.Calendar.DAY_OF_MONTH
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
@@ -20,6 +22,34 @@ fun View.hideKeyboard() {
 
 // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
+
+fun createDateLabel(cal: Calendar) : String{
+ val timeInMills = cal.timeInMillis
+
+ // Produce day, generally either in Monday or Mon format. We want only two characters (Mo, Tu, We, etc)
+ val dayName: String = dayNameFormat.format(timeInMills).dropLast(1)
+ val month: String = monthFormat.format(timeInMills)
+ val day: String = dayFormat.format(timeInMills)
+
+ // Depending on day, add ordinals
+ // https://stackoverflow.com/questions/4011075/how-do-you-format-the-day-of-the-month-to-say-11th-21st-or-23rd-ordinal
+ val dayNum = cal.get(DAY_OF_MONTH)
+ // Set ordinal for 11th, 12th, 13th unique cases
+ val ordinal = if (dayNum in 11..13) {
+  "th"
+ }
+ // Otherwise if ending with 1 == st, 2 == nd, 3 == rd, 4-9 == th
+ else {
+  when (dayNum % 10) {
+   1 -> "st"
+   2 -> "nd"
+   3 -> "rd"
+   else -> "th"
+  }
+ }
+
+ return "$dayName $month $day$ordinal"
+}
 
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/

@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.main_activity.*
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 class MainActivity : AppCompatActivity() {
     // Settings
     private val settings: Settings = Settings()
@@ -127,7 +128,8 @@ class MainActivity : AppCompatActivity() {
                 cal.set(Calendar.MONTH, m)
                 cal.set(Calendar.DAY_OF_MONTH, d)
 
-                date = dateFormat.format(cal.timeInMillis)
+                date = createDateLabel(cal)
+                // date = dateFormat.format(cal.timeInMillis)
                 id = idFormat.format(cal.timeInMillis).toInt()
                 changeDateBtn.text = date
             }
@@ -163,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupLateInit() {
         // Add new task variables
         val cal = Calendar.getInstance()
-        startDate = dateFormat.format(cal.timeInMillis)
+        startDate = createDateLabel(cal)
         id = idFormat.format(cal.timeInMillis).toInt()
         minDate = cal.timeInMillis
         // Add extra days to get max date
