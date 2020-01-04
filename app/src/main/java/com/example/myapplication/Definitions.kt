@@ -13,8 +13,10 @@ const val spTaskGroupList = "TaskGroupList"
 const val mainTitle = "My Task List"
 // Add new task formats + variables
 // Link: https://developer.android.com/reference/java/text/SimpleDateFormat
-val dayNameFormat = SimpleDateFormat("EEE")
-val monthFormat = SimpleDateFormat("MMM")
+val dayNameFormat = SimpleDateFormat("EEEE")
+val monthFormat = SimpleDateFormat("MMMMMMM")
+val sdayNameFormat = SimpleDateFormat("EEE")
+val smonthFormat = SimpleDateFormat("MMM")
 val dayFormat = SimpleDateFormat("d")
 val idFormat = SimpleDateFormat("yyyyMMdd")
 

@@ -23,19 +23,33 @@ fun View.hideKeyboard() {
 // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 
-fun createDateLabel(cal: Calendar) : String{
- val timeInMills = cal.timeInMillis
+// ########## Date labels ##########
 
+fun createDateLabel(cal: Calendar, short: Boolean = false) : String{
+ val timeInMills = cal.timeInMillis
  // Produce day, generally either in Monday or Mon format. We want only two characters (Mo, Tu, We, etc)
- val dayName: String = dayNameFormat.format(timeInMills).dropLast(1)
- val month: String = monthFormat.format(timeInMills)
+ var dayName: String
+ var month: String
  val day: String = dayFormat.format(timeInMills)
+
+ if (short) {
+   dayName = sdayNameFormat.format(timeInMills).dropLast(1)
+   month = smonthFormat.format(timeInMills)
+ } else {
+   dayName = dayNameFormat.format(timeInMills)
+   month = monthFormat.format(timeInMills)
+ }
 
  // Depending on day, add ordinals
  // https://stackoverflow.com/questions/4011075/how-do-you-format-the-day-of-the-month-to-say-11th-21st-or-23rd-ordinal
- val dayNum = cal.get(DAY_OF_MONTH)
+ val ordinal = addOrdinal(cal.get(DAY_OF_MONTH))
+
+ return "$dayName $month $day$ordinal"
+}
+
+private fun addOrdinal(dayNum: Int) : String {
  // Set ordinal for 11th, 12th, 13th unique cases
- val ordinal = if (dayNum in 11..13) {
+ return if (dayNum in 11..13) {
   "th"
  }
  // Otherwise if ending with 1 == st, 2 == nd, 3 == rd, 4-9 == th
@@ -47,8 +61,6 @@ fun createDateLabel(cal: Calendar) : String{
    else -> "th"
   }
  }
-
- return "$dayName $month $day$ordinal"
 }
 
 /** ########## Tutorials: ##########

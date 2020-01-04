@@ -129,9 +129,8 @@ class MainActivity : AppCompatActivity() {
                 cal.set(Calendar.DAY_OF_MONTH, d)
 
                 date = createDateLabel(cal)
-                // date = dateFormat.format(cal.timeInMillis)
                 id = idFormat.format(cal.timeInMillis).toInt()
-                changeDateBtn.text = date
+                changeDateBtn.text = createDateLabel(cal, true)
             }
 
         // ########## Buttons ##########
@@ -165,6 +164,10 @@ class MainActivity : AppCompatActivity() {
     private fun setupLateInit() {
         // Add new task variables
         val cal = Calendar.getInstance()
+        // Apply starting date to be today's date at bottom bar
+        changeDateBtn.text = createDateLabel(cal, true)
+
+        // Create starting date, id and min date
         startDate = createDateLabel(cal)
         id = idFormat.format(cal.timeInMillis).toInt()
         minDate = cal.timeInMillis
@@ -173,9 +176,6 @@ class MainActivity : AppCompatActivity() {
         maxDate = cal.timeInMillis
         // Reset date back to starting date
         date = startDate
-
-        // Apply starting date to be today's date at bottom bar
-        changeDateBtn.text = date
 
         // Input Validation:
         // TextWatcher. Ensure confirm button only enabled when task entered (can't submit blank tasks)
