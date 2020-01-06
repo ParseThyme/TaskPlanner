@@ -40,15 +40,11 @@ class AdapterTasks(private val group: TaskGroup,
 
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        private val card = itemView.card
-        private val task = itemView.desc
-
-        private lateinit var selectedText: SpannableString
+        private val taskField = itemView.desc
 
         fun bind(task: Task) {
-            selectedText = SpannableString(task.desc)
             // Set description of task when bound
-            itemView.desc.text = selectedText
+            taskField.text = task.desc
 
             // Toggle selected icon based on state
             toggleSelected(task.selected)
@@ -169,18 +165,8 @@ class AdapterTasks(private val group: TaskGroup,
 
         // ########## Toggling functionality ##########
         private fun toggleSelected(isSelected: Boolean) {
-            if (isSelected) {
-                selectedText.setSpan(BackgroundColorSpan(Color.parseColor(settings.taskHighlightColor)),
-                    0, selectedText.length, 0)
-                itemView.desc.text = selectedText
-            }
-            else {
-                selectedText.setSpan(BackgroundColorSpan(Color.TRANSPARENT), 0, selectedText.length, 0)
-                itemView.desc.text = selectedText
-
-                // card.setCardBackgroundColor(Color.parseColor(settings.taskBaseBGColor))
-                // task.setTextColor(Color.parseColor(settings.taskBaseTextColor))
-            }
+            if (isSelected) { taskField.setBackgroundColor(Color.parseColor(settings.taskHighlightColor)) }
+            else { taskField.setBackgroundColor(Color.parseColor(settings.taskBaseColor)) }
         }
     }
 }

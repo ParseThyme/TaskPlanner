@@ -257,7 +257,6 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
                 adapter = taskAdapter
-                addDivider()
             }
         }
     }
