@@ -1,10 +1,13 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +15,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
+import kotlin.collections.ArrayList
+
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
@@ -30,6 +35,9 @@ fun RecyclerView.addDivider(vertical : Boolean = true) {
     val divider = DividerItemDecoration(this.context, orientation)
     this.addItemDecoration(divider)
 }
+
+// https://stackoverflow.com/questions/2461824/how-to-programmatically-set-maxlength-in-android-textview
+fun EditText.setMaxLength(length: Int) { this.filters = arrayOf(LengthFilter(length)) }
 
 // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)

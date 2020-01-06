@@ -88,6 +88,7 @@ class AdapterTasks(private val group: TaskGroup,
             taskEditView.editedTask.hint = itemView.desc.text
             taskEditView.editedTask.setText(itemView.desc.text.toString())
             taskEditView.editedTask.setSelection(itemView.desc.text.toString().length)
+            taskEditView.editedTask.setMaxLength(settings.taskMaxLength)
 
             // 2. Set date and setup onClick behaviour
             taskEditView.editDateBtn.text = group.date

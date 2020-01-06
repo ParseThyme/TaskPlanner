@@ -198,6 +198,9 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
+
+        // Settings
+        taskDesc.setMaxLength(settings.taskMaxLength)
     }
 
     // ########## OnClick ##########

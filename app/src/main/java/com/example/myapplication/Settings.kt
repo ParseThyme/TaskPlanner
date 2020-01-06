@@ -1,7 +1,7 @@
 package com.example.myapplication
 
 class Settings {
-    // private val defTaskMaxLength: Int = 35 // Use range. Max = 35. Min = 10?
+    val taskMaxLength: Int = 60
 
     // Task entry
     private val defTaskHighlightColor: String = "#FFFFE600"   // Yellow
