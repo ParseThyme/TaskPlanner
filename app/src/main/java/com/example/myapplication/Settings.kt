@@ -1,17 +1,11 @@
 package com.example.myapplication
 
-import android.graphics.Color
-
 class Settings {
     // private val defTaskMaxLength: Int = 35 // Use range. Max = 35. Min = 10?
-    // val defTaskColor
-    // val defBackgroundColor
 
     // Task entry
-    private val defTaskSelectedBGColor: Int = Color.BLACK
-    private val defTaskSelectedTextColor: Int = Color.WHITE
-    var taskSelectedBGColor: Int = Color.BLUE
-    var taskSelectedTextColor: Int = Color.WHITE
+    private val defTaskHighlightColor: String = "#FFFFE600"   // Yellow
+    var taskHighlightColor: String = "#FFFFE600"
 
     // Calendar values
     private val defCalendarRange: Int = 30
@@ -25,7 +19,6 @@ class Settings {
     fun setDefault() {
         calendarRange = defCalendarRange
 
-        taskSelectedBGColor = defTaskSelectedBGColor
-        taskSelectedTextColor = defTaskSelectedTextColor
+        taskHighlightColor = defTaskHighlightColor
     }
 }

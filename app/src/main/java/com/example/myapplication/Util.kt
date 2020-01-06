@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
@@ -20,11 +22,19 @@ fun View.hideKeyboard() {
  imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
+fun RecyclerView.addDivider(vertical : Boolean = true) {
+    // Divider between date categories
+    var orientation = DividerItemDecoration.VERTICAL
+    if (!vertical) { orientation = DividerItemDecoration.HORIZONTAL }
+
+    val divider = DividerItemDecoration(this.context, orientation)
+    this.addItemDecoration(divider)
+}
+
 // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 
-// ########## Date labels ##########
-
+// ########## Date ##########
 fun createDateLabel(cal: Calendar, short: Boolean = false) : String{
  val timeInMills = cal.timeInMillis
  // Produce day, generally either in Monday or Mon format. We want only two characters (Mo, Tu, We, etc)

@@ -3,6 +3,8 @@ package com.example.myapplication.adapters
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.graphics.Color
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,13 +40,15 @@ class AdapterTasks(private val group: TaskGroup,
 
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        // private val selectedIcon = itemView.selected
         private val card = itemView.card
-        private val text = itemView.desc
+        private val task = itemView.desc
+
+        private lateinit var selectedText: SpannableString
 
         fun bind(task: Task) {
+            selectedText = SpannableString(task.desc)
             // Set description of task when bound
-            itemView.desc.text = task.desc
+            itemView.desc.text = selectedText
 
             // Toggle selected icon based on state
             toggleSelected(task.selected)
@@ -85,9 +89,9 @@ class AdapterTasks(private val group: TaskGroup,
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in current task, placing cursor at end
-            taskEditView.task.hint = itemView.desc.text
-            taskEditView.task.setText(itemView.desc.text.toString())
-            taskEditView.task.setSelection(itemView.desc.text.toString().length)
+            taskEditView.editedTask.hint = itemView.desc.text
+            taskEditView.editedTask.setText(itemView.desc.text.toString())
+            taskEditView.editedTask.setSelection(itemView.desc.text.toString().length)
 
             // 2. Set date and setup onClick behaviour
             taskEditView.editDateBtn.text = group.date
@@ -125,7 +129,7 @@ class AdapterTasks(private val group: TaskGroup,
             // 2. Apply: make changes if edit made
             taskEditView.applyBtn.setOnClickListener {
                 var updated = false
-                val editedText: String = taskEditView.task.text.toString()
+                val editedText: String = taskEditView.editedTask.text.toString()
                 val editedDate: String = taskEditView.editDateBtn.text.toString()
 
                 // 1. Check if task edit is new
@@ -133,18 +137,12 @@ class AdapterTasks(private val group: TaskGroup,
                     updated = true
 
                     // Apply text change to selected task label and internally
-                    task.desc = taskEditView.task.text.toString()
+                    task.desc = taskEditView.editedTask.text.toString()
                     itemView.desc.text = task.desc
                 }
                 // 2. Check if date has been changed
                 if (editedDate != group.date) {
                     updated = true
-
-                    // ToDo: Fix Bug:
-                    /* - Group has 2+ tasks
-                     * - Top most task selected (highlighted)
-                     * - Change date of top most task to new date (new group or existing group doesn't matter)
-                     */
 
                     // Deselect task if selected
                     if (task.selected) {
@@ -172,12 +170,16 @@ class AdapterTasks(private val group: TaskGroup,
         // ########## Toggling functionality ##########
         private fun toggleSelected(isSelected: Boolean) {
             if (isSelected) {
-                card.setCardBackgroundColor(settings.taskSelectedBGColor)
-                text.setTextColor(settings.taskSelectedTextColor)
+                selectedText.setSpan(BackgroundColorSpan(Color.parseColor(settings.taskHighlightColor)),
+                    0, selectedText.length, 0)
+                itemView.desc.text = selectedText
             }
             else {
-                card.setCardBackgroundColor(Color.WHITE)
-                text.setTextColor(Color.BLACK)
+                selectedText.setSpan(BackgroundColorSpan(Color.TRANSPARENT), 0, selectedText.length, 0)
+                itemView.desc.text = selectedText
+
+                // card.setCardBackgroundColor(Color.parseColor(settings.taskBaseBGColor))
+                // task.setTextColor(Color.parseColor(settings.taskBaseTextColor))
             }
         }
     }

@@ -67,8 +67,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Divider between date categories
-        val divider = DividerItemDecoration(dateGroupRV.context, DividerItemDecoration.VERTICAL)
-        dateGroupRV.addItemDecoration(divider)
+        dateGroupRV.addDivider()
 
         runSetup()
     }

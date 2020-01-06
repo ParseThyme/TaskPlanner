@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.Settings
+import com.example.myapplication.addDivider
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.data_classes.groupSelected
@@ -256,6 +257,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
                 adapter = taskAdapter
+                addDivider()
             }
         }
     }
