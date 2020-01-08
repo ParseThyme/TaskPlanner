@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity() {
                 // Disable modification buttons and disable options
                 btnDelete.visibility = View.GONE
                 btnSelectAll.visibility = View.GONE
-                btnSettings.visibility = View.VISIBLE
+                //btnSettings.visibility = View.VISIBLE
 
                 // Enable ability to add new tasks
                 bottomBar.visibility = View.VISIBLE
@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity() {
                 // Show modification buttons and disable options
                 btnDelete.visibility = View.VISIBLE
                 btnSelectAll.visibility = View.VISIBLE
-                btnSettings.visibility = View.GONE
+                //btnSettings.visibility = View.GONE
 
                 // Disable ability to add new tasks
                 bottomBar.visibility = View.GONE
