@@ -1,16 +1,12 @@
 package com.example.myapplication
 
 import android.app.DatePickerDialog
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.ActionBar
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.AdapterTaskGroup
 import com.example.myapplication.data_classes.Task
@@ -18,7 +14,6 @@ import com.example.myapplication.data_classes.TaskGroup
 import kotlinx.android.synthetic.main.main_activity.*
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity() {
     // Settings
@@ -35,12 +30,6 @@ class MainActivity : AppCompatActivity() {
     private var selected: Int = 0
     private var mode: Mode = Mode.ADD
 
-    // Navigation TopBar
-    private lateinit var topBar: ActionBar
-    // Navigation bottom menu options
-    private lateinit var taskDelete: MenuItem
-    private lateinit var taskSelectAll: MenuItem
-
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = settings.calendarRange
     // Calendar limits + starting values
@@ -51,8 +40,7 @@ class MainActivity : AppCompatActivity() {
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
 
-    // ########## Main functions ##########
-
+    // ########## Main ##########
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -70,101 +58,23 @@ class MainActivity : AppCompatActivity() {
         dateGroupRV.addDivider()
 
         runSetup()
+        setMode(Mode.ADD)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_topbar_menu, menu)
-
-        // Create references to topBar menu options
-        taskDelete = menu!!.findItem(R.id.delete)
-        taskSelectAll = menu.findItem(R.id.selectAll)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.delete -> {
-                taskGroupAdapter.deleteSelected(selected)
-                taskCount -= selected
-
-                // Clear selections and return to add mode
-                setMode(Mode.ADD)
-                updateSave()
-            }
-            R.id.selectAll -> {
-                // If not all selected, select all
-                if (selected != taskGroupAdapter.taskCount) {
-                    taskGroupAdapter.toggleAll()
-                    selected = taskGroupAdapter.taskCount
-                    updateSelectedCountDisplay()
-                }
-                // All selected, deselect all and return to add mode
-                else {
-                    taskGroupAdapter.toggleAll(false)
-                    setMode(Mode.ADD)
-                }
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    // ########## Setup related functions ##########
+    // ########## Setup related ##########
     private fun runSetup() {
         // [1]. Initialize variable references
         setupLateInit()
 
-        // [2]. Add custom toolbar at top
-        setSupportActionBar(findViewById(R.id.mainBar))
-        topBar = supportActionBar!!
-        updateTopBar(mainTitle)
-
-        // Setup listener for date picker dialog
-        val cal = Calendar.getInstance()
-        val dateSetListener =
-            DatePickerDialog.OnDateSetListener { _, y, m, d ->
-                cal.set(Calendar.YEAR, y)
-                cal.set(Calendar.MONTH, m)
-                cal.set(Calendar.DAY_OF_MONTH, d)
-
-                date = createDateLabel(cal)
-                id = idFormat.format(cal.timeInMillis).toInt()
-                changeDateBtn.text = createDateLabel(cal, true)
-            }
-
-        // ########## Buttons ##########
-        // A. Update date button
-        changeDateBtn.setOnClickListener {
-            val dialog = DatePickerDialog(this, dateSetListener,
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
-            )
-
-            // Assign min + max date then show dialog box
-            dialog.datePicker.minDate = minDate
-            dialog.datePicker.maxDate = maxDate
-            dialog.show()
-        }
-
-        // B. Add new task button
-        newTaskBtn.setOnClickListener {
-            // Get task description entry, create task entry and add to adapter
-            val desc = taskDesc.text.toString().trim()
-            taskGroupAdapter.addTask(id, date, desc)
-
-            // Clear task entry and clear focus
-            taskDesc.setText("")
-            taskDesc.clearFocus()
-            taskDesc.hideKeyboard()
-
-            updateSave()
-        }
+        // [2]. Buttons (topBar and bottomBar)
+        setupButtons()
     }
 
     private fun setupLateInit() {
         // Add new task variables
         val cal = Calendar.getInstance()
         // Apply starting date to be today's date at bottom bar
-        changeDateBtn.text = createDateLabel(cal, true)
+        btnChangeDate.text = createDateLabel(cal, true)
 
         // Create starting date, id and min date
         startDate = createDateLabel(cal)
@@ -179,8 +89,8 @@ class MainActivity : AppCompatActivity() {
         // Input Validation:
         // TextWatcher. Ensure confirm button only enabled when task entered (can't submit blank tasks)
         if (validateInput) {
-            newTaskBtn.isEnabled = false
-            newTaskBtn.setColorFilter(Color.GRAY)
+            btnNewTask.isEnabled = false
+            btnNewTask.toggle(false)
 
             taskDesc.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable) { }
@@ -189,18 +99,88 @@ class MainActivity : AppCompatActivity() {
                 // Check when text is being changed
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     // Toggle confirm button based on whether text is empty or not
-                    newTaskBtn.isEnabled = taskDesc.text.isNotEmpty()
-
-                    if (newTaskBtn.isEnabled)
-                        newTaskBtn.setColorFilter(Color.GREEN)
-                    else
-                        newTaskBtn.setColorFilter(Color.GRAY)
+                    btnNewTask.isEnabled = taskDesc.text.isNotEmpty()
+                    btnNewTask.toggle(btnNewTask.isEnabled)
                 }
             })
         }
 
         // Settings
         taskDesc.setMaxLength(settings.taskMaxLength)
+    }
+
+    private fun setupButtons() {
+        // ########## TopBar ##########
+        // 0. ToDo: Menu button
+
+        // 1. Select all
+        btnSelectAll.setOnClickListener {
+            // If not all selected, select all
+            if (selected != taskGroupAdapter.taskCount) {
+                taskGroupAdapter.toggleAll()
+                selected = taskGroupAdapter.taskCount
+                updateSelectedCountDisplay()
+            }
+            // All selected, deselect all and return to add mode
+            else {
+                taskGroupAdapter.toggleAll(false)
+                setMode(Mode.ADD)
+            }
+        }
+
+        // 2. Delete selected
+        btnDelete.setOnClickListener {
+            taskGroupAdapter.deleteSelected(selected)
+            taskCount -= selected
+
+            // Clear selections and return to add mode
+            setMode(Mode.ADD)
+            updateSave()
+        }
+
+        // 3. Settings
+        btnSettings.setOnClickListener {
+            // ToDo
+        }
+
+        // ########## BottomBar ##########
+        // 1. Update date
+        // Setup listener for date picker dialog
+        val cal = Calendar.getInstance()
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { _, y, m, d ->
+                cal.set(Calendar.YEAR, y)
+                cal.set(Calendar.MONTH, m)
+                cal.set(Calendar.DAY_OF_MONTH, d)
+
+                date = createDateLabel(cal)
+                id = idFormat.format(cal.timeInMillis).toInt()
+                btnChangeDate.text = createDateLabel(cal, true)
+            }
+        btnChangeDate.setOnClickListener {
+            val dialog = DatePickerDialog(this, dateSetListener,
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
+            )
+
+            // Assign min + max date then show dialog box
+            dialog.datePicker.minDate = minDate
+            dialog.datePicker.maxDate = maxDate
+            dialog.show()
+        }
+
+        // 2. Add new task
+        btnNewTask.setOnClickListener {
+            // Get task description entry, create task entry and add to adapter
+            val desc = taskDesc.text.toString().trim()
+            taskGroupAdapter.addTask(id, date, desc)
+
+            // Clear task entry and clear focus
+            taskDesc.setText("")
+            taskDesc.clearFocus()
+            taskDesc.hideKeyboard()
+
+            updateSave()
+        }
     }
 
     // ########## OnClick ##########
@@ -246,9 +226,10 @@ class MainActivity : AppCompatActivity() {
                 selected = 0
                 updateTopBar(mainTitle)
 
-                // Disable modification options
-                taskDelete.isVisible = false
-                taskSelectAll.isVisible = false
+                // Disable modification buttons and disable options
+                btnDelete.visibility = View.GONE
+                btnSelectAll.visibility = View.GONE
+                btnSettings.visibility = View.VISIBLE
 
                 // Enable ability to add new tasks
                 bottomBar.visibility = View.VISIBLE
@@ -256,9 +237,10 @@ class MainActivity : AppCompatActivity() {
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
 
-                // Show modification options
-                taskDelete.isVisible = true
-                taskSelectAll.isVisible = true
+                // Show modification buttons and disable options
+                btnDelete.visibility = View.VISIBLE
+                btnSelectAll.visibility = View.VISIBLE
+                btnSettings.visibility = View.GONE
 
                 // Disable ability to add new tasks
                 bottomBar.visibility = View.GONE
@@ -266,8 +248,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateTopBar(newTitle: String) { topBar.title = newTitle }
+    private fun updateTopBar(newTitle: String) { topBarTitle.text = newTitle }
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
+
+    private fun ImageButton.toggle(enabled: Boolean) {
+        if (enabled)
+            updateBtnColor(R.color.btnEnabled, applicationContext)
+        else
+            updateBtnColor(R.color.btnDisabled, applicationContext)
+    }
 
     // ########## Internal functions ##########
     private fun loadSave() {

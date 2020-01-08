@@ -3,8 +3,6 @@ package com.example.myapplication.adapters
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.graphics.Color
-import android.text.SpannableString
-import android.text.style.BackgroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,13 +73,13 @@ class AdapterTasks(private val group: TaskGroup,
             val taskEditView = LayoutInflater.from(itemView.context).
                 inflate(R.layout.task_edit_alertdialog, null)
             // Create builder
-            val taskEditBuilder = AlertDialog.Builder(itemView.context).apply {
+            val builder = AlertDialog.Builder(itemView.context).apply {
                 setView(taskEditView)
                 setCancelable(false)
             }
 
             // Show dialog
-            val taskEditDialog = taskEditBuilder.show()
+            val taskEditDialog = builder.show()
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in current task, placing cursor at end

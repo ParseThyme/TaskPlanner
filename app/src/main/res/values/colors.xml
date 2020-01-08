@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#566DCA</color>
-    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorPrimary">#177CAD</color>
+    <color name="colorPrimaryDark">#FF004B6F</color>
     <color name="colorAccent">#000000</color>
+
+    <color name="colorForeground">#FFFFFF</color>
+
+    <color name="btnEnabled">#57FF5E</color>
+    <color name="btnDisabled">#818181</color>
 
     <color name="taskBGDefault">#00FFFFFF</color>
     <color name="taskTextDefault">#000000</color>
