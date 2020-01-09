@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
 
@@ -54,11 +55,11 @@ fun createDateLabel(cal: Calendar, short: Boolean = false) : String{
  val day: String = dayFormat.format(timeInMills)
 
  if (short) {
-   dayName = sdayNameFormat.format(timeInMills).dropLast(1)
-   month = smonthFormat.format(timeInMills)
+   dayName = SimpleDateFormat("EEEEEE").format(timeInMills)
+   month = SimpleDateFormat("MMM").format(timeInMills)
  } else {
-   dayName = dayNameFormat.format(timeInMills)
-   month = monthFormat.format(timeInMills)
+   dayName = SimpleDateFormat("EEEE").format(timeInMills)
+   month = SimpleDateFormat("MMMM").format(timeInMills)
  }
 
  // Depending on day, add ordinals

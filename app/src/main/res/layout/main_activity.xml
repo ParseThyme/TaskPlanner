@@ -138,8 +138,8 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/datesCard"
-            android:layout_width="100dp"
-            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
@@ -153,7 +153,7 @@
             <Button
                 android:id="@+id/btnChangeDate"
                 style="text"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:drawableStart="@drawable/ic_date"
@@ -169,23 +169,21 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/taskCard"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
             app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/datesCard"
             app:layout_constraintEnd_toStartOf="@id/btnNewTask"
             app:layout_constraintStart_toEndOf="@+id/datesCard"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@+id/datesCard">
 
             <EditText
                 android:id="@+id/taskDesc"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:hint="@string/label_task"
                 android:inputType="textAutoCorrect|textCapSentences"
