@@ -209,6 +209,10 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     private fun changeGroup(task: Task, newDate: String, oldID: Int, newID: Int) {
+        // "Move" to new position (add new task). -- to balance out addition made in addTask()
+        addTask(newID, newDate, task.desc)
+        taskCount--
+
         // Find old group and remove it at the old position
         for (index in 0 until taskGroupList.size) {
             val group = taskGroupList[index]
@@ -228,10 +232,6 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                 break
             }
         }
-
-        // "Move" to new position (add new task). -- to balance out addition made in addTask()
-        addTask(newID, newDate, task.desc)
-        taskCount--
     }
 
     // ########## ViewHolder ##########
