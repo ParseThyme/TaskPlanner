@@ -85,7 +85,7 @@ class AdapterTasks(private val group: TaskGroup,
             // 1. Set current task as hint text and fill in current task, placing cursor at end
             taskEditView.editedTask.hint = itemView.desc.text
             taskEditView.editedTask.setText(itemView.desc.text.toString())
-            taskEditView.editedTask.setSelection(itemView.desc.text.toString().length)
+            // taskEditView.editedTask.setSelection(itemView.desc.text.toString().length)
             taskEditView.editedTask.setMaxLength(settings.taskMaxLength)
 
             // 2. Set date and setup onClick behaviour

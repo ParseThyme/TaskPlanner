@@ -96,6 +96,7 @@ private fun addOrdinal(dayNum: Int) : String {
  - Saving data (sharedPreferences): http://www.kotlincodes.com/kotlin/shared-preferences-with-kotlin/
  - Hide Keyboard: https://stackoverflow.com/questions/41790357/close-hide-the-android-soft-keyboard-with-kotlin
  - Function parameter: https://stackoverflow.com/questions/41887584/passing-function-as-parameter-in-kotlin
+ - Toggle Image: https://stackoverflow.com/questions/11499574/toggle-button-using-two-image-on-different-state/11499595#11499595
  **/
 
 /** ########## Notes: ##########

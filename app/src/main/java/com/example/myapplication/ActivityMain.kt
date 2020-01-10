@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -20,9 +21,11 @@ class MainActivity : AppCompatActivity() {
     private val settings: Settings = Settings()
 
     // TaskList (Center Area)
-    private var taskGroupList = ArrayList<TaskGroup>()
+    private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
     private val taskClickedFn = { task : Task -> taskClicked(task) }
     private val dateClickedFn = { group: Int -> groupClicked(group) }
+    private val toTopFn = { group: Int -> scrollTo(group) }
+    private val updateSaveFn = { updateSave() }
     private lateinit var taskGroupAdapter: AdapterTaskGroup
 
     // Selecting tasks
@@ -185,7 +188,7 @@ class MainActivity : AppCompatActivity() {
 
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
-        val difference: Int = taskGroupAdapter.toggleGroup(groupNum)
+        val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
         selected += difference
 
         // Changing modes depending on selection/deselection
@@ -217,6 +220,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)
+    private fun scrollTo(position: Int) {
+        dateGroupRV.scrollToPosition(position)
+
+        // Scroll bit extra for last position
+        if (position == taskGroupList.lastIndex) {
+            // ToDo
+        }
+    }
+
     // ########## Change values/display ##########
     private fun setMode(newMode: Mode) {
         mode = newMode
@@ -243,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                 //btnSettings.visibility = View.GONE
 
                 // Disable ability to add new tasks
-                bottomBar.visibility = View.GONE
+                bottomBar.visibility = View.INVISIBLE
             }
         }
     }
@@ -263,7 +276,8 @@ class MainActivity : AppCompatActivity() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
-        taskGroupAdapter = AdapterTaskGroup(taskGroupList, taskClickedFn, dateClickedFn, { updateSave() }, settings)
+        taskGroupAdapter = AdapterTaskGroup(taskGroupList, settings,
+            taskClickedFn, dateClickedFn, toTopFn, updateSaveFn)
     }
 
     private fun updateSave() {

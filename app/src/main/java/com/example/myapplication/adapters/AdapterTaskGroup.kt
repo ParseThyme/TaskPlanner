@@ -15,10 +15,11 @@ import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
+                       private val settings: Settings,
                        private val taskClickListener: (Task) -> Unit,
                        private val dateClickListener: (Int) -> Unit,
-                       private val saveFunction: () -> Unit,
-                       private val settings: Settings)
+                       private val scrollToFn: (Int) -> Unit,
+                       private val saveFn: () -> Unit)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Date changed for task
@@ -64,7 +65,8 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
-        holder.bind(taskGroupList[position], taskClickListener, dateClickListener, saveFunction, settings)
+        holder.bind(taskGroupList[position],
+            taskClickListener, dateClickListener, saveFn, settings)
     }
 
     // ########## Group related functionality ##########
@@ -159,7 +161,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         }
     }
 
-    fun toggleGroup(groupNum : Int) : Int {
+    fun toggleGroupSelected(groupNum : Int) : Int {
         var difference = 0
         val group: TaskGroup = taskGroupList[groupNum]
 
@@ -245,11 +247,26 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                  dateClickListener: (Int) -> Unit,
                  saveFunction: () -> Unit,
                  settings: Settings) {
+
             // Assign date label
             dateLabel.text = group.date
 
             // When date label clicked, call ActivityMain click listener function
-            this.itemView.setOnClickListener { dateClickListener(adapterPosition) }
+            itemView.taskGroupCard.setOnClickListener { dateClickListener(adapterPosition) }
+
+            // Closing/Opening group tab
+            itemView.toggleGroupOpenClose.setOnCheckedChangeListener { _, close ->
+                if (close) {
+                    // Close group, call main activity, scroll to group label
+                    itemView.taskGroupRV.visibility = View.GONE
+                } else {
+                    // Open group
+                    itemView.taskGroupRV.visibility = View.VISIBLE
+
+                    // Scroll position, ensure entire group + contents visible when expanded
+                    scrollToFn(adapterPosition)
+                }
+            }
 
             // Store reference to task adapter
             val taskAdapter = AdapterTasks(group, taskClickListener, changeDateListener, saveFunction, settings)
