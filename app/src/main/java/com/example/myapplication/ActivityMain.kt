@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity() {
 
         // Scroll bit extra for last position
         if (position == taskGroupList.lastIndex) {
-            // ToDo
+            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
         }
     }
 

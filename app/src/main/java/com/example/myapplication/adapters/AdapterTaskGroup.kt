@@ -10,7 +10,8 @@ import com.example.myapplication.Settings
 import com.example.myapplication.addDivider
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
-import com.example.myapplication.data_classes.groupSelected
+import com.example.myapplication.data_classes.isSelected
+import com.example.myapplication.data_classes.toggleExpandCollapse
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
@@ -165,7 +166,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         var difference = 0
         val group: TaskGroup = taskGroupList[groupNum]
 
-        if (groupSelected(group)) {
+        if (group.isSelected()) {
             for (i in 0 until group.taskList.size)
                 group.taskList[i].selected = false
 
@@ -255,16 +256,18 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             itemView.taskGroupCard.setOnClickListener { dateClickListener(adapterPosition) }
 
             // Closing/Opening group tab
-            itemView.toggleGroupOpenClose.setOnCheckedChangeListener { _, close ->
-                if (close) {
-                    // Close group, call main activity, scroll to group label
-                    itemView.taskGroupRV.visibility = View.GONE
-                } else {
+            itemView.toggleGroupOpenClose.setOnCheckedChangeListener { _, _ ->
+                val expand: Boolean = group.toggleExpandCollapse()
+
+                if (expand) {
                     // Open group
                     itemView.taskGroupRV.visibility = View.VISIBLE
 
                     // Scroll position, ensure entire group + contents visible when expanded
                     scrollToFn(adapterPosition)
+                } else {
+                    // Close group, call main activity, scroll to group label
+                    itemView.taskGroupRV.visibility = View.GONE
                 }
             }
 
@@ -275,6 +278,10 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
                 adapter = taskAdapter
             }
+        }
+
+        private fun setGroupExpandCollapse() {
+
         }
     }
 }

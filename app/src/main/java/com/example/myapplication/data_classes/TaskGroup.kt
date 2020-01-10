@@ -9,12 +9,20 @@ data class TaskGroup (
     val id: Int = 0,
 
     // When tasks selected
-    var numSelected: Int = 0
+    var numSelected: Int = 0,
+    // Toggle state (expanded/collapsed)
+    var expanded: Boolean = true
 )
 
-fun groupSelected(taskGroup: TaskGroup) : Boolean {
-    if (taskGroup.numSelected == taskGroup.taskList.size)
+fun TaskGroup.isSelected() : Boolean {
+    if (this.numSelected == this.taskList.size)
         return true
 
     return false
+}
+
+fun TaskGroup.toggleExpandCollapse(): Boolean {
+    expanded = !expanded
+
+    return expanded
 }
