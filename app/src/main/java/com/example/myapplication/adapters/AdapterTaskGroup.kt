@@ -1,5 +1,6 @@
 package com.example.myapplication.adapters
 
+import android.graphics.Color
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -166,6 +167,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         var difference = 0
         val group: TaskGroup = taskGroupList[groupNum]
 
+        // A. Deselect all in group
         if (group.isSelected()) {
             for (i in 0 until group.taskList.size)
                 group.taskList[i].selected = false
@@ -173,17 +175,18 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             group.numSelected = 0
             difference = -(group.taskList.size)
         }
+        // B. Select all in group
         else {
             for (i in 0 until group.taskList.size) {
                 val task: Task = group.taskList[i]
+
+                // Task not already selected, highlight and select it
                 if (!task.selected) {
                     difference += 1
                     group.numSelected += 1
-                    task.selected = true
+                    group.taskList[i].selected = true
 
-                    if (group.numSelected == group.taskList.size) {
-                        break
-                    }
+                    if (group.numSelected == group.taskList.size) { break }
                 }
             }
         }
@@ -253,23 +256,10 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             dateLabel.text = group.date
 
             // When date label clicked, call ActivityMain click listener function
-            itemView.taskGroupCard.setOnClickListener { dateClickListener(adapterPosition) }
+            itemView.dateCard.setOnClickListener { if (group.expanded) dateClickListener(adapterPosition) }
 
             // Closing/Opening group tab
-            itemView.toggleGroupOpenClose.setOnCheckedChangeListener { _, _ ->
-                val expand: Boolean = group.toggleExpandCollapse()
-
-                if (expand) {
-                    // Open group
-                    itemView.taskGroupRV.visibility = View.VISIBLE
-
-                    // Scroll position, ensure entire group + contents visible when expanded
-                    scrollToFn(adapterPosition)
-                } else {
-                    // Close group, call main activity, scroll to group label
-                    itemView.taskGroupRV.visibility = View.GONE
-                }
-            }
+            itemView.collapseExpandBtn.setOnClickListener { toggleExpandCollapseState(group) }
 
             // Store reference to task adapter
             val taskAdapter = AdapterTasks(group, taskClickListener, changeDateListener, saveFunction, settings)
@@ -280,8 +270,31 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             }
         }
 
-        private fun setGroupExpandCollapse() {
+        private fun toggleExpandCollapseState(group: TaskGroup) {
+            val expand: Boolean = group.toggleExpandCollapse()
 
+            if (expand) {
+                // Change background color back to normal (if modified)
+                itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
+
+                // Open group and update icon
+                itemView.taskGroupRV.visibility = View.VISIBLE
+                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_drop_down)
+
+                // Scroll position, ensure entire group + contents visible when expanded
+                scrollToFn(adapterPosition)
+            } else {
+                // If a task has been selected, highlight background to indicate
+                if (group.numSelected != 0)
+                    itemView.collapseExpandBtn.setBackgroundColor(Color.parseColor(settings.taskHighlightColor))
+                else
+                    itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
+
+
+                // Close group, and change icon
+                itemView.taskGroupRV.visibility = View.GONE
+                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_drop_up)
+            }
         }
     }
 }

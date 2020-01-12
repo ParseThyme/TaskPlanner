@@ -48,10 +48,10 @@ class AdapterTasks(private val group: TaskGroup,
             toggleSelected(task.selected)
 
             // Edit button
-            this.itemView.editBtn.setOnClickListener { editTask(task) }
+            itemView.editBtn.setOnClickListener { editTask(task) }
 
             // Task Clicked
-            this.itemView.setOnClickListener {
+            itemView.setOnClickListener {
                 // When clicked, swap its state and select/deselect it
                 task.selected = !task.selected
                 toggleSelected(task.selected)
@@ -83,9 +83,9 @@ class AdapterTasks(private val group: TaskGroup,
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in current task, placing cursor at end
+            // ToDo: Open Keyboard
             taskEditView.editedTask.hint = itemView.desc.text
             taskEditView.editedTask.setText(itemView.desc.text.toString())
-            // taskEditView.editedTask.setSelection(itemView.desc.text.toString().length)
             taskEditView.editedTask.setMaxLength(settings.taskMaxLength)
 
             // 2. Set date and setup onClick behaviour
