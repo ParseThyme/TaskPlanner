@@ -11,18 +11,28 @@ data class TaskGroup (
     // When tasks selected
     var numSelected: Int = 0,
     // Toggle state (expanded/collapsed)
-    var expanded: Boolean = true
+    var state: ViewState = ViewState.EXPANDED
 )
 
-fun TaskGroup.isSelected() : Boolean {
+fun TaskGroup.allSelected() : Boolean {
     if (this.numSelected == this.taskList.size)
         return true
 
     return false
 }
 
-fun TaskGroup.toggleExpandCollapse(): Boolean {
-    expanded = !expanded
+fun TaskGroup.toggleExpandCollapse(): ViewState {
+    state = if (state == ViewState.EXPANDED)
+        ViewState.COLLAPSED
+    else
+        ViewState.EXPANDED
 
-    return expanded
+    return state
 }
+
+fun TaskGroup.isExpanded() : Boolean {
+    if (state == ViewState.EXPANDED) return true
+    return false
+}
+
+enum class ViewState { EXPANDED, COLLAPSED }

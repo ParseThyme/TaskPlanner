@@ -9,23 +9,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.Settings
 import com.example.myapplication.addDivider
-import com.example.myapplication.data_classes.Task
-import com.example.myapplication.data_classes.TaskGroup
-import com.example.myapplication.data_classes.isSelected
-import com.example.myapplication.data_classes.toggleExpandCollapse
+import com.example.myapplication.data_classes.*
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                        private val settings: Settings,
-                       private val taskClickListener: (Task) -> Unit,
-                       private val dateClickListener: (Int) -> Unit,
-                       private val scrollToFn: (Int) -> Unit,
-                       private val saveFn: () -> Unit)
+                       private val taskClicked: (Task) -> Unit,
+                       private val dateClicked: (Int) -> Unit,
+                       private val scrollTo: (Int) -> Unit,
+                       private val updateSave: () -> Unit)
     : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
 
     // Date changed for task
-    private val changeDateListener = {
+    private val changedDate = {
         // Params:
             task: Task, newDate: String, oldID: Int, newID: Int
         // Function to call:
@@ -67,8 +64,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // Assign description and date to task based on stored array
-        holder.bind(taskGroupList[position],
-            taskClickListener, dateClickListener, saveFn, settings)
+        holder.bind(taskGroupList[position])
     }
 
     // ########## Group related functionality ##########
@@ -168,7 +164,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         val group: TaskGroup = taskGroupList[groupNum]
 
         // A. Deselect all in group
-        if (group.isSelected()) {
+        if (group.allSelected()) {
             for (i in 0 until group.taskList.size)
                 group.taskList[i].selected = false
 
@@ -196,15 +192,16 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     fun toggleAll(selectAll : Boolean = true) {
-        val end = taskGroupList.size - 1
+        val end: Int = taskGroupList.size - 1
         for (groupNum in end downTo 0) {
             val group = taskGroupList[groupNum]
 
             // Go through each individual task and select/deselect it
-            for (taskNum in group.taskList.size - 1 downTo 0)
+            for (taskNum in group.taskList.size - 1 downTo 0) {
                 group.taskList[taskNum].selected = selectAll
+            }
 
-            // Depending on overall call, either set num selected to group count or 0
+            // Depending on overall call, either set num selected to group count or 0. Also modify collapse/expand state
             if (selectAll)
                 group.numSelected = group.taskList.size
             else
@@ -246,23 +243,24 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         private val tasksRV = itemView.taskGroupRV
         private val dateLabel = itemView.dateLabel
 
-        fun bind(group: TaskGroup,
-                 taskClickListener: (Task) -> Unit,
-                 dateClickListener: (Int) -> Unit,
-                 saveFunction: () -> Unit,
-                 settings: Settings) {
-
+        fun bind(group: TaskGroup) {
             // Assign date label
             dateLabel.text = group.date
 
             // When date label clicked, call ActivityMain click listener function
-            itemView.dateCard.setOnClickListener { if (group.expanded) dateClickListener(adapterPosition) }
+            itemView.dateCard.setOnClickListener { if (group.isExpanded()) dateClicked(adapterPosition) }
+
+            // Load previously saved collapse/expand states
+            toggleExpandCollapseState(group.state, group)
 
             // Closing/Opening group tab
-            itemView.collapseExpandBtn.setOnClickListener { toggleExpandCollapseState(group) }
+            itemView.collapseExpandBtn.setOnClickListener {
+                val newState: ViewState = group.toggleExpandCollapse()
+                toggleExpandCollapseState(newState, group)
+            }
 
             // Store reference to task adapter
-            val taskAdapter = AdapterTasks(group, taskClickListener, changeDateListener, saveFunction, settings)
+            val taskAdapter = AdapterTasks(group, taskClicked, changedDate, updateSave, settings)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
@@ -270,10 +268,8 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             }
         }
 
-        private fun toggleExpandCollapseState(group: TaskGroup) {
-            val expand: Boolean = group.toggleExpandCollapse()
-
-            if (expand) {
+        private fun toggleExpandCollapseState(state: ViewState, group: TaskGroup) {
+            if (state == ViewState.EXPANDED) {
                 // Change background color back to normal (if modified)
                 itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
 
@@ -282,19 +278,19 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
                 itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_drop_down)
 
                 // Scroll position, ensure entire group + contents visible when expanded
-                scrollToFn(adapterPosition)
+                scrollTo(adapterPosition)
             } else {
                 // If a task has been selected, highlight background to indicate
                 if (group.numSelected != 0)
                     itemView.collapseExpandBtn.setBackgroundColor(Color.parseColor(settings.taskHighlightColor))
-                else
-                    itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
-
 
                 // Close group, and change icon
                 itemView.taskGroupRV.visibility = View.GONE
                 itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_drop_up)
             }
+
+            // Save change to view state
+            updateSave()
         }
     }
 }

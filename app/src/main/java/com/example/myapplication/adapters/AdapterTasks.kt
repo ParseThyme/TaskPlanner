@@ -19,9 +19,9 @@ import java.util.*
 // Unit == no return type (same as void)
 
 class AdapterTasks(private val group: TaskGroup,
-                   private val taskClickedListener: (Task) -> Unit,
-                   private val changedDateFn: (Task, String, Int, Int) -> Unit,
-                   private val updateSaveFn: () -> Unit,
+                   private val taskClicked: (Task) -> Unit,
+                   private val changedDate: (Task, String, Int, Int) -> Unit,
+                   private val updateSave: () -> Unit,
                    private val settings: Settings)
     : RecyclerView.Adapter<AdapterTasks.ViewHolder>()
 {
@@ -64,7 +64,7 @@ class AdapterTasks(private val group: TaskGroup,
                     group.numSelected--
 
                 // Call main click listener function (implemented in main activity)
-                taskClickedListener(task)
+                taskClicked(task)
             }
         }
 
@@ -146,17 +146,15 @@ class AdapterTasks(private val group: TaskGroup,
                         group.numSelected--
 
                         // Call listener function in main activity
-                        taskClickedListener(task)
+                        taskClicked(task)
                     }
 
                     // Notify group adapter to change date
-                    changedDateFn(task, newDate, group.id, newID)
+                    changedDate(task, newDate, group.id, newID)
                 }
 
-                if (updated) {
-                    // Notify main activity to save change made
-                    updateSaveFn()
-                }
+                // Notify main activity to save change made
+                if (updated) { updateSave() }
 
                 taskEditDialog.dismiss()
             }
