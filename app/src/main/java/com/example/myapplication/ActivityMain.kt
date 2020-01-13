@@ -184,6 +184,17 @@ class MainActivity : AppCompatActivity() {
 
             updateSave()
         }
+
+        // 3. Set time
+        btnTime.text = "Set time"
+        btnTime.setOnClickListener {
+            // ToDo
+        }
+
+        // 4. Change tag
+        btnTag.setOnClickListener {
+            // ToDo
+        }
     }
 
     // ########## OnClick ##########

@@ -137,31 +137,125 @@
         app:layout_constraintTop_toBottomOf="@+id/dateGroupRV">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/extraEditsCard"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/datesCard"
+            app:layout_constraintStart_toEndOf="@+id/datesCard"
+            app:layout_constraintTop_toTopOf="@+id/datesCard">
+
+            <ImageButton
+                android:id="@+id/btnToggleExtraEdits"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_extra_settings" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/extraSettings"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/datesCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/extraEditsCard"
+            app:layout_constraintTop_toTopOf="@+id/datesCard">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/lockCard"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tagCard"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageButton
+                    android:id="@+id/btnLock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_lock_open" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tagCard"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageButton
+                    android:id="@+id/btnTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_tag_base" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/timeCard"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lockCard"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Button
+                    android:id="@+id/btnTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:drawableStart="@drawable/ic_time"
+                    android:drawableLeft="@drawable/ic_time"
+                    android:drawablePadding="2dp"
+                    android:gravity="center|center_horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="@string/placeholderTime"
+                    android:textColor="#4D4D4D"
+                    android:textSize="12sp" />
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/datesCard"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/taskCard"
+            app:layout_constraintBottom_toTopOf="@+id/taskCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <Button
                 android:id="@+id/btnChangeDate"
-                style="text"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:drawableStart="@drawable/ic_date"
+                android:drawableLeft="@drawable/ic_date"
                 android:gravity="center|center_horizontal|center_vertical"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingRight="2dp"
                 android:text="@string/placeholderDate"
                 android:textAllCaps="false"
+                android:textColor="#4D4D4D"
                 android:textSize="12sp" />
 
         </androidx.cardview.widget.CardView>
@@ -169,22 +263,23 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/taskCard"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
             app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="@+id/datesCard"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnNewTask"
-            app:layout_constraintStart_toEndOf="@+id/datesCard"
-            app:layout_constraintTop_toTopOf="@+id/datesCard">
+            app:layout_constraintStart_toStartOf="parent">
 
             <EditText
                 android:id="@+id/taskDesc"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
+                android:cursorVisible="false"
                 android:hint="@string/label_task"
                 android:inputType="textAutoCorrect|textCapSentences"
                 android:padding="5dp"
@@ -206,5 +301,4 @@
             app:srcCompat="@drawable/ic_add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

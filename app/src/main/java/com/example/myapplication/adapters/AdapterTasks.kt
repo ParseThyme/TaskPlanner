@@ -82,10 +82,12 @@ class AdapterTasks(private val group: TaskGroup,
             val taskEditDialog = builder.show()
 
             // ########## Fill values: ##########
-            // 1. Set current task as hint text and fill in current task, placing cursor at end
-            // ToDo: Open Keyboard
-            taskEditView.editedTask.hint = itemView.desc.text
+            // 1. Set current task as hint text and fill in previous entry
+            // taskEditView.editedTask.showKeyboard()
+            // taskEditView.editedTask.setSelection(itemView.desc.text.length)
+
             taskEditView.editedTask.setText(itemView.desc.text.toString())
+            taskEditView.editedTask.hint = itemView.desc.text
             taskEditView.editedTask.setMaxLength(settings.taskMaxLength)
 
             // 2. Set date and setup onClick behaviour

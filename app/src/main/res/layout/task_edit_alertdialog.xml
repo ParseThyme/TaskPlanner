@@ -95,7 +95,6 @@
             android:background="@android:color/transparent"
             android:inputType="textPersonName"
             android:padding="5dp"
-            android:text="@string/placeholderText"
             android:textSize="12sp" />
 
     </androidx.cardview.widget.CardView>
