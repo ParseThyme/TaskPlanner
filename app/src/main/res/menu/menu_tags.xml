@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/tag_base"
+        android:icon="@drawable/ic_tag_base"
+        android:title="@string/tag_base"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/tag_booking"
+        android:icon="@drawable/ic_tag_booking"
+        android:title="@string/tag_booking" />
+    <item
+        android:id="@+id/tag_buy"
+        android:icon="@drawable/ic_tag_buy"
+        android:title="@string/tag_buy" />
+    <item
+        android:id="@+id/tag_event"
+        android:icon="@drawable/ic_tag_event"
+        android:title="@string/tag_event" />
+</menu>

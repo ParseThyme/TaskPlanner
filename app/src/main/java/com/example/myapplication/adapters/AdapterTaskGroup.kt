@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.Settings
-import com.example.myapplication.addDivider
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
@@ -275,7 +274,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
 
                 // Open group and update icon
                 itemView.taskGroupRV.visibility = View.VISIBLE
-                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_drop_down)
+                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_down)
 
                 // Scroll position, ensure entire group + contents visible when expanded
                 scrollTo(adapterPosition)
@@ -286,7 +285,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
 
                 // Close group, and change icon
                 itemView.taskGroupRV.visibility = View.GONE
-                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_drop_up)
+                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_up)
             }
 
             // Save change to view state

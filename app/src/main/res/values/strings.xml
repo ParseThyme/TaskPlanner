@@ -3,7 +3,7 @@
 
     <string name="placeholderText">Lea nushe ri Pishfa lehati Yelet kai shtnesa Valva safa luli Teetha lethghraloo</string>
     <string name="placeholderTime">10:00AM\n12:30PM</string>
-    <string name="placeholderDate">Mon 18 Nov</string>
+    <string name="placeholderDate">Mo-18-Dec</string>
 
     <!-- Labels -->
     <string name="label_task">Tap to enter a new task</string>
@@ -15,4 +15,10 @@
     <string name="btn_select_all">Select All</string>
     <string name="btn_settings">Settings</string>
     <string name="btn_delete">Delete</string>
+
+    <!-- Tags -->
+    <string name="tag_base">Untagged</string>
+    <string name="tag_booking">Booking / Appointment</string>
+    <string name="tag_event">Special Event</string>
+    <string name="tag_buy">Buy</string>
 </resources>

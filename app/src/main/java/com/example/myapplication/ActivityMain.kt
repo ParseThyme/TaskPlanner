@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Settings
-        taskDesc.setMaxLength(settings.taskMaxLength)
+        // taskDesc.setMaxLength(settings.taskMaxLength)
     }
 
     private fun setupButtons() {
@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 3. Set time
-        btnTime.text = "Set time"
+        btnTime.text = "Set Time"
         btnTime.setOnClickListener {
             // ToDo
         }

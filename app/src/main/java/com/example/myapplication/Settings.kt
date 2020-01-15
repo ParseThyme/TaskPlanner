@@ -22,9 +22,11 @@ var maxDate: Long = 0
 
 // ########## App settings ##########
 class Settings {
+    // Unused
+    // val taskMaxLength: Int = 60
+
     // Tasks
     private val defTaskHighlightColor: String = "#FFFFE600"   // Yellow
-    val taskMaxLength: Int = 60
     var taskHighlightColor: String = "#FFFFE600"
     var taskBaseColor: String = "#00000000"
 

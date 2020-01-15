@@ -82,7 +82,7 @@ private fun addOrdinal(dayNum: Int) : String {
 
 // ########## Shortcuts ##########
 // https://stackoverflow.com/questions/2461824/how-to-programmatically-set-maxlength-in-android-textview
-fun EditText.setMaxLength(length: Int) { this.filters = arrayOf(LengthFilter(length)) }
+// fun EditText.setMaxLength(length: Int) { this.filters = arrayOf(LengthFilter(length)) }
 
 fun ImageButton.updateBtnColor(color: Int, context: Context) {
     this.setColorFilter(ContextCompat.getColor(context, color))
