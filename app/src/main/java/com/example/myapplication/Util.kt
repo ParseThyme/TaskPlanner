@@ -45,23 +45,26 @@ fun RecyclerView.addDivider(vertical : Boolean = true) {
 fun createDateLabel(cal: Calendar, short: Boolean = false) : String{
     val timeInMills = cal.timeInMillis
     // Produce day, generally either in Monday or Mon format. We want only two characters (Mo, Tu, We, etc)
-    var dayName: String
-    var month: String
+    val dayName: String
+    val month: String
     val day: String = dayFormat.format(timeInMills)
+    var result: String
 
     if (short) {
-        dayName = SimpleDateFormat("EEEEEE").format(timeInMills)
+        dayName = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
         month = SimpleDateFormat("MMM").format(timeInMills)
+        result = "$dayName $month $day"
     } else {
         dayName = SimpleDateFormat("EEEE").format(timeInMills)
         month = SimpleDateFormat("MMMM").format(timeInMills)
+
+        // Depending on day, add ordinals
+        // https://stackoverflow.com/questions/4011075/how-do-you-format-the-day-of-the-month-to-say-11th-21st-or-23rd-ordinal
+        val ordinal = addOrdinal(cal.get(DAY_OF_MONTH))
+        result = "$dayName $month $day$ordinal"
     }
 
-    // Depending on day, add ordinals
-    // https://stackoverflow.com/questions/4011075/how-do-you-format-the-day-of-the-month-to-say-11th-21st-or-23rd-ordinal
-    val ordinal = addOrdinal(cal.get(DAY_OF_MONTH))
-
-    return "$dayName $month $day$ordinal"
+    return result
 }
 
 private fun addOrdinal(dayNum: Int) : String {
