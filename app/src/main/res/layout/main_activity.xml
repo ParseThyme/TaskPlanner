@@ -151,6 +151,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
+                android:padding="5dp"
                 app:srcCompat="@drawable/ic_tag_base" />
 
         </androidx.cardview.widget.CardView>
@@ -254,7 +255,7 @@
                     android:background="@android:color/white"
                     android:cursorVisible="true"
                     android:hint="@string/label_task"
-                    android:inputType="textAutoCorrect|textMultiLine|textCapSentences"
+                    android:inputType="textAutoCorrect|textCapSentences"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

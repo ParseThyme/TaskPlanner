@@ -53,6 +53,25 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/tagCard"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dateCard"
+        app:layout_constraintStart_toEndOf="@+id/dateCard"
+        app:layout_constraintTop_toTopOf="@+id/dateCard">
+
+        <ImageButton
+            android:id="@+id/btnTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="5dp"
+            app:srcCompat="@drawable/ic_tag_base" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/dateCard"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -64,11 +83,12 @@
         app:layout_constraintTop_toBottomOf="@+id/titleCard">
 
         <Button
-            android:id="@+id/editDateBtn"
+            android:id="@+id/btnEditDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:drawableStart="@drawable/ic_date"
+            android:drawableLeft="@drawable/ic_date"
             android:padding="5dp"
             android:text="@string/placeholderDate"
             android:textAllCaps="false"
@@ -100,7 +120,7 @@
     </androidx.cardview.widget.CardView>
 
     <ImageButton
-        android:id="@+id/applyBtn"
+        android:id="@+id/btnApply"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginStart="10dp"

@@ -2,7 +2,7 @@
     <string name="app_name">Planner App</string>
 
     <string name="placeholderText">Lea nushe ri Pishfa lehati Yelet kai shtnesa Valva safa luli Teetha lethghraloo</string>
-    <string name="placeholderTime">10:00AM\n12:30PM</string>
+    <string name="placeholderTime">10:00am\n12:30pm</string>
     <string name="placeholderDate">Mo-18-Dec</string>
 
     <!-- Labels -->
@@ -21,4 +21,5 @@
     <string name="tag_booking">Booking / Appointment</string>
     <string name="tag_event">Special Event</string>
     <string name="tag_buy">Buy</string>
+    <string name="tag_todo">To Do</string>
 </resources>

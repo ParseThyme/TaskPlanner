@@ -4,17 +4,23 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.AdapterTaskGroup
+import com.example.myapplication.data_classes.Tag
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
+import com.example.myapplication.data_classes.setImageResourceFromTag
 import kotlinx.android.synthetic.main.main_activity.*
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class MainActivity : AppCompatActivity() {
     // Settings
@@ -36,9 +42,12 @@ class MainActivity : AppCompatActivity() {
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = settings.calendarRange
     // Calendar limits + starting values
-    private var date: String = ""
     private var startDate: String = ""
     private var id: Int = 0
+
+    // Created task
+    private var date: String = ""
+    private var tag: Tag = Tag.NONE
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -71,6 +80,9 @@ class MainActivity : AppCompatActivity() {
 
         // [2]. Buttons (topBar and bottomBar)
         setupButtons()
+
+        // [3]. Popup menus (bottomBar)
+        setupPopupMenus()
     }
 
     private fun setupLateInit() {
@@ -175,13 +187,14 @@ class MainActivity : AppCompatActivity() {
         btnNewTask.setOnClickListener {
             // Get task description entry, create task entry and add to adapter
             val desc = taskDesc.text.toString().trim()
-            taskGroupAdapter.addTask(id, date, desc)
+            taskGroupAdapter.addTask(id, date, desc, tag)
 
-            // Clear task entry and clear focus
+            // Reset values
             taskDesc.setText("")
             taskDesc.clearFocus()
             taskDesc.hideKeyboard()
 
+            // Save changes
             updateSave()
         }
 
@@ -194,6 +207,58 @@ class MainActivity : AppCompatActivity() {
         // 4. Change tag
         btnTag.setOnClickListener {
             // ToDo
+        }
+    }
+
+    private fun setupPopupMenus() {
+        // Setting task tag
+        btnTag.setOnClickListener {
+            /*
+            // Create popup menu then set on click behaviour
+            val menu = PopupMenu(this, it)
+            menu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.tag_base -> tag = Tag.NONE
+                    R.id.tag_booking -> tag = Tag.BOOKING
+                    R.id.tag_buy -> tag = Tag.BUY
+                    R.id.tag_event -> tag = Tag.EVENT
+                }
+
+                // Get appropriate imageResource and apply it
+                btnTag.setImageResourceFromTag(tag)
+
+                true
+            }
+
+            menu.inflate(R.menu.menu_tags)
+            menu.show()
+            */
+
+            //https://stackoverflow.com/questions/20836385/popup-menu-with-icon-on-android
+            val menuBuilder = MenuBuilder(this)
+            val menuInflater = MenuInflater(this)
+            menuInflater.inflate(R.menu.menu_tags, menuBuilder)
+            val optionsMenu = MenuPopupHelper(this, menuBuilder, btnTag)
+            optionsMenu.setForceShowIcon(true)
+
+            menuBuilder.setCallback(object : MenuBuilder.Callback {
+                override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
+                    tag = when (item.itemId) {
+                        R.id.tag_base -> Tag.NONE
+                        R.id.tag_booking -> Tag.BOOKING
+                        R.id.tag_buy -> Tag.BUY
+                        R.id.tag_event -> Tag.EVENT
+                        else -> return false
+                    }
+
+                    btnTag.setImageResourceFromTag(tag)
+                    return true
+                }
+                // Unused
+                override fun onMenuModeChange(menu: MenuBuilder) {}
+            })
+
+            optionsMenu.show()
         }
     }
 

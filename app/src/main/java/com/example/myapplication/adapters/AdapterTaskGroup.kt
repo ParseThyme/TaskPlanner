@@ -67,7 +67,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     // ########## Group related functionality ##########
-    fun addTask(id: Int, date: String, desc: String) {
+    fun addTask(id: Int, date: String, desc: String, tag: Tag = Tag.NONE) {
         taskCount++
 
         // ---------- Auto Sorting Entries ----------
@@ -75,7 +75,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         if (id < minDate) {
             // New date is earlier, make it the new min date and insert new group at the top
             minDate = id
-            addNewTaskGroup(0, date, Task(desc), id)
+            addNewTaskGroup(0, date, Task(desc, tag), id)
             return
         }
 
@@ -83,12 +83,12 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
         for (pos in taskGroupList.lastIndex downTo 0 step 1) {
             // [1]. Matching date, append to existing list of tasks
             if (id == taskGroupList[pos].id) {
-                addToTaskGroup(pos, Task(desc))
+                addToTaskGroup(pos, Task(desc, tag))
                 return
             }
             // [2]. Date reached is earlier, create new date category with new task
             if (id > taskGroupList[pos].id) {
-                addNewTaskGroup(pos + 1, date, Task(desc), id)
+                addNewTaskGroup(pos + 1, date, Task(desc, tag), id)
                 return
             }
         }
@@ -212,7 +212,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
 
     private fun changeGroup(task: Task, newDate: String, oldID: Int, newID: Int) {
         // "Move" to new position (add new task). -- to balance out addition made in addTask()
-        addTask(newID, newDate, task.desc)
+        addTask(newID, newDate, task.desc, task.tag)
         taskCount--
 
         // Find old group and remove it at the old position

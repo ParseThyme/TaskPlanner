@@ -8,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
-import com.example.myapplication.data_classes.Task
-import com.example.myapplication.data_classes.TaskGroup
+import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.task_edit_alertdialog.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 import java.util.*
@@ -43,6 +42,10 @@ class AdapterTasks(private val group: TaskGroup,
         fun bind(task: Task) {
             // Set description of task when bound
             taskField.text = task.desc
+
+            // Show/hide tag/time if allocated
+            toggleTag(task.tag)
+            toggleTime(task.timeStart, task.timeEnd)
 
             // Toggle selected icon based on state
             toggleSelected(task.selected)
@@ -83,15 +86,12 @@ class AdapterTasks(private val group: TaskGroup,
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in previous entry
-            // taskEditView.editedTask.showKeyboard()
-            // taskEditView.editedTask.setSelection(itemView.desc.text.length)
-
+            taskEditView.btnTag.setImageResourceFromTag(task.tag)
             taskEditView.editedTask.setText(itemView.desc.text.toString())
             taskEditView.editedTask.hint = itemView.desc.text
-            // taskEditView.editedTask.setMaxLength(settings.taskMaxLength)
 
             // 2. Set date and setup onClick behaviour
-            taskEditView.editDateBtn.text = group.date
+            taskEditView.btnEditDate.text = group.date
             var newDate = ""
             var newID = 0
             val cal = Calendar.getInstance()
@@ -104,9 +104,9 @@ class AdapterTasks(private val group: TaskGroup,
                     // Change displayed date
                     newDate = createDateLabel(cal)
                     newID = idFormat.format(cal.timeInMillis).toInt()
-                    taskEditView.editDateBtn.text = newDate
+                    taskEditView.btnEditDate.text = newDate
                 }
-            taskEditView.editDateBtn.setOnClickListener {
+            taskEditView.btnEditDate.setOnClickListener {
                 val dialog = DatePickerDialog(taskEditView.context, dateSetListener,
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -120,16 +120,22 @@ class AdapterTasks(private val group: TaskGroup,
             }
 
             // ########## Buttons ##########
-            // 1. Cancel: close dialog
+            // Cancel: close dialog
             taskEditView.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }
 
-            // 2. Apply: make changes if edit made
-            taskEditView.applyBtn.setOnClickListener {
+            // Change Tag
+            taskEditView.btnTag.setOnClickListener {
+                // ToDo
+            }
+
+            // Apply: make changes if edit made
+            taskEditView.btnApply.setOnClickListener {
                 var updated = false
                 val editedText: String = taskEditView.editedTask.text.toString()
-                val editedDate: String = taskEditView.editDateBtn.text.toString()
+                val editedDate: String = taskEditView.btnEditDate.text.toString()
+                // val editedTag:
 
-                // 1. Check if task edit is new
+                // Check if task edit is new
                 if (editedText != task.desc) {
                     updated = true
 
@@ -137,7 +143,11 @@ class AdapterTasks(private val group: TaskGroup,
                     task.desc = taskEditView.editedTask.text.toString()
                     itemView.desc.text = task.desc
                 }
-                // 2. Check if date has been changed
+                // Check if tag has been changed
+                /*
+                if ()
+                */
+                // Check if date has been changed
                 if (editedDate != group.date) {
                     updated = true
 
@@ -162,10 +172,42 @@ class AdapterTasks(private val group: TaskGroup,
             }
         }
 
-        // ########## Toggling functionality ##########
         private fun toggleSelected(isSelected: Boolean) {
             if (isSelected) { taskField.setBackgroundColor(Color.parseColor(settings.taskHighlightColor)) }
             else { taskField.setBackgroundColor(Color.parseColor(settings.taskBaseColor)) }
+        }
+
+        private fun toggleTag(tag: Tag) {
+            // No tag, don't display anything
+            if (tag == Tag.NONE) {
+                itemView.taskTag.visibility = View.GONE
+                return
+            }
+
+            // Get image, set tag accordingly and display
+            itemView.taskTag.setImageResourceFromTag(tag)
+            itemView.taskTag.visibility = View.VISIBLE
+        }
+
+        private fun toggleTime(timeStart: String, timeEnd: String) {
+            // No starting time allocated, meaning no end time has been allocated as well
+            if (timeStart == "") {
+                itemView.taskTime.visibility = View.GONE
+                return
+            }
+
+            var timeDisplay: String = ""
+
+            // Set starting date of string
+            timeDisplay = timeStart
+
+            // Check if end time allocated (optional value), if so append with spacing in between
+            if (timeEnd != "")
+                timeDisplay = "$timeStart\n$timeEnd"
+
+            // Set time and show
+            itemView.taskTime.text = timeDisplay
+            itemView.taskTime.visibility = View.VISIBLE
         }
     }
 }
