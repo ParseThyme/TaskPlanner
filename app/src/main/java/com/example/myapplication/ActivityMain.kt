@@ -1,16 +1,19 @@
 package com.example.myapplication
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.ImageButton
+import android.widget.PopupWindow
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuPopupHelper
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.AdapterTaskGroup
 import com.example.myapplication.data_classes.Tag
@@ -18,9 +21,9 @@ import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.data_classes.setImageResourceFromTag
 import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity() {
     // Settings
@@ -203,11 +206,6 @@ class MainActivity : AppCompatActivity() {
         btnTime.setOnClickListener {
             // ToDo
         }
-
-        // 4. Change tag
-        btnTag.setOnClickListener {
-            // ToDo
-        }
     }
 
     private fun setupPopupMenus() {
@@ -234,6 +232,21 @@ class MainActivity : AppCompatActivity() {
             menu.show()
             */
 
+            val window:PopupWindow = createTagPopupWindow(btnTag)
+            val view: View = window.contentView
+            view.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
+                when (chosenTag) {
+                    R.id.tagNone -> tag = Tag.NONE
+                    R.id.tagEvent -> tag = Tag.EVENT
+                    R.id.tagBooking -> tag = Tag.BOOKING
+                    R.id.tagBuy -> tag = Tag.BUY
+                }
+
+                btnTag.setImageResourceFromTag(tag)
+                window.dismiss()
+            }
+
+            /*
             //https://stackoverflow.com/questions/20836385/popup-menu-with-icon-on-android
             val menuBuilder = MenuBuilder(this)
             val menuInflater = MenuInflater(this)
@@ -259,6 +272,7 @@ class MainActivity : AppCompatActivity() {
             })
 
             optionsMenu.show()
+            */
         }
     }
 

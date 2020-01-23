@@ -17,6 +17,7 @@
     <string name="btn_delete">Delete</string>
 
     <!-- Tags -->
+    <string name="tag_titleMsg">Update Tag</string>
     <string name="tag_base">Untagged</string>
     <string name="tag_booking">Booking / Appointment</string>
     <string name="tag_event">Special Event</string>

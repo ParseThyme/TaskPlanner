@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardTagGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="false">
+
+        <RadioGroup
+            android:id="@+id/tagGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/tagNone"
+                style="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:button="@android:color/transparent"
+                android:drawableStart="@drawable/ic_tag_base"
+                android:drawableLeft="@drawable/ic_tag_base"
+                android:padding="5dp" />
+
+            <RadioButton
+                android:id="@+id/tagBooking"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:button="@android:color/transparent"
+                android:drawableStart="@drawable/ic_tag_booking"
+                android:drawableLeft="@drawable/ic_tag_booking"
+                android:padding="5dp" />
+
+            <RadioButton
+                android:id="@+id/tagBuy"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:button="@android:color/transparent"
+                android:drawableStart="@drawable/ic_tag_buy"
+                android:drawableLeft="@drawable/ic_tag_buy"
+                android:padding="5dp" />
+
+            <RadioButton
+                android:id="@+id/tagEvent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:button="@android:color/transparent"
+                android:drawableStart="@drawable/ic_tag_event"
+                android:drawableLeft="@drawable/ic_tag_event"
+                android:padding="5dp" />
+
+        </RadioGroup>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
