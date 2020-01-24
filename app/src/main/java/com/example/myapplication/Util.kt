@@ -112,6 +112,8 @@ inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, 
  - Show Keyboard: http://www.androidtutorialshub.com/how-to-hide-and-show-soft-keyboard-in-android/
  - Function parameter: https://stackoverflow.com/questions/41887584/passing-function-as-parameter-in-kotlin
  - Toggle Image: https://stackoverflow.com/questions/11499574/toggle-button-using-two-image-on-different-state/11499595#11499595
+ - Change Activity: https://www.tutorialkart.com/kotlin-android/android-start-another-activity/
+ - Pass Data between activities: https://devofandroid.blogspot.com/2018/03/pass-data-between-activities-using.html
  **/
 
 /** ########## Notes: ##########

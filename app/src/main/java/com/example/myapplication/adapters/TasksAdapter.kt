@@ -9,7 +9,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import kotlinx.android.synthetic.main.task_edit_alertdialog.view.*
+import kotlinx.android.synthetic.main.tag_popup_window.view.*
+import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 import java.util.*
 
@@ -17,12 +18,12 @@ import java.util.*
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
 
-class AdapterTasks(private val group: TaskGroup,
+class TasksAdapter(private val group: TaskGroup,
                    private val taskClicked: (Task) -> Unit,
                    private val changedDate: (Task, String, Int, Int) -> Unit,
                    private val updateSave: () -> Unit,
                    private val settings: Settings)
-    : RecyclerView.Adapter<AdapterTasks.ViewHolder>()
+    : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v =  parent.inflate(R.layout.task_entry_rv, false)
@@ -74,7 +75,7 @@ class AdapterTasks(private val group: TaskGroup,
         private fun editTask(task: Task) {
             // Set view to be applied to alert dialog
             val taskEditView = LayoutInflater.from(itemView.context).
-                inflate(R.layout.task_edit_alertdialog, null)
+                inflate(R.layout.task_edit_view, null)
             // Create builder
             val builder = AlertDialog.Builder(itemView.context).apply {
                 setView(taskEditView)
@@ -83,6 +84,9 @@ class AdapterTasks(private val group: TaskGroup,
 
             // Show dialog
             val taskEditDialog = builder.show()
+
+            // Modifiable values
+            var editedTag: Tag = task.tag
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in previous entry
@@ -125,7 +129,18 @@ class AdapterTasks(private val group: TaskGroup,
 
             // Change Tag
             taskEditView.btnTag.setOnClickListener {
-                // ToDo
+                val window = itemView.context.createTagPopupWindow(taskEditView.btnTag)
+                window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
+                    when (chosenTag) {
+                        R.id.tagNone -> editedTag = Tag.NONE
+                        R.id.tagEvent -> editedTag = Tag.EVENT
+                        R.id.tagBooking -> editedTag = Tag.BOOKING
+                        R.id.tagBuy -> editedTag = Tag.BUY
+                    }
+
+                    taskEditView.btnTag.setImageResourceFromTag(editedTag)
+                    window.dismiss()
+                }
             }
 
             // Apply: make changes if edit made
@@ -133,20 +148,25 @@ class AdapterTasks(private val group: TaskGroup,
                 var updated = false
                 val editedText: String = taskEditView.editedTask.text.toString()
                 val editedDate: String = taskEditView.btnEditDate.text.toString()
-                // val editedTag:
 
                 // Check if task edit is new
                 if (editedText != task.desc) {
                     updated = true
 
-                    // Apply text change to selected task label and internally
+                    // Apply text change to display and internal value
                     task.desc = taskEditView.editedTask.text.toString()
                     itemView.desc.text = task.desc
                 }
                 // Check if tag has been changed
-                /*
-                if ()
-                */
+                if (editedTag != task.tag) {
+                    updated = true
+
+                    // Apply change to display and internal value
+                    task.tag = editedTag
+                    toggleTag(task.tag)
+                    //itemView.taskTag.setImageResourceFromTag(task.tag)
+                }
+
                 // Check if date has been changed
                 if (editedDate != group.date) {
                     updated = true

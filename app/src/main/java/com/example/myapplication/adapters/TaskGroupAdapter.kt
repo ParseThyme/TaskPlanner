@@ -12,13 +12,13 @@ import com.example.myapplication.data_classes.*
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
-class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
+class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val settings: Settings,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
                        private val updateSave: () -> Unit)
-    : RecyclerView.Adapter<AdapterTaskGroup.ViewHolder>() {
+    : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
 
     // Date changed for task
     private val changedDate = {
@@ -259,7 +259,7 @@ class AdapterTaskGroup(private val taskGroupList: ArrayList<TaskGroup>,
             }
 
             // Store reference to task adapter
-            val taskAdapter = AdapterTasks(group, taskClicked, changedDate, updateSave, settings)
+            val taskAdapter = TasksAdapter(group, taskClicked, changedDate, updateSave, settings)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)

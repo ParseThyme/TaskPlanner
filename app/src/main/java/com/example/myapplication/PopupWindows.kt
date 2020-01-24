@@ -10,7 +10,7 @@ import android.view.WindowManager
 import android.widget.PopupWindow
 
 // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
-fun Activity.createTagPopupWindow(parent: View) : PopupWindow {
+fun Context.createTagPopupWindow(parent: View) : PopupWindow {
     val inflater: LayoutInflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     val view: View = inflater.inflate(R.layout.tag_popup_window, null)
     val window = PopupWindow(this)

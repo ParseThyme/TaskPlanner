@@ -1,26 +1,20 @@
 package com.example.myapplication
 
 import android.app.DatePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupWindow
-import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myapplication.adapters.AdapterTaskGroup
+import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.Tag
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskGroup
 import com.example.myapplication.data_classes.setImageResourceFromTag
-import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -35,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val dateClickedFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
     private val updateSaveFn = { updateSave() }
-    private lateinit var taskGroupAdapter: AdapterTaskGroup
+    private lateinit var taskGroupAdapter: TaskGroupAdapter
 
     // Selecting tasks
     private var taskCount: Int = 0
@@ -58,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     // ########## Main ##########
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
+        setContentView(R.layout.main_view)
 
         // Check for existing saved data, attempt to load it then create the adapter
         loadSave()
@@ -211,30 +205,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupPopupMenus() {
         // Setting task tag
         btnTag.setOnClickListener {
-            /*
-            // Create popup menu then set on click behaviour
-            val menu = PopupMenu(this, it)
-            menu.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.tag_base -> tag = Tag.NONE
-                    R.id.tag_booking -> tag = Tag.BOOKING
-                    R.id.tag_buy -> tag = Tag.BUY
-                    R.id.tag_event -> tag = Tag.EVENT
-                }
-
-                // Get appropriate imageResource and apply it
-                btnTag.setImageResourceFromTag(tag)
-
-                true
-            }
-
-            menu.inflate(R.menu.menu_tags)
-            menu.show()
-            */
-
             val window:PopupWindow = createTagPopupWindow(btnTag)
-            val view: View = window.contentView
-            view.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
+            window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
                 when (chosenTag) {
                     R.id.tagNone -> tag = Tag.NONE
                     R.id.tagEvent -> tag = Tag.EVENT
@@ -245,34 +217,6 @@ class MainActivity : AppCompatActivity() {
                 btnTag.setImageResourceFromTag(tag)
                 window.dismiss()
             }
-
-            /*
-            //https://stackoverflow.com/questions/20836385/popup-menu-with-icon-on-android
-            val menuBuilder = MenuBuilder(this)
-            val menuInflater = MenuInflater(this)
-            menuInflater.inflate(R.menu.menu_tags, menuBuilder)
-            val optionsMenu = MenuPopupHelper(this, menuBuilder, btnTag)
-            optionsMenu.setForceShowIcon(true)
-
-            menuBuilder.setCallback(object : MenuBuilder.Callback {
-                override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
-                    tag = when (item.itemId) {
-                        R.id.tag_base -> Tag.NONE
-                        R.id.tag_booking -> Tag.BOOKING
-                        R.id.tag_buy -> Tag.BUY
-                        R.id.tag_event -> Tag.EVENT
-                        else -> return false
-                    }
-
-                    btnTag.setImageResourceFromTag(tag)
-                    return true
-                }
-                // Unused
-                override fun onMenuModeChange(menu: MenuBuilder) {}
-            })
-
-            optionsMenu.show()
-            */
         }
     }
 
@@ -366,7 +310,7 @@ class MainActivity : AppCompatActivity() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
-        taskGroupAdapter = AdapterTaskGroup(taskGroupList, settings,
+        taskGroupAdapter = TaskGroupAdapter(taskGroupList, settings,
             taskClickedFn, dateClickedFn, toTopFn, updateSaveFn)
     }
 
