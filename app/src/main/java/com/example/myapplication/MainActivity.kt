@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 2. Delete selected
-        btnDelete.setOnClickListener {
+        btnDeleteOld.setOnClickListener {
             taskGroupAdapter.deleteSelected(selected)
             taskCount -= selected
 
@@ -274,7 +274,7 @@ class MainActivity : AppCompatActivity() {
                 updateTopBar(mainTitle)
 
                 // Disable modification buttons and disable options
-                btnDelete.visibility = View.GONE
+                btnDeleteOld.visibility = View.GONE
                 btnSelectAll.visibility = View.GONE
                 //btnSettings.visibility = View.VISIBLE
 
@@ -285,12 +285,12 @@ class MainActivity : AppCompatActivity() {
                 updateSelectedCountDisplay()
 
                 // Show modification buttons and disable options
-                btnDelete.visibility = View.VISIBLE
+                btnDeleteOld.visibility = View.VISIBLE
                 btnSelectAll.visibility = View.VISIBLE
                 //btnSettings.visibility = View.GONE
 
                 // Disable ability to add new tasks
-                bottomBar.visibility = View.INVISIBLE
+                bottomBar.visibility = View.GONE
             }
         }
     }
