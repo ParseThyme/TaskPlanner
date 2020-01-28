@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     // Selecting tasks
     private var taskCount: Int = 0
     private var selected: Int = 0
-    private var mode: Mode = Mode.ADD
+    private var mode: Mode = Mode.START
 
     // Ensure you can only select either today or future dates, ToDo: Customizable
     private val calMaxDays = settings.calendarRange
@@ -100,22 +100,20 @@ class MainActivity : AppCompatActivity() {
 
         // Input Validation:
         // TextWatcher. Ensure confirm button only enabled when task entered (can't submit blank tasks)
-        if (validateInput) {
-            btnNewTask.isEnabled = false
-            btnNewTask.toggle(false)
+        btnNewTask.isEnabled = false
+        btnNewTask.toggle(false)
 
-            taskDesc.addTextChangedListener(object: TextWatcher {
-                override fun afterTextChanged(s: Editable) { }
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        taskDesc.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable) { }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-                // Check when text is being changed
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    // Toggle confirm button based on whether text is empty or not
-                    btnNewTask.isEnabled = taskDesc.text.isNotEmpty()
-                    btnNewTask.toggle(btnNewTask.isEnabled)
-                }
-            })
-        }
+            // Check when text is being changed
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                // Toggle confirm button based on whether text is empty or not
+                btnNewTask.isEnabled = taskDesc.text.isNotEmpty()
+                btnNewTask.toggle(btnNewTask.isEnabled)
+            }
+        })
 
         // Settings
         // taskDesc.setMaxLength(settings.taskMaxLength)
@@ -129,19 +127,27 @@ class MainActivity : AppCompatActivity() {
         btnSelectAll.setOnClickListener {
             // If not all selected, select all
             if (selected != taskGroupAdapter.taskCount) {
+                // Change icon to opposite icon (deselect all)
+                btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+
+                // Toggle all to selected state
                 taskGroupAdapter.toggleAll()
                 selected = taskGroupAdapter.taskCount
                 updateSelectedCountDisplay()
+
+                // Switch to select mode if in add mode
+                setMode(Mode.SELECTION)
             }
             // All selected, deselect all and return to add mode
             else {
+                // Toggle all to off state and return to add mode
                 taskGroupAdapter.toggleAll(false)
                 setMode(Mode.ADD)
             }
         }
 
         // 2. Delete selected
-        btnDeleteOld.setOnClickListener {
+        btnDelete.setOnClickListener {
             taskGroupAdapter.deleteSelected(selected)
             taskCount -= selected
 
@@ -240,8 +246,14 @@ class MainActivity : AppCompatActivity() {
             // Selected 0 -> 1, change to selection mode. Otherwise update as usual
             if (selected == 1)
                 setMode(Mode.SELECTION)
-            else
+            else {
                 updateSelectedCountDisplay()
+
+                // If all selected, change topBar icon (selectAll to off)
+                if (selected == taskGroupAdapter.taskCount)
+                    btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+
+            }
         }
         else {
             selected--
@@ -249,8 +261,13 @@ class MainActivity : AppCompatActivity() {
             // Selected tasks 1 -> 0, return to add mode. Otherwise update as usual
             if (selected == 0)
                 setMode(Mode.ADD)
-            else
+            else {
                 updateSelectedCountDisplay()
+
+                // If went from max to max - 1, change topBar icon (selectAll to on)
+                if (selected == taskGroupAdapter.taskCount - 1)
+                    btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
+            }
         }
     }
 
@@ -266,6 +283,10 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Change values/display ##########
     private fun setMode(newMode: Mode) {
+        // Do nothing if called on same mode
+        if (mode == newMode)
+            return
+
         mode = newMode
         when (newMode) {
             Mode.ADD -> {
@@ -273,24 +294,20 @@ class MainActivity : AppCompatActivity() {
                 selected = 0
                 updateTopBar(mainTitle)
 
-                // Disable modification buttons and disable options
-                btnDeleteOld.visibility = View.GONE
-                btnSelectAll.visibility = View.GONE
-                //btnSettings.visibility = View.VISIBLE
+                // Switch display of bottomBar
+                addModeBar.visibility = View.VISIBLE
+                selectModeBar.visibility = View.GONE
 
-                // Enable ability to add new tasks
-                bottomBar.visibility = View.VISIBLE
+                // Reset icon: Select all
+                btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
+
             }
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
 
-                // Show modification buttons and disable options
-                btnDeleteOld.visibility = View.VISIBLE
-                btnSelectAll.visibility = View.VISIBLE
-                //btnSettings.visibility = View.GONE
-
-                // Disable ability to add new tasks
-                bottomBar.visibility = View.GONE
+                // Switch display of bottomBar
+                addModeBar.visibility = View.GONE
+                selectModeBar.visibility = View.VISIBLE
             }
         }
     }
@@ -312,11 +329,12 @@ class MainActivity : AppCompatActivity() {
         // settings = saveLoad.loadSettings()
         taskGroupAdapter = TaskGroupAdapter(taskGroupList, settings,
             taskClickedFn, dateClickedFn, toTopFn, updateSaveFn)
+
+        // Clear previous selections if saved
+        taskGroupAdapter.toggleAll(false)
     }
 
-    private fun updateSave() {
-        saveLoad.saveTaskGroupList(taskGroupList)
-    }
+    private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }
 
     /*
     private fun deleteSave() {
@@ -325,4 +343,4 @@ class MainActivity : AppCompatActivity() {
     */
 }
 
-enum class Mode { ADD, SELECTION }
+enum class Mode { START, ADD, SELECTION }

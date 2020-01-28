@@ -53,7 +53,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
 
-    // Creating cell
+    // Creating cell (date group entry)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Use inflate function found in Util then return containing cell layout and clickListener
         val inflatedView = parent.inflate(R.layout.task_group_rv, false)
@@ -62,7 +62,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     // When cell made
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Assign description and date to task based on stored array
+        // Apply updates to UI based on internal values
         holder.bind(taskGroupList[position])
     }
 
@@ -256,6 +256,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             itemView.collapseExpandBtn.setOnClickListener {
                 val newState: ViewState = group.toggleExpandCollapse()
                 toggleExpandCollapseState(newState, group)
+
+                // Scroll position, ensure entire group + contents visible when expanded
+                if (newState == ViewState.EXPANDED) { scrollTo(adapterPosition) }
             }
 
             // Store reference to task adapter
@@ -272,16 +275,15 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 // Change background color back to normal (if modified)
                 itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
 
-                // Open group and update icon
+                // Open group and update icon (only do so if not done already)
                 itemView.taskGroupRV.visibility = View.VISIBLE
                 itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_down)
-
-                // Scroll position, ensure entire group + contents visible when expanded
-                scrollTo(adapterPosition)
             } else {
                 // If a task has been selected, highlight background to indicate
                 if (group.numSelected != 0)
                     itemView.collapseExpandBtn.setBackgroundColor(Color.parseColor(settings.taskHighlightColor))
+                else // Clear highlights (via selectAll toggle when collapsed)
+                    itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
 
                 // Close group, and change icon
                 itemView.taskGroupRV.visibility = View.GONE

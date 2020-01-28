@@ -3,9 +3,6 @@ package com.example.myapplication
 import java.text.SimpleDateFormat
 
 // ########## Hardcoded values (unmodified by app) ##########
-// Debug, remove at end
-const val validateInput = true
-
 // SharedPreferences (Saving/Loading data)
 const val spName: String = "SavedData"
 const val spTaskGroupList = "TaskGroupList"
