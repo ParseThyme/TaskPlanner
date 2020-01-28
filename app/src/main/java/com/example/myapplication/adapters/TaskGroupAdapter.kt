@@ -39,13 +39,17 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     init {
         // Updating values based on previously saved list
         if (taskGroupList.size > 0) {
-            for (group in taskGroupList)
+            for (group in taskGroupList) {
                 taskCount += group.taskList.size
+
+                // Clear previous selections
+                group.toggleSelectAll(false)
+            }
 
             minDate = taskGroupList[0].id
         }
+        // New list, no previous save
         else {
-            Log.d("Test", "Empty")
             minDate = baseMinDate
         }
     }
@@ -193,19 +197,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     fun toggleAll(selectAll : Boolean = true) {
         val end: Int = taskGroupList.size - 1
         for (groupNum in end downTo 0) {
-            val group = taskGroupList[groupNum]
-
-            // Go through each individual task and select/deselect it
-            for (taskNum in group.taskList.size - 1 downTo 0) {
-                group.taskList[taskNum].selected = selectAll
-            }
-
-            // Depending on overall call, either set num selected to group count or 0. Also modify collapse/expand state
-            if (selectAll)
-                group.numSelected = group.taskList.size
-            else
-                group.numSelected = 0
-
+            taskGroupList[groupNum].toggleSelectAll(selectAll)
             notifyItemChanged(groupNum)
         }
     }

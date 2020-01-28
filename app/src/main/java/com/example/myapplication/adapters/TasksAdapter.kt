@@ -62,10 +62,8 @@ class TasksAdapter(private val group: TaskGroup,
                 notifyItemChanged(adapterPosition)
 
                 // If update count in group to notify number selected
-                if (task.selected)
-                    group.numSelected++
-                else
-                    group.numSelected--
+                if (task.selected) group.numSelected++
+                else group.numSelected--
 
                 // Call main click listener function (implemented in main activity)
                 taskClicked(task)

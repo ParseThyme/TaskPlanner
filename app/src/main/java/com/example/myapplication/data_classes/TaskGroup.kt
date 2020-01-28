@@ -15,9 +15,7 @@ data class TaskGroup (
 )
 
 fun TaskGroup.allSelected() : Boolean {
-    if (this.numSelected == this.taskList.size)
-        return true
-
+    if (this.numSelected == this.taskList.size) return true
     return false
 }
 
@@ -33,6 +31,33 @@ fun TaskGroup.toggleExpandCollapse(): ViewState {
 fun TaskGroup.isExpanded() : Boolean {
     if (state == ViewState.EXPANDED) return true
     return false
+}
+
+fun TaskGroup.toggleSelectAll(highlight: Boolean) {
+    // Select all [TRUE]
+    if (highlight) {
+        for (task in taskList) {
+            // Break early if all tasks have been selected
+            if (numSelected == taskList.count()) return
+
+            if (!task.selected) {
+                task.selected = true
+                numSelected++
+            }
+        }
+    }
+    // Deselect all [FALSE]
+    else  {
+        for (task in taskList) {
+            // Break early if all tasks have been deselected
+            if (numSelected == 0) return
+
+            if (task.selected) {
+                task.selected = false
+                numSelected--
+            }
+        }
+    }
 }
 
 enum class ViewState { EXPANDED, COLLAPSED }

@@ -329,9 +329,6 @@ class MainActivity : AppCompatActivity() {
         // settings = saveLoad.loadSettings()
         taskGroupAdapter = TaskGroupAdapter(taskGroupList, settings,
             taskClickedFn, dateClickedFn, toTopFn, updateSaveFn)
-
-        // Clear previous selections if saved
-        taskGroupAdapter.toggleAll(false)
     }
 
     private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }
