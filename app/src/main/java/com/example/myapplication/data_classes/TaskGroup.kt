@@ -14,11 +14,6 @@ data class TaskGroup (
     var state: ViewState = ViewState.EXPANDED
 )
 
-fun TaskGroup.allSelected() : Boolean {
-    if (this.numSelected == this.taskList.size) return true
-    return false
-}
-
 fun TaskGroup.toggleExpandCollapse(): ViewState {
     state = if (state == ViewState.EXPANDED)
         ViewState.COLLAPSED
@@ -33,8 +28,17 @@ fun TaskGroup.isExpanded() : Boolean {
     return false
 }
 
-fun TaskGroup.toggleSelectAll(highlight: Boolean) {
-    // Select all [TRUE]
+fun TaskGroup.toggleHighlight() {
+    // Usage: Toggle to select all if not all selected, otherwise deselect all
+    // [A]. Deselect all (All have been selected)
+    if (numSelected == taskList.count()) { setHighlight(false) }
+    // [B]. Select all (not all have been selected)
+    else { setHighlight(true) }
+}
+
+fun TaskGroup.setHighlight(highlight: Boolean) {
+    // Usage: Override highlighting with either selectAll on/off
+    // [A]. Select all [TRUE]
     if (highlight) {
         for (task in taskList) {
             // Break early if all tasks have been selected
@@ -46,7 +50,7 @@ fun TaskGroup.toggleSelectAll(highlight: Boolean) {
             }
         }
     }
-    // Deselect all [FALSE]
+    // [B]. Deselect all [FALSE]
     else  {
         for (task in taskList) {
             // Break early if all tasks have been deselected

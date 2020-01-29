@@ -197,14 +197,12 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun toggleTag(tag: Tag) {
             // No tag, don't display anything
-            if (tag == Tag.NONE) {
-                itemView.taskTag.visibility = View.GONE
-                return
-            }
-
+            if (tag == Tag.NONE) { itemView.taskTag.visibility = View.GONE }
             // Get image, set tag accordingly and display
-            itemView.taskTag.setImageResourceFromTag(tag)
-            itemView.taskTag.visibility = View.VISIBLE
+            else {
+                itemView.taskTag.setImageResourceFromTag(tag)
+                itemView.taskTag.visibility = View.VISIBLE
+            }
         }
 
         private fun toggleTime(timeStart: String, timeEnd: String) {

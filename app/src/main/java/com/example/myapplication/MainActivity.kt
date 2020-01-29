@@ -72,13 +72,15 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Setup related ##########
     private fun runSetup() {
-        // [1]. Initialize variable references
+        setDefaultValues()
+
+        // Initialize variable references
         setupLateInit()
 
-        // [2]. Buttons (topBar and bottomBar)
+        // Buttons (topBar and bottomBar)
         setupButtons()
 
-        // [3]. Popup menus (bottomBar)
+        // Popup menus (bottomBar)
         setupPopupMenus()
     }
 
@@ -119,47 +121,19 @@ class MainActivity : AppCompatActivity() {
         // taskDesc.setMaxLength(settings.taskMaxLength)
     }
 
+    private fun setDefaultValues() {
+        btnTime.text = "Set Time"
+    }
+
+    // ########## Buttons ##########
     private fun setupButtons() {
         // ########## TopBar ##########
         // 0. ToDo: Menu button
 
-        // 1. Select all
-        btnSelectAll.setOnClickListener {
-            // If not all selected, select all
-            if (selected != taskGroupAdapter.taskCount) {
-                // Change icon to opposite icon (deselect all)
-                btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
-
-                // Toggle all to selected state
-                taskGroupAdapter.toggleAll()
-                selected = taskGroupAdapter.taskCount
-                updateSelectedCountDisplay()
-
-                // Switch to select mode if in add mode
-                setMode(Mode.SELECTION)
-            }
-            // All selected, deselect all and return to add mode
-            else {
-                // Toggle all to off state and return to add mode
-                taskGroupAdapter.toggleAll(false)
-                setMode(Mode.ADD)
-            }
-        }
-
-        // 2. Delete selected
-        btnDelete.setOnClickListener {
-            taskGroupAdapter.deleteSelected(selected)
-            taskCount -= selected
-
-            // Clear selections and return to add mode
-            setMode(Mode.ADD)
-            updateSave()
-        }
-
-        // 3. Settings
-        btnSettings.setOnClickListener {
-            // ToDo
-        }
+        // SelectAll, Settings
+        btnSelectAll.setOnClickListener { selectAllBtnFn() }
+        btnCollapseExpand.setOnClickListener { collapseExpandBtnFn() }
+        btnSettings.setOnClickListener { settingsBtnFn() }
 
         // ########## BottomBar ##########
         // 1. Update date
@@ -186,28 +160,81 @@ class MainActivity : AppCompatActivity() {
             dialog.show()
         }
 
-        // 2. Add new task
-        btnNewTask.setOnClickListener {
-            // Get task description entry, create task entry and add to adapter
-            val desc = taskDesc.text.toString().trim()
-            taskGroupAdapter.addTask(id, date, desc, tag)
+        // Delete, New Task, Set Time, Reset Values
+        btnDelete.setOnClickListener { deleteBtnFn() }
+        btnNewTask.setOnClickListener { newTaskBtnFn() }
+        btnTime.setOnClickListener { timeBtnFn() }
+        btnReset.setOnClickListener { resetBtnFn() }
+    }
 
-            // Reset values
-            taskDesc.setText("")
-            taskDesc.clearFocus()
-            taskDesc.hideKeyboard()
+    private fun selectAllBtnFn() {
+        // If not all selected, select all
+        if (selected != taskGroupAdapter.taskCount) {
+            // Change icon to opposite icon (deselect all)
+            btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
-            // Save changes
-            updateSave()
+            // Toggle all to selected state
+            taskGroupAdapter.toggleAllHighlight()
+            selected = taskGroupAdapter.taskCount
+            updateSelectedCountDisplay()
+
+            // Switch to select mode if in add mode
+            setMode(Mode.SELECTION)
         }
-
-        // 3. Set time
-        btnTime.text = "Set Time"
-        btnTime.setOnClickListener {
-            // ToDo
+        // All selected, deselect all and return to add mode
+        else {
+            // Toggle all to off state and return to add mode
+            taskGroupAdapter.toggleAllHighlight(false)
+            setMode(Mode.ADD)
         }
     }
 
+    private fun collapseExpandBtnFn() {
+        // Expand all when all are collapsed
+        if (taskGroupAdapter.allCollapsed()) {
+            taskGroupAdapter.toggleAllExpandCollapse()
+            // Switch icon to collapse all
+            btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
+        }
+        // Otherwise collapse all
+        else {
+            taskGroupAdapter.toggleAllExpandCollapse(false)
+            // Switch icon to expand all
+            btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
+        }
+    }
+
+    //ToDo
+    private fun settingsBtnFn() { }
+
+    private fun deleteBtnFn() {
+        taskGroupAdapter.deleteSelected(selected)
+        taskCount -= selected
+
+        // Clear selections and return to add mode
+        setMode(Mode.ADD)
+        updateSave()
+    }
+
+    private fun newTaskBtnFn() {
+        // Get task description entry, create task entry and add to adapter
+        val desc = taskDesc.text.toString().trim()
+        taskGroupAdapter.addTask(id, date, desc, tag)
+
+        // Reset values
+        taskDesc.setText("")
+        taskDesc.clearFocus()
+        taskDesc.hideKeyboard()
+
+        // Save changes
+        updateSave()
+    }
+    //ToDo
+    private fun timeBtnFn() {}
+    //ToDo
+    private fun resetBtnFn() {}
+
+    // ########## Popups ##########
     private fun setupPopupMenus() {
         // Setting task tag
         btnTag.setOnClickListener {
@@ -228,14 +255,22 @@ class MainActivity : AppCompatActivity() {
 
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
-        val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
+        val difference: Int = taskGroupAdapter.toggleGroupHighlight(groupNum)
+        val selectedPreClick = selected
         selected += difference
 
-        // Changing modes depending on selection/deselection
-        if (selected > 0)
-            setMode(Mode.SELECTION)
-        else
-            setMode(Mode.ADD)
+        when {
+            // [1]. From 0 -> x selected. Enter select mode
+            selectedPreClick == 0 -> {
+                setMode(Mode.SELECTION)
+            }
+            // [2]. From x -> 0 selected. Return to add mode
+            selected == 0 -> {
+                setMode(Mode.ADD)
+            }
+            // [3]. From x -> x + y OR x -> x - y. Update value display
+            else -> { updateSelectedCountDisplay() }
+        }
     }
 
     private fun taskClicked (task: Task) {
@@ -252,7 +287,6 @@ class MainActivity : AppCompatActivity() {
                 // If all selected, change topBar icon (selectAll to off)
                 if (selected == taskGroupAdapter.taskCount)
                     btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
-
             }
         }
         else {
@@ -268,16 +302,6 @@ class MainActivity : AppCompatActivity() {
                 if (selected == taskGroupAdapter.taskCount - 1)
                     btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
-        }
-    }
-
-    // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)
-    private fun scrollTo(position: Int) {
-        dateGroupRV.scrollToPosition(position)
-
-        // Scroll bit extra for last position
-        if (position == taskGroupList.lastIndex) {
-            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
         }
     }
 
@@ -315,14 +339,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateTopBar(newTitle: String) { topBarTitle.text = newTitle }
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
 
-    private fun ImageButton.toggle(enabled: Boolean) {
-        if (enabled)
-            updateBtnColor(R.color.btnEnabled, applicationContext)
-        else
-            updateBtnColor(R.color.btnDisabled, applicationContext)
-    }
-
-    // ########## Internal functions ##########
+    // ########## Save/Load ##########
     private fun loadSave() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
@@ -338,6 +355,24 @@ class MainActivity : AppCompatActivity() {
         saveLoad.clearAllData()
     }
     */
+
+    // ########## Utility ##########
+    // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)
+    private fun scrollTo(position: Int) {
+        dateGroupRV.scrollToPosition(position)
+
+        // Scroll bit extra for last position
+        if (position == taskGroupList.lastIndex) {
+            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
+        }
+    }
+
+    private fun ImageButton.toggle(enabled: Boolean) {
+        if (enabled)
+            updateBtnColor(R.color.btnEnabled, applicationContext)
+        else
+            updateBtnColor(R.color.btnDisabled, applicationContext)
+    }
 }
 
 enum class Mode { START, ADD, SELECTION }
