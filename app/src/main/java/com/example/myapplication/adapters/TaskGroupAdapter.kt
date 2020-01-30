@@ -17,6 +17,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
+                       private val changeCollapseExpandIcon: (ViewState) -> Unit,
                        private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
 
@@ -35,6 +36,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     // Total task count (from entire recycler view). Public get, private set
     var taskCount: Int = 0
         private set
+    // Number of groups collapsed
     var collapsedCount: Int = 0
         private set
 
@@ -45,12 +47,15 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             for (group in taskGroupList) {
                 taskCount += group.taskList.size
 
-                // Clear previous selections
+                // Clear previous selections and update collapse count if group is collapsed
                 group.setHighlight(false)
+                if (!group.isExpanded())
+                    collapsedCount++
             }
 
-            // Set minimum date to first entry and initial expanded counter
+            // Set minimum date to first entry and check if expand collapse icon needs updating
             minDate = taskGroupList[0].id
+            updateExpandCollapseIcon()
         }
         // 2. New list, no previous save, set default values
         else {
@@ -68,14 +73,11 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         return ViewHolder(inflatedView)
     }
 
-    // When cell made
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Apply updates to UI based on internal values
-        holder.bind(taskGroupList[position])
-    }
+    // When group made, apply updates to UI based on internal values
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
 
     // ########## Getters/Setters ##########
-    fun allCollapsed() : Boolean { return collapsedCount == taskGroupList.count() }
+    fun allCollapsed() : Boolean { return collapsedCount == taskGroupList.size }
 
     // ########## Group related functionality ##########
     fun addTask(id: Int, date: String, desc: String, tag: Tag = Tag.NONE) {
@@ -108,6 +110,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     private fun addNewTaskGroup(pos: Int, date: String, newTask: Task, id: Int) {
         taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask), id))
         notifyItemInserted(pos)
+
+        // Update collapse/expand icon to enable collapsing as new entry will always be expanded
+        changeCollapseExpandIcon(ViewState.EXPANDED)
     }
 
     private fun addToTaskGroup(pos: Int, newTask: Task) {
@@ -117,6 +122,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     // ########## Modifying task entries ##########
     fun deleteSelected(selected : Int) {
+        var groupDeleted: Boolean = false
+
         // [1]. Clearing entire list
         if (selected == taskCount) {
             // Empty everything and reset values
@@ -131,7 +138,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         var count = 0
         val end = taskGroupList.size - 1
 
-        for (groupNum in end downTo 0) {
+        main_loop@for (groupNum in end downTo 0) {
             val group = taskGroupList[groupNum]
             if (group.numSelected > 0) {
                 // Go through task list in group, deleting selected tasks
@@ -154,19 +161,23 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
                             taskGroupList.removeAt(groupNum)
                             notifyItemRemoved(groupNum)
+                            groupDeleted = true
                         }
 
-                        // Exit entire function if all selected tasks have been removed
+                        // Exit entire loop if all selected tasks have been removed
                         if (count == selected)
-                            return
+                            break@main_loop
 
-                        // Exit early once numSelected = 0 (no more selected tasks in this group)
+                        // Exit inner loop early once numSelected = 0 (no more selected tasks in this group)
                         if (group.numSelected == 0)
                             break
                     }
                 }
             }
         }
+
+        // Check to see if collapse/expand all icon needs to be updated
+        if(groupDeleted) { updateExpandCollapseIcon() }
     }
 
     fun toggleGroupHighlight(groupNum : Int) : Int {
@@ -183,21 +194,23 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     fun toggleAllHighlight(selectAll : Boolean = true) {
         val end: Int = taskGroupList.size - 1
-        for (groupNum in end downTo 0) {
+        for (groupNum in end downTo 0)
             taskGroupList[groupNum].setHighlight(selectAll)
-            notifyItemChanged(groupNum)
-        }
+
+        notifyDataSetChanged()
     }
 
-    fun toggleAllExpandCollapse(expandAll: Boolean = true) {
-        var newState: ViewState = ViewState.EXPANDED
-        if (!expandAll)
-            newState = ViewState.COLLAPSED
-
+    fun toggleAllExpandCollapse(newState: ViewState = ViewState.EXPANDED) {
         val end: Int = taskGroupList.size - 1
-        for (groupNum in end downTo 0) {
+        for (groupNum in end downTo 0)
             taskGroupList[groupNum].state = newState
-            notifyItemChanged(groupNum)
+
+        notifyDataSetChanged()
+
+        // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
+        collapsedCount = when (newState) {
+            ViewState.EXPANDED -> 0
+            ViewState.COLLAPSED -> taskGroupList.size
         }
     }
 
@@ -227,6 +240,14 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
     }
 
+    private fun updateExpandCollapseIcon() {
+        // Update icon accordingly based on number collapsed
+        when (collapsedCount) {
+            taskGroupList.size - 1 -> changeCollapseExpandIcon(ViewState.EXPANDED)  // Expandable
+            taskGroupList.size -> changeCollapseExpandIcon(ViewState.COLLAPSED)     // All collapsed
+        }
+    }
+
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
@@ -237,19 +258,27 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             // Assign date label
             dateLabel.text = group.date
 
+            // Update view if collapsed/expanded
+            setExpandCollapse(group)
+
             // When date label clicked, call ActivityMain click listener function
             itemView.dateCard.setOnClickListener { if (group.isExpanded()) dateClicked(adapterPosition) }
 
-            // Load previously saved collapse/expand states
-            setExpandCollapse(group.state, group)
-
-            // Closing/Opening group tab
+            // Update view if collapsed/expanded (Clicked)
             itemView.collapseExpandBtn.setOnClickListener {
                 val newState: ViewState = group.toggleExpandCollapse()
-                setExpandCollapse(newState, group)
+                setExpandCollapse(group)
 
-                // Scroll position, ensure entire group + contents visible when expanded
-                if (newState == ViewState.EXPANDED) { scrollTo(adapterPosition) }
+                // Update collapsed counts, scroll position if expanded, ensure entire group visible
+                when (newState) {
+                    ViewState.EXPANDED -> {
+                        scrollTo(adapterPosition)
+                        collapsedCount--
+                    }
+                    ViewState.COLLAPSED ->
+                        collapsedCount++
+                }
+                updateExpandCollapseIcon()
 
                 // Save change to view state
                 updateSave()
@@ -264,40 +293,35 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             }
         }
 
-        private fun setExpandCollapse(state: ViewState, group: TaskGroup) {
+        private fun setExpandCollapse(group: TaskGroup) {
             // Only apply if change is being made (e.g. Expand on already expanded date should do nothing)
-            if (group.state == state) {
-                Log.d("Test", "Exit early on state: $state")
-                return
+            if (group.state.isNewState(itemView.taskGroupRV)) {
+                when (group.state) {
+                    ViewState.EXPANDED -> {
+                        // Change background color back to normal (if modified)
+                        itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
+
+                        // Open group and update icon (only do so if not done already)
+                        itemView.taskGroupRV.visibility = View.VISIBLE
+                        itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_down)
+                    }
+
+                    ViewState.COLLAPSED -> {
+                        // Close group, and change icon
+                        itemView.taskGroupRV.visibility = View.GONE
+                        itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_up)
+                    }
+                }
             }
 
-            if (state == ViewState.EXPANDED) {
-                // Change background color back to normal (if modified)
-                itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
-
-                // Open group and update icon (only do so if not done already)
-                itemView.taskGroupRV.visibility = View.VISIBLE
-                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_down)
-
-                // Update counter
-                collapsedCount--
-            }
-            else {
+            // Toggling arrow icon highlighting when group collapsed
+            if (group.state == ViewState.COLLAPSED) {
                 // If a task has been selected, highlight background to indicate
                 if (group.numSelected != 0)
                     itemView.collapseExpandBtn.setBackgroundColor(Color.parseColor(settings.taskHighlightColor))
                 else // Clear highlights (via selectAll toggle when collapsed)
                     itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
-
-                // Close group, and change icon
-                itemView.taskGroupRV.visibility = View.GONE
-                itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_up)
-
-                // Update counter
-                collapsedCount++
             }
-
-            Log.d("Test", "Collapsed: $collapsedCount")
         }
     }
 }

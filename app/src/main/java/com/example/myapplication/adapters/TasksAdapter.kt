@@ -32,9 +32,7 @@ class TasksAdapter(private val group: TaskGroup,
 
     override fun getItemCount(): Int { return group.taskList.size }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(group.taskList[position])
-    }
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(group.taskList[pos]) }
 
     // ########## ViewHolder ##########
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {

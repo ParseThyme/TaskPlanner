@@ -1,5 +1,7 @@
 package com.example.myapplication.data_classes
 
+import android.view.View
+
 // ########## Data Type ##########
 data class TaskGroup (
     val date: String = "",
@@ -14,6 +16,20 @@ data class TaskGroup (
     var state: ViewState = ViewState.EXPANDED
 )
 
+// ########## Collapsing/Expanding view state ##########
+fun ViewState.isNewState(view: View): Boolean {
+    if (view.visibility == View.VISIBLE && this == ViewState.EXPANDED)
+        return false
+    if (view.visibility == View.GONE && this == ViewState.COLLAPSED)
+        return false
+
+    return true
+}
+
+fun TaskGroup.isExpanded() : Boolean {
+    return state == ViewState.EXPANDED
+}
+
 fun TaskGroup.toggleExpandCollapse(): ViewState {
     state = if (state == ViewState.EXPANDED)
         ViewState.COLLAPSED
@@ -23,21 +39,17 @@ fun TaskGroup.toggleExpandCollapse(): ViewState {
     return state
 }
 
-fun TaskGroup.isExpanded() : Boolean {
-    if (state == ViewState.EXPANDED) return true
-    return false
-}
-
+// ########## Selecting/Deselecting entire group ##########
+// Select all if not all selected, otherwise deselect all
 fun TaskGroup.toggleHighlight() {
-    // Usage: Toggle to select all if not all selected, otherwise deselect all
     // [A]. Deselect all (All have been selected)
     if (numSelected == taskList.count()) { setHighlight(false) }
     // [B]. Select all (not all have been selected)
     else { setHighlight(true) }
 }
 
+// Override highlighting with either selectAll on or off
 fun TaskGroup.setHighlight(highlight: Boolean) {
-    // Usage: Override highlighting with either selectAll on/off
     // [A]. Select all [TRUE]
     if (highlight) {
         for (task in taskList) {

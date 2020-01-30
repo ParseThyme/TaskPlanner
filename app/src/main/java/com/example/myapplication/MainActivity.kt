@@ -10,10 +10,7 @@ import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
-import com.example.myapplication.data_classes.Tag
-import com.example.myapplication.data_classes.Task
-import com.example.myapplication.data_classes.TaskGroup
-import com.example.myapplication.data_classes.setImageResourceFromTag
+import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import java.util.*
@@ -28,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val taskClickedFn = { task : Task -> taskClicked(task) }
     private val dateClickedFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
+    private val updateCollapseExpandIconFn = { state: ViewState -> updateCollapseExpandIcon(state)}
     private val updateSaveFn = { updateSave() }
     private lateinit var taskGroupAdapter: TaskGroupAdapter
 
@@ -190,18 +188,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun collapseExpandBtnFn() {
-        // Expand all when all are collapsed
+        // Expand all when all are collapsed, switch icon to collapse all icon
         if (taskGroupAdapter.allCollapsed()) {
             taskGroupAdapter.toggleAllExpandCollapse()
-            // Switch icon to collapse all
-            btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
+            updateCollapseExpandIcon(ViewState.EXPANDED)
         }
-        // Otherwise collapse all
+        // Otherwise collapse all and switch icon to expand all icon
         else {
-            taskGroupAdapter.toggleAllExpandCollapse(false)
-            // Switch icon to expand all
-            btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
+            taskGroupAdapter.toggleAllExpandCollapse(ViewState.COLLAPSED)
+            updateCollapseExpandIcon(ViewState.COLLAPSED)
         }
+        updateSave()
     }
 
     //ToDo
@@ -339,13 +336,20 @@ class MainActivity : AppCompatActivity() {
     private fun updateTopBar(newTitle: String) { topBarTitle.text = newTitle }
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
 
+    private fun updateCollapseExpandIcon(state: ViewState) {
+        when(state) {
+            ViewState.EXPANDED -> btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
+            ViewState.COLLAPSED -> btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
+        }
+    }
+
     // ########## Save/Load ##########
     private fun loadSave() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
         taskGroupAdapter = TaskGroupAdapter(taskGroupList, settings,
-            taskClickedFn, dateClickedFn, toTopFn, updateSaveFn)
+            taskClickedFn, dateClickedFn, toTopFn, updateCollapseExpandIconFn, updateSaveFn)
     }
 
     private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }
