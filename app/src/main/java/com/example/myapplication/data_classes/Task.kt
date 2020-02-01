@@ -8,8 +8,8 @@ data class Task (
     var desc : String = "",
 
     var tag: Tag = Tag.NONE,
-    var timeStart: String = "",
-    var timeEnd: String = "",
+    var timeStart: TaskTime = TaskTime("0","0","AM"),
+    var timeEnd: TaskTime = TaskTime("0","0","AM"),
 
     var selected : Boolean = false
 )

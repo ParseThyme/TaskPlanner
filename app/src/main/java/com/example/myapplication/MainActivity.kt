@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupWindow
@@ -40,6 +41,10 @@ class MainActivity : AppCompatActivity() {
     // Calendar limits + starting values
     private var startDate: String = ""
     private var id: Int = 0
+
+    // Time
+    private var t1: TaskTime = TaskTime()
+    private var t2: TaskTime = TaskTime()
 
     // Created task
     private var date: String = ""
@@ -121,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaultValues() {
-        btnTime.text = "Set Time"
+        btnTime.text = defaultTimeMsg
     }
 
     // ########## Buttons ##########
@@ -163,6 +168,20 @@ class MainActivity : AppCompatActivity() {
         btnDelete.setOnClickListener { deleteBtnFn() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
+    }
+
+    private fun newTaskBtnFn() {
+        // Get task description entry, create task entry and add to adapter
+        val desc = taskDesc.text.toString().trim()
+        taskGroupAdapter.addTask(id, date, desc, tag, t1, t2)
+
+        // Reset values
+        taskDesc.setText("")
+        taskDesc.clearFocus()
+        taskDesc.hideKeyboard()
+
+        // Save changes
+        updateSave()
     }
 
     private fun selectAllBtnFn() {
@@ -213,19 +232,6 @@ class MainActivity : AppCompatActivity() {
         updateSave()
     }
 
-    private fun newTaskBtnFn() {
-        // Get task description entry, create task entry and add to adapter
-        val desc = taskDesc.text.toString().trim()
-        taskGroupAdapter.addTask(id, date, desc, tag)
-
-        // Reset values
-        taskDesc.setText("")
-        taskDesc.clearFocus()
-        taskDesc.hideKeyboard()
-
-        // Save changes
-        updateSave()
-    }
     //ToDo
     private fun resetBtnFn() {}
 
@@ -250,9 +256,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //ToDo
     private fun timePopupFn() {
         val window:PopupWindow = createTimePopupWindow(btnTime)
+        val view: View = window.contentView
+
+        // Use currently selected times for t1 and t2
+        view.txtT1Hour.text = t1.hour
+        view.txtT1Min.text = t1.min
+        view.txtT1Period.text = t1.period
+
+        view.txtT2Hour.text = t2.hour
+        view.txtT2Min.text = t2.min
+        view.txtT2Period.text = t2.period
+
+        // Save updated time when window dismissed
+        window.setOnDismissListener {
+            // Assign t1 and t2 values
+            t1 = TaskTime(view.txtT1Hour.text.toString(), view.txtT1Min.text.toString(),
+                          view.txtT1Period.text.toString())
+            t2 = TaskTime(view.txtT2Hour.text.toString(), view.txtT2Min.text.toString(),
+                          view.txtT2Period.text.toString())
+
+            // Generate displayed string
+            val display = createDisplayedTime(t1, t2)
+            // If result is blank (Both t1 and t2 invalid, display default string)
+            if (display == "") { btnTime.text = defaultTimeMsg }
+            else { btnTime.text = display }
+
+            // Clear entry if its hour was "0"
+            if (!t1.isValid()) t1 = TaskTime()
+        }
     }
 
     // ########## OnClick ##########

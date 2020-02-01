@@ -7,143 +7,344 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/verticalDivider"
-        android:layout_width="1dp"
-        android:layout_height="60dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/horizontalDivider"
-        app:layout_constraintHorizontal_bias="0.65"
-        app:layout_constraintStart_toStartOf="@+id/horizontalDivider"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/horizontalDivider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/t2Layout"
-        app:layout_constraintEnd_toEndOf="@+id/t1Layout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/t1Layout" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/t1Layout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/background"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/startTimeLabel"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cardLayout"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:padding="2dp"
-            android:text="T1"
-            android:textColor="@color/colorForeground"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content"
+            android:padding="5dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/startTime"
-            android:layout_width="40dp"
-            android:layout_height="0dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/startTimeLabel"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <Button
-                android:id="@+id/btnStartTime"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/t1Layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="00:00"
-                android:textSize="14sp" />
-        </androidx.cardview.widget.CardView>
+                android:background="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/startTimeOfDay"
-            android:layout_width="30dp"
-            android:layout_height="0dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/startTime"
-            app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:id="@+id/t1Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="T1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/btnStartTimeOfDay"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardT1Hour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/t1Label"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/t1HourLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnT1HourUp"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            android:scaleType="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_up" />
+
+                        <TextView
+                            android:id="@+id/txtT1Hour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/bottomBarText"
+                            app:layout_constraintBottom_toTopOf="@+id/btnT1HourDown"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/btnT1HourUp" />
+
+                        <ImageButton
+                            android:id="@+id/btnT1HourDown"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_down" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/t1Divider"
+                    android:layout_width="5dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:text=":"
+                    android:textColor="@color/bottomBarText"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardT1Hour"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardT1Min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/t1Divider"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/t1MinLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnT1MinUp"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            android:scaleType="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_up" />
+
+                        <TextView
+                            android:id="@+id/txtT1Min"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00"
+                            android:textColor="@color/bottomBarText"
+                            app:layout_constraintBottom_toTopOf="@+id/btnT1MinDown"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/btnT1MinUp" />
+
+                        <ImageButton
+                            android:id="@+id/btnT1MinDown"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_down" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardT1Period"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardT1Min"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/txtT1Period"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="AM"
+                        android:textColor="@color/bottomBarText" />
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/t2Layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="AM" />
-        </androidx.cardview.widget.CardView>
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:background="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/t1Layout"
+                app:layout_constraintTop_toTopOf="parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/t2Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="T2"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/t2Layout"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/t1Layout">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardT2Hour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/t2Label"
+                    app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/endTimeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:padding="2dp"
-            android:text="T2"
-            android:textColor="@color/colorForeground"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/t2HourLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/endTime"
-            android:layout_width="40dp"
-            android:layout_height="0dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/endTimeLabel"
-            app:layout_constraintTop_toTopOf="parent">
+                        <ImageButton
+                            android:id="@+id/btnT2HourUp"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            android:scaleType="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_up" />
 
-            <Button
-                android:id="@+id/btnEndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="00:00" />
-        </androidx.cardview.widget.CardView>
+                        <TextView
+                            android:id="@+id/txtT2Hour"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/bottomBarText"
+                            app:layout_constraintBottom_toTopOf="@+id/btnT2HourDown"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/btnT2HourUp" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/endTimeOfDay"
-            android:layout_width="30dp"
-            android:layout_height="0dp"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/endTime"
-            app:layout_constraintTop_toTopOf="parent">
+                        <ImageButton
+                            android:id="@+id/btnT2HourDown"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_down" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
-                android:id="@+id/btnEndTimeOfDay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="AM" />
-        </androidx.cardview.widget.CardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/t2Divider"
+                    android:layout_width="5dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:text=":"
+                    android:textColor="@color/bottomBarText"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardT2Hour"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardT2Min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/t2Divider"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/t2MinLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btnT2MinUp"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            android:scaleType="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_up" />
+
+                        <TextView
+                            android:id="@+id/txtT2Min"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00"
+                            android:textColor="@color/bottomBarText"
+                            app:layout_constraintBottom_toTopOf="@+id/btnT2MinDown"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/btnT2MinUp" />
+
+                        <ImageButton
+                            android:id="@+id/btnT2MinDown"
+                            android:layout_width="30dp"
+                            android:layout_height="10dp"
+                            android:background="@android:color/transparent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:srcCompat="@drawable/ic_arrow_filled_down" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardT2Period"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cardT2Min"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/txtT2Period"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="AM"
+                        android:textColor="@color/bottomBarText" />
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

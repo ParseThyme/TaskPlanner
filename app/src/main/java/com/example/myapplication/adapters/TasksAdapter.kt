@@ -203,23 +203,17 @@ class TasksAdapter(private val group: TaskGroup,
             }
         }
 
-        private fun toggleTime(timeStart: String, timeEnd: String) {
-            // No starting time allocated, meaning no end time has been allocated as well
-            if (timeStart == "") {
+        private fun toggleTime(timeStart: TaskTime, timeEnd: TaskTime) {
+            // Generate time to display
+            val timeDisplay = createDisplayedTime(timeStart, timeEnd)
+
+            // No times allocated, hide display
+            if (timeDisplay == "") {
                 itemView.taskTime.visibility = View.GONE
                 return
             }
 
-            var timeDisplay: String = ""
-
-            // Set starting date of string
-            timeDisplay = timeStart
-
-            // Check if end time allocated (optional value), if so append with spacing in between
-            if (timeEnd != "")
-                timeDisplay = "$timeStart\n$timeEnd"
-
-            // Set time and show
+            // Otherwise set time and show
             itemView.taskTime.text = timeDisplay
             itemView.taskTime.visibility = View.VISIBLE
         }

@@ -9,6 +9,8 @@ const val spTaskGroupList = "TaskGroupList"
 
 // Activity.main
 const val mainTitle = "My Task List"
+const val defaultTimeMsg = "Set Time"
+
 // Add new task formats + variables
 // Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
 val dayFormat = SimpleDateFormat("d")
