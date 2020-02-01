@@ -13,6 +13,7 @@ import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tag_popup_window.view.*
+import kotlinx.android.synthetic.main.time_popup_window.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -158,10 +159,9 @@ class MainActivity : AppCompatActivity() {
             dialog.show()
         }
 
-        // Delete, New Task, Set Time, Reset Values
+        // Delete, New Task, Reset Values
         btnDelete.setOnClickListener { deleteBtnFn() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
-        btnTime.setOnClickListener { timeBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
     }
 
@@ -227,27 +227,32 @@ class MainActivity : AppCompatActivity() {
         updateSave()
     }
     //ToDo
-    private fun timeBtnFn() {}
-    //ToDo
     private fun resetBtnFn() {}
 
     // ########## Popups ##########
     private fun setupPopupMenus() {
-        // Setting task tag
-        btnTag.setOnClickListener {
-            val window:PopupWindow = createTagPopupWindow(btnTag)
-            window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
-                when (chosenTag) {
-                    R.id.tagNone -> tag = Tag.NONE
-                    R.id.tagEvent -> tag = Tag.EVENT
-                    R.id.tagBooking -> tag = Tag.BOOKING
-                    R.id.tagBuy -> tag = Tag.BUY
-                }
+        btnTag.setOnClickListener { tagPopupFn() }
+        btnTime.setOnClickListener { timePopupFn() }
+    }
 
-                btnTag.setImageResourceFromTag(tag)
-                window.dismiss()
+    private fun tagPopupFn() {
+        val window:PopupWindow = createTagPopupWindow(btnTag)
+        window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
+            when (chosenTag) {
+                R.id.tagNone -> tag = Tag.NONE
+                R.id.tagEvent -> tag = Tag.EVENT
+                R.id.tagBooking -> tag = Tag.BOOKING
+                R.id.tagBuy -> tag = Tag.BUY
             }
+
+            btnTag.setImageResourceFromTag(tag)
+            window.dismiss()
         }
+    }
+
+    //ToDo
+    private fun timePopupFn() {
+        val window:PopupWindow = createTimePopupWindow(btnTime)
     }
 
     // ########## OnClick ##########
@@ -330,6 +335,7 @@ class MainActivity : AppCompatActivity() {
                 addModeBar.visibility = View.GONE
                 selectModeBar.visibility = View.VISIBLE
             }
+            else -> return
         }
     }
 
