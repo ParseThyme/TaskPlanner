@@ -119,7 +119,7 @@
                             <ImageButton
                                 android:id="@+id/btnHourUp"
                                 android:layout_width="wrap_content"
-                                android:layout_height="10dp"
+                                android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
                                 android:scaleType="center"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -143,7 +143,7 @@
                             <ImageButton
                                 android:id="@+id/btnHourDown"
                                 android:layout_width="wrap_content"
-                                android:layout_height="10dp"
+                                android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -182,7 +182,7 @@
                             <ImageButton
                                 android:id="@+id/btnMinuteUp"
                                 android:layout_width="wrap_content"
-                                android:layout_height="10dp"
+                                android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
                                 android:scaleType="center"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -206,7 +206,7 @@
                             <ImageButton
                                 android:id="@+id/btnMinuteDown"
                                 android:layout_width="wrap_content"
-                                android:layout_height="10dp"
+                                android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -258,7 +258,7 @@
                         <ImageButton
                             android:id="@+id/btnDurationUp"
                             android:layout_width="wrap_content"
-                            android:layout_height="10dp"
+                            android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             app:layout_constraintEnd_toEndOf="@+id/txtDuration"
                             app:layout_constraintStart_toStartOf="@+id/txtDuration"
@@ -279,7 +279,8 @@
                         <ImageButton
                             android:id="@+id/btnDurationDown"
                             android:layout_width="wrap_content"
-                            android:layout_height="10dp"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
                             app:layout_constraintEnd_toEndOf="@+id/txtDuration"
                             app:layout_constraintStart_toStartOf="@+id/txtDuration"
                             app:layout_constraintTop_toBottomOf="@+id/txtDuration"

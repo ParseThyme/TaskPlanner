@@ -198,6 +198,7 @@
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/ic_date"
                     android:drawableLeft="@drawable/ic_date"
+                    android:ems="6"
                     android:gravity="center|center_horizontal|center_vertical"
                     android:paddingStart="1dp"
                     android:paddingLeft="1dp"
@@ -233,7 +234,7 @@
                     android:text="@string/placeholderTime"
                     android:textAllCaps="false"
                     android:textColor="@color/bottomBarText"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
