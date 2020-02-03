@@ -44,7 +44,7 @@ class TasksAdapter(private val group: TaskGroup,
 
             // Show/hide tag/time if allocated
             toggleTag(task.tag)
-            toggleTime(task.timeStart, task.timeEnd)
+            toggleTime(task.time)
 
             // Toggle selected icon based on state
             toggleSelected(task.selected)
@@ -203,12 +203,12 @@ class TasksAdapter(private val group: TaskGroup,
             }
         }
 
-        private fun toggleTime(timeStart: TaskTime, timeEnd: TaskTime) {
+        private fun toggleTime(time: TaskTime) {
             // Generate time to display
-            val timeDisplay = createDisplayedTime(timeStart, timeEnd)
+            val timeDisplay = time.createDisplayedTime()
 
-            // No times allocated, hide display
-            if (timeDisplay == "") {
+            // Time unallocated, hide display
+            if (!time.isValid()) {
                 itemView.taskTime.visibility = View.GONE
                 return
             }

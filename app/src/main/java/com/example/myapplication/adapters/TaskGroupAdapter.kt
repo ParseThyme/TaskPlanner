@@ -80,13 +80,11 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     fun allCollapsed() : Boolean { return collapsedCount == taskGroupList.size }
 
     // ########## Group related functionality ##########
-    fun addTask(id: Int, date: String, desc: String, tag: Tag = Tag.NONE,
-                timeStart: TaskTime = TaskTime("0","0","AM"),
-                timeEnd: TaskTime = TaskTime("0","0","AM"))
+    fun addTask(id: Int, date: String, desc: String, tag: Tag = Tag.NONE, time: TaskTime = TaskTime())
     {
         taskCount++
 
-        val newTask = Task(desc, tag, timeStart, timeEnd)
+        val newTask = Task(desc, tag, time)
         // ---------- Auto Sorting Entries ----------
         // [A]. Check for earliest date
         if (id < minDate) {

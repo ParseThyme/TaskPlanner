@@ -42,9 +42,8 @@ class MainActivity : AppCompatActivity() {
     private var startDate: String = ""
     private var id: Int = 0
 
-    // Time
-    private var t1: TaskTime = TaskTime()
-    private var t2: TaskTime = TaskTime()
+    // Time allocated to task
+    private var time: TaskTime = TaskTime()
 
     // Created task
     private var date: String = ""
@@ -173,7 +172,7 @@ class MainActivity : AppCompatActivity() {
     private fun newTaskBtnFn() {
         // Get task description entry, create task entry and add to adapter
         val desc = taskDesc.text.toString().trim()
-        taskGroupAdapter.addTask(id, date, desc, tag, t1, t2)
+        taskGroupAdapter.addTask(id, date, desc, tag, time)
 
         // Reset values
         taskDesc.setText("")
@@ -260,31 +259,37 @@ class MainActivity : AppCompatActivity() {
         val window:PopupWindow = createTimePopupWindow(btnTime)
         val view: View = window.contentView
 
-        // Use currently selected times for t1 and t2
-        view.txtT1Hour.text = t1.hour
-        view.txtT1Min.text = t1.min
-        view.txtT1Period.text = t1.period
+        // Use currently selected times for time and duration
+        view.txtHour.text = time.hour.toString()
+        view.txtMinute.text = minutesAsString(time.min)
+        view.txtTimeOfDay.text = time.timeOfDay
 
-        view.txtT2Hour.text = t2.hour
-        view.txtT2Min.text = t2.min
-        view.txtT2Period.text = t2.period
+        view.txtDuration.text = durationAsString(time.duration)
+        view.txtDurationInc.text = durationAsString(time.durationInc)
 
-        // Save updated time when window dismissed
-        window.setOnDismissListener {
-            // Assign t1 and t2 values
-            t1 = TaskTime(view.txtT1Hour.text.toString(), view.txtT1Min.text.toString(),
-                          view.txtT1Period.text.toString())
-            t2 = TaskTime(view.txtT2Hour.text.toString(), view.txtT2Min.text.toString(),
-                          view.txtT2Period.text.toString())
+        // Save updated time when window closed
+        view.btnApplyTime.setOnClickListener {
+            window.dismiss()
+            val hour:Int = view.txtHour.text.toString().toInt()
+            val minutes:Int = view.txtMinute.text.toString().toInt()
+            val timeOfDay:String = view.txtTimeOfDay.text.toString()
+            val duration:Int = durationAsInt(view.txtDuration.text.toString())
+            val durationInc: Int = durationAsInt(view.txtDurationInc.text.toString())
+
+            // Assign time value
+            time = TaskTime(hour, minutes, timeOfDay, duration, durationInc)
 
             // Generate displayed string
-            val display = createDisplayedTime(t1, t2)
-            // If result is blank (Both t1 and t2 invalid, display default string)
-            if (display == "") { btnTime.text = defaultTimeMsg }
-            else { btnTime.text = display }
+            var display = time.createDisplayedTime()
 
-            // Clear entry if its hour was "0"
-            if (!t1.isValid()) t1 = TaskTime()
+            // Clear entry if its hour was "0" and set message to display as default
+            if (!time.isValid()) {
+                time.resetValues()
+                display = defaultTimeMsg
+            }
+
+            // Display time on button
+            btnTime.text = display
         }
     }
 
