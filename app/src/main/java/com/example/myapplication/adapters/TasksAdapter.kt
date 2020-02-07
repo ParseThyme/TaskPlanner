@@ -146,7 +146,7 @@ class TasksAdapter(private val group: TaskGroup,
                 val editedDate: String = taskEditView.btnEditDate.text.toString()
 
                 // Check if task edit is new
-                if (editedText != task.desc) {
+                if (editedText != task.desc && editedText != "") {
                     updated = true
 
                     // Apply text change to display and internal value
