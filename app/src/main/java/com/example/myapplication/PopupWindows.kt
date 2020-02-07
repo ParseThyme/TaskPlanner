@@ -17,7 +17,6 @@ fun Context.createTagPopupWindow(parent: View): PopupWindow {
 }
 
 fun Context.createTimePopupWindow(parent: View): PopupWindow {
-    // Adding additional offset as popup window is 2 rows in height (by default anchored to top row)
     val timeWindow: PopupWindow = createPopupWindow(R.layout.time_popup_window, parent)
 
     // Set behaviour for changing time period (AM/PM)

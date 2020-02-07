@@ -4,8 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.*
+import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +16,7 @@ import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import kotlinx.android.synthetic.main.time_popup_window.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class MainActivity : AppCompatActivity() {
     // Settings
@@ -108,17 +108,20 @@ class MainActivity : AppCompatActivity() {
         btnNewTask.isEnabled = false
         btnNewTask.toggle(false)
 
-        taskDesc.addTextChangedListener(object: TextWatcher {
+        // When text changed, check for non-empty input
+        txtTaskDesc.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable) { }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
             // Check when text is being changed
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 // Toggle confirm button based on whether text is empty or not
-                btnNewTask.isEnabled = taskDesc.text.isNotEmpty()
+                btnNewTask.isEnabled = txtTaskDesc.text.isNotEmpty()
                 btnNewTask.toggle(btnNewTask.isEnabled)
             }
         })
+        // When pressing out of taskDesc, close the keyboard
+        txtTaskDesc.closeKeyboardOnFocusLost()
 
         // Settings
         // taskDesc.setMaxLength(settings.taskMaxLength)
@@ -171,13 +174,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun newTaskBtnFn() {
         // Get task description entry, create task entry and add to adapter
-        val desc = taskDesc.text.toString().trim()
+        val desc = txtTaskDesc.text.toString().trim()
         taskGroupAdapter.addTask(id, date, desc, tag, time)
 
         // Reset values
-        taskDesc.setText("")
-        taskDesc.clearFocus()
-        taskDesc.hideKeyboard()
+        txtTaskDesc.setText("")
+        txtTaskDesc.clearFocus()
+        txtTaskDesc.hideKeyboard()
 
         // Save changes
         updateSave()

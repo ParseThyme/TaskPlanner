@@ -70,11 +70,11 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun editTask(task: Task) {
             // Set view to be applied to alert dialog
-            val taskEditView = LayoutInflater.from(itemView.context).
+            val view = LayoutInflater.from(itemView.context).
                 inflate(R.layout.task_edit_view, null)
             // Create builder
             val builder = AlertDialog.Builder(itemView.context).apply {
-                setView(taskEditView)
+                setView(view)
                 setCancelable(false)
             }
 
@@ -86,12 +86,12 @@ class TasksAdapter(private val group: TaskGroup,
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in previous entry
-            taskEditView.btnTag.setImageResourceFromTag(task.tag)
-            taskEditView.editedTask.setText(itemView.desc.text.toString())
-            taskEditView.editedTask.hint = itemView.desc.text
+            view.btnTag.setImageResourceFromTag(task.tag)
+            view.txtEditTaskDesc.setText(itemView.desc.text.toString())
+            view.txtEditTaskDesc.hint = itemView.desc.text
 
             // 2. Set date and setup onClick behaviour
-            taskEditView.btnEditDate.text = group.date
+            view.btnEditDate.text = group.date
             var newDate = ""
             var newID = 0
             val cal = Calendar.getInstance()
@@ -104,10 +104,10 @@ class TasksAdapter(private val group: TaskGroup,
                     // Change displayed date
                     newDate = createDateLabel(cal)
                     newID = idFormat.format(cal.timeInMillis).toInt()
-                    taskEditView.btnEditDate.text = newDate
+                    view.btnEditDate.text = newDate
                 }
-            taskEditView.btnEditDate.setOnClickListener {
-                val dialog = DatePickerDialog(taskEditView.context, dateSetListener,
+            view.btnEditDate.setOnClickListener {
+                val dialog = DatePickerDialog(view.context, dateSetListener,
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
                     cal.get(Calendar.DAY_OF_MONTH)
@@ -119,13 +119,13 @@ class TasksAdapter(private val group: TaskGroup,
                 dialog.show()
             }
 
-            // ########## Buttons ##########
-            // Cancel: close dialog
-            taskEditView.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }
+            // ########## Listeners ##########
+            // Close keyboard when editText loses focus
+            view.txtEditTaskDesc.closeKeyboardOnFocusLost()
 
             // Change Tag
-            taskEditView.btnTag.setOnClickListener {
-                val window = itemView.context.createTagPopupWindow(taskEditView.btnTag)
+            view.btnTag.setOnClickListener {
+                val window = itemView.context.createTagPopupWindow(view.btnTag)
                 window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
                     when (chosenTag) {
                         R.id.tagNone -> editedTag = Tag.NONE
@@ -134,23 +134,26 @@ class TasksAdapter(private val group: TaskGroup,
                         R.id.tagBuy -> editedTag = Tag.BUY
                     }
 
-                    taskEditView.btnTag.setImageResourceFromTag(editedTag)
+                    view.btnTag.setImageResourceFromTag(editedTag)
                     window.dismiss()
                 }
             }
 
+            // Cancel: close dialog
+            view.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }
+
             // Apply: make changes if edit made
-            taskEditView.btnApply.setOnClickListener {
+            view.btnApply.setOnClickListener {
                 var updated = false
-                val editedText: String = taskEditView.editedTask.text.toString()
-                val editedDate: String = taskEditView.btnEditDate.text.toString()
+                val editedText: String = view.txtEditTaskDesc.text.toString()
+                val editedDate: String = view.btnEditDate.text.toString()
 
                 // Check if task edit is new
                 if (editedText != task.desc && editedText != "") {
                     updated = true
 
                     // Apply text change to display and internal value
-                    task.desc = taskEditView.editedTask.text.toString()
+                    task.desc = view.txtEditTaskDesc.text.toString()
                     itemView.desc.text = task.desc
                 }
                 // Check if tag has been changed

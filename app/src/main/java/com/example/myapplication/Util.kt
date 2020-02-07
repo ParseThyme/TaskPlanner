@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Context
 import android.text.InputFilter.LengthFilter
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,22 +15,26 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.settings_alertdialog.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.DAY_OF_MONTH
 
 // ########## Keyboard ##########
+// https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
 fun View.hideKeyboard() {
     val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken, 0)
+    imm.hideSoftInputFromWindow(this.windowToken, 0)
 }
 
-/*
-fun View.showKeyboard() {
-    val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+// https://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
+fun View.closeKeyboardOnFocusLost() {
+    this.setOnFocusChangeListener { _, focused ->
+        // Hide keyboard when user presses out of taskDesc
+        if (!focused)
+            this.hideKeyboard()
+    }
 }
-*/
 
 // ########## Creation ##########
 fun RecyclerView.addDivider(vertical : Boolean = true) {
