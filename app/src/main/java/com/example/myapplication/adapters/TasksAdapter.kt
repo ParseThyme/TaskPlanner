@@ -82,9 +82,6 @@ class TasksAdapter(private val group: TaskGroup,
             // Show dialog
             val taskEditDialog = builder.show()
 
-            // Modifiable values
-            var editedTag: Tag = task.tag
-
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in previous entry
             view.btnTag.setImageResourceFromTag(task.tag)
@@ -125,7 +122,8 @@ class TasksAdapter(private val group: TaskGroup,
             view.txtEditTaskDesc.closeKeyboardOnFocusLost()
 
             // Change Tag
-            view.btnTag.setOnClickListener {
+            view.btnTag.setOnClickListener { itemView.context.createTagPopup(view.btnTag)
+                /*
                 val window = itemView.context.createTagPopup(view.btnTag)
                 window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
                     when (chosenTag) {
@@ -138,6 +136,7 @@ class TasksAdapter(private val group: TaskGroup,
                     view.btnTag.setImageResourceFromTag(editedTag)
                     window.dismiss()
                 }
+                */
             }
 
             // Cancel: close dialog
@@ -148,6 +147,7 @@ class TasksAdapter(private val group: TaskGroup,
                 var updated = false
                 val editedText: String = view.txtEditTaskDesc.text.toString()
                 val editedDate: String = view.btnEditDate.text.toString()
+                val editedTag: Tag = view.btnTag.getTagFromImageResource()
 
                 // Check if task edit is new
                 if (editedText != task.desc && editedText != "") {
@@ -164,7 +164,6 @@ class TasksAdapter(private val group: TaskGroup,
                     // Apply change to display and internal value
                     task.tag = editedTag
                     toggleTag(task.tag)
-                    //itemView.taskTag.setImageResourceFromTag(task.tag)
                 }
 
                 // Check if date has been changed

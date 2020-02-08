@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     // Created task
     private var date: String = ""
-    private var tag: Tag = Tag.NONE
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -175,8 +174,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun newTaskBtnFn() {
-        // Get task description entry, create task entry and add to adapter
-        val desc = txtTaskDesc.text.toString().trim()
+        // Get relevant values
+        val desc: String = txtTaskDesc.text.toString().trim()
+        val tag: Tag = btnTag.getTagFromImageResource()
+
+        // Add new task to adapter
         taskGroupAdapter.addTask(id, date, desc, tag, time)
 
         // Reset values
@@ -241,23 +243,8 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Popups ##########
     private fun setupPopupMenus() {
-        btnTag.setOnClickListener { tagPopupFn() }
+        btnTag.setOnClickListener { createTagPopup(btnTag) }
         btnTime.setOnClickListener { timePopupFn() }
-    }
-
-    private fun tagPopupFn() {
-        val window:PopupWindow = createTagPopup(btnTag)
-        window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
-            when (chosenTag) {
-                R.id.tagNone -> tag = Tag.NONE
-                R.id.tagEvent -> tag = Tag.EVENT
-                R.id.tagBooking -> tag = Tag.BOOKING
-                R.id.tagBuy -> tag = Tag.BUY
-            }
-
-            btnTag.setImageResourceFromTag(tag)
-            window.dismiss()
-        }
     }
 
     private fun timePopupFn() {

@@ -1,5 +1,6 @@
 package com.example.myapplication.data_classes
 
+import android.util.Log
 import android.widget.ImageView
 import com.example.myapplication.R
 
@@ -24,4 +25,12 @@ fun ImageView.setImageResourceFromTag(tag: Tag) {
     }
 
     this.setImageResource(imageResource)
+    this.tag = tag
+}
+
+fun ImageView.getTagFromImageResource(): Tag {
+    // Get string tag from imageResource
+    val tagString: String = this.tag.toString()
+    // Convert it to Tag enum
+    return Tag.valueOf(tagString)
 }
