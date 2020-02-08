@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.popup_windows.createTagPopup
 import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
@@ -125,7 +126,7 @@ class TasksAdapter(private val group: TaskGroup,
 
             // Change Tag
             view.btnTag.setOnClickListener {
-                val window = itemView.context.createTagPopupWindow(view.btnTag)
+                val window = itemView.context.createTagPopup(view.btnTag)
                 window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
                     when (chosenTag) {
                         R.id.tagNone -> editedTag = Tag.NONE

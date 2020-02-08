@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.popup_windows.createTagPopup
+import com.example.myapplication.popup_windows.createTimePopup
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import kotlinx.android.synthetic.main.time_popup_window.view.*
@@ -244,7 +246,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun tagPopupFn() {
-        val window:PopupWindow = createTagPopupWindow(btnTag)
+        val window:PopupWindow = createTagPopup(btnTag)
         window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
             when (chosenTag) {
                 R.id.tagNone -> tag = Tag.NONE
@@ -259,7 +261,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun timePopupFn() {
-        val window:PopupWindow = createTimePopupWindow(btnTime)
+        val window:PopupWindow = createTimePopup(btnTime)
         val view: View = window.contentView
 
         // Use currently selected times for time and duration
@@ -268,7 +270,7 @@ class MainActivity : AppCompatActivity() {
         view.txtTimeOfDay.text = time.timeOfDay
 
         view.txtDuration.text = durationAsString(time.duration)
-        view.txtDurationInc.text = durationAsString(time.durationInc)
+        view.txtIncDelta.text = durationAsString(time.durationInc)
 
         // Save updated time when window closed
         view.btnApplyTime.setOnClickListener {
@@ -277,7 +279,7 @@ class MainActivity : AppCompatActivity() {
             val minutes:Int = view.txtMinute.text.toString().toInt()
             val timeOfDay:String = view.txtTimeOfDay.text.toString()
             val duration:Int = durationAsInt(view.txtDuration.text.toString())
-            val durationInc: Int = durationAsInt(view.txtDurationInc.text.toString())
+            val durationInc: Int = durationAsInt(view.txtIncDelta.text.toString())
 
             // Assign time value
             time = TaskTime(hour, minutes, timeOfDay, duration, durationInc)
