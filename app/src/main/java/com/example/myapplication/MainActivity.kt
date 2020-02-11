@@ -72,6 +72,8 @@ class MainActivity : AppCompatActivity() {
 
         runSetup()
         setMode(Mode.ADD)
+
+        // TESTING
     }
 
     // ########## Setup related ##########
@@ -177,9 +179,10 @@ class MainActivity : AppCompatActivity() {
         // Get relevant values
         val desc: String = txtTaskDesc.text.toString().trim()
         val tag: Tag = btnTag.getTagFromImageResource()
+        val newTask = Task(desc, tag, time)
 
         // Add new task to adapter
-        taskGroupAdapter.addTask(id, date, desc, tag, time)
+        taskGroupAdapter.addTask(id, date, newTask)
 
         // Reset values
         txtTaskDesc.setText("")
