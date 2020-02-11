@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -44,48 +45,6 @@ fun RecyclerView.addDivider(vertical : Boolean = true) {
 
     val divider = DividerItemDecoration(this.context, orientation)
     this.addItemDecoration(divider)
-}
-
-// ########## Date ##########
-fun createDateLabel(cal: Calendar, short: Boolean = false) : String{
-    val timeInMills = cal.timeInMillis
-    // Produce day, generally either in Monday or Mon format. We want only two characters (Mo, Tu, We, etc)
-    val dayName: String
-    val month: String
-    val day: String = dayFormat.format(timeInMills)
-    var result: String
-
-    if (short) {
-        dayName = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
-        month = SimpleDateFormat("MMM").format(timeInMills)
-        result = "$dayName $month $day"
-    } else {
-        dayName = SimpleDateFormat("EEEE").format(timeInMills)
-        month = SimpleDateFormat("MMMM").format(timeInMills)
-
-        // Depending on day, add ordinals
-        // https://stackoverflow.com/questions/4011075/how-do-you-format-the-day-of-the-month-to-say-11th-21st-or-23rd-ordinal
-        val ordinal = addOrdinal(cal.get(DAY_OF_MONTH))
-        result = "$dayName $month $day$ordinal"
-    }
-
-    return result
-}
-
-private fun addOrdinal(dayNum: Int) : String {
-    // Set ordinal for 11th, 12th, 13th unique cases
-    return if (dayNum in 11..13) {
-        "th"
-    }
-    // Otherwise if ending with 1 == st, 2 == nd, 3 == rd, 4-9 == th
-    else {
-        when (dayNum % 10) {
-            1 -> "st"
-            2 -> "nd"
-            3 -> "rd"
-            else -> "th"
-        }
-    }
 }
 
 // ########## Shortcuts ##########

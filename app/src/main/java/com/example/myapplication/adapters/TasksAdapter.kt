@@ -122,22 +122,7 @@ class TasksAdapter(private val group: TaskGroup,
             view.txtEditTaskDesc.closeKeyboardOnFocusLost()
 
             // Change Tag
-            view.btnTag.setOnClickListener { itemView.context.createTagPopup(view.btnTag)
-                /*
-                val window = itemView.context.createTagPopup(view.btnTag)
-                window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
-                    when (chosenTag) {
-                        R.id.tagNone -> editedTag = Tag.NONE
-                        R.id.tagEvent -> editedTag = Tag.EVENT
-                        R.id.tagBooking -> editedTag = Tag.BOOKING
-                        R.id.tagBuy -> editedTag = Tag.BUY
-                    }
-
-                    view.btnTag.setImageResourceFromTag(editedTag)
-                    window.dismiss()
-                }
-                */
-            }
+            view.btnTag.setOnClickListener { itemView.context.createTagPopup(view.btnTag) }
 
             // Cancel: close dialog
             view.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }

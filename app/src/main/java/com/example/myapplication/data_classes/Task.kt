@@ -24,11 +24,15 @@ fun ImageView.setImageResourceFromTag(tag: Tag) {
         else -> R.drawable.ic_tag_base
     }
 
+    // Assign image resource and internal tag (for converting to Tag enum later)
     this.setImageResource(imageResource)
     this.tag = tag
 }
 
+// https://www.programiz.com/kotlin-programming/examples/enum-by-string-value
 fun ImageView.getTagFromImageResource(): Tag {
+    // Return no tag for unassigned image resources
+    if (this.tag == null) { return Tag.NONE }
     // Get string tag from imageResource
     val tagString: String = this.tag.toString()
     // Convert it to Tag enum
