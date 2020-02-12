@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.R
-import com.example.myapplication.Settings
+import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
@@ -65,16 +63,14 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
-
+    // When group made, apply updates to UI based on internal values
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
     // Creating cell (date group entry)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Use inflate function found in Util then return containing cell layout and clickListener
         val inflatedView = parent.inflate(R.layout.task_group_rv, false)
         return ViewHolder(inflatedView)
     }
-
-    // When group made, apply updates to UI based on internal values
-    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
 
     // ########## Getters/Setters ##########
     fun allCollapsed() : Boolean { return collapsedCount == taskGroupList.size }
@@ -319,9 +315,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             if (group.state == ViewState.COLLAPSED) {
                 // If a task has been selected, highlight background to indicate
                 if (group.numSelected != 0)
-                    itemView.collapseExpandBtn.setBackgroundColor(Color.parseColor(settings.taskHighlightColor))
+                    itemView.collapseExpandBtn.applyBackgroundColor(settings.highlightColor)
                 else // Clear highlights (via selectAll toggle when collapsed)
-                    itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
+                    itemView.collapseExpandBtn.applyBackgroundColor(Color.TRANSPARENT)
             }
         }
     }

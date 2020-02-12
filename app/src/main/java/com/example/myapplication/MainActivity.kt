@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupWindow
@@ -11,11 +12,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.popup_windows.PopupWindowDate
+// import com.example.myapplication.popup_windows.createDatePopup
 import com.example.myapplication.popup_windows.createTagPopup
 import com.example.myapplication.popup_windows.createTimePopup
+import kotlinx.android.synthetic.main.date_popup_window.view.*
 import kotlinx.android.synthetic.main.main_view.*
-import kotlinx.android.synthetic.main.tag_popup_window.view.*
 import kotlinx.android.synthetic.main.time_popup_window.view.*
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -73,7 +78,13 @@ class MainActivity : AppCompatActivity() {
         runSetup()
         setMode(Mode.ADD)
 
-        // TESTING
+        val datePopup = PopupWindowDate(btnTestDate, settings)
+        btnTestDate.setOnClickListener {
+            val window: PopupWindow = datePopup.create(this)
+            window.setOnDismissListener {
+                Log.d("Test", "Chosen: ${datePopup.selectedDate.dateShort}")
+            }
+        }
     }
 
     // ########## Setup related ##########

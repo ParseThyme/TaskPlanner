@@ -78,6 +78,7 @@ inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, 
  - Toggle Image: https://stackoverflow.com/questions/11499574/toggle-button-using-two-image-on-different-state/11499595#11499595
  - Change Activity: https://www.tutorialkart.com/kotlin-android/android-start-another-activity/
  - Pass Data between activities: https://devofandroid.blogspot.com/2018/03/pass-data-between-activities-using.html
+ - Radio Group RecyclerView: http://joshskeen.com/building-a-radiogroup-recyclerview/
  **/
 
 /** ########## Notes: ##########

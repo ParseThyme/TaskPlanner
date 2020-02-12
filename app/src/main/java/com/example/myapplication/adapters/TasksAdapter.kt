@@ -177,8 +177,8 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun toggleSelected(isSelected: Boolean) {
-            if (isSelected) { taskField.setBackgroundColor(Color.parseColor(settings.taskHighlightColor)) }
-            else { taskField.setBackgroundColor(Color.parseColor(settings.taskBaseColor)) }
+            if (isSelected) { taskField.applyBackgroundColor(settings.highlightColor) }
+            else { taskField.applyBackgroundColor(settings.taskBaseColor) }
         }
 
         private fun toggleTag(tag: Tag) {

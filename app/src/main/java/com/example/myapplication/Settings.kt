@@ -1,5 +1,7 @@
 package com.example.myapplication
 
+import android.graphics.Color
+import android.view.View
 import java.text.SimpleDateFormat
 
 // ########## Hardcoded values (unmodified by app) ##########
@@ -30,8 +32,8 @@ class Settings {
     // val taskMaxLength: Int = 60
 
     // Tasks
-    private val defTaskHighlightColor: String = "#FFFFE600"   // Yellow
-    var taskHighlightColor: String = "#FFFFE600"
+    private val defHighlightColor: String = "#FFFFE600"   // Yellow
+    var highlightColor: String = "#FFFFE600"
     var taskBaseColor: String = "#00000000"
 
     // Calendar values
@@ -45,6 +47,9 @@ class Settings {
     fun setDefault() {
         calendarRange = defCalendarRange
 
-        taskHighlightColor = defTaskHighlightColor
+        highlightColor = defHighlightColor
     }
 }
+
+fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
+fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }
