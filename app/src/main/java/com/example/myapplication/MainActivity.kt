@@ -1,10 +1,8 @@
 package com.example.myapplication
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupWindow
@@ -12,15 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.PopupWindowDate
+import com.example.myapplication.popup_windows.*
 // import com.example.myapplication.popup_windows.createDatePopup
-import com.example.myapplication.popup_windows.createTagPopup
-import com.example.myapplication.popup_windows.createTimePopup
-import kotlinx.android.synthetic.main.date_popup_window.view.*
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.time_popup_window.view.*
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -55,6 +48,11 @@ class MainActivity : AppCompatActivity() {
     // Created task
     private var date: String = ""
 
+    // Popups
+    private lateinit var datePopup: PopupDate
+    private lateinit var timePopup: PopupTime
+    private lateinit var tagPopup: PopupTag
+
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
 
@@ -77,14 +75,6 @@ class MainActivity : AppCompatActivity() {
 
         runSetup()
         setMode(Mode.ADD)
-
-        val datePopup = PopupWindowDate(btnTestDate, settings)
-        btnTestDate.setOnClickListener {
-            val window: PopupWindow = datePopup.create(this)
-            window.setOnDismissListener {
-                Log.d("Test", "Chosen: ${datePopup.selectedDate.dateShort}")
-            }
-        }
     }
 
     // ########## Setup related ##########
@@ -96,16 +86,13 @@ class MainActivity : AppCompatActivity() {
 
         // Buttons (topBar and bottomBar)
         setupButtons()
-
-        // Popup menus (bottomBar)
-        setupPopupMenus()
     }
 
     private fun setupLateInit() {
         // Add new task variables
         val cal = Calendar.getInstance()
         // Apply starting date to be today's date at bottom bar
-        btnChangeDate.text = createDateLabel(cal, true)
+        btnSetDate.text = createDateLabel(cal, true)
 
         // Create starting date, id and min date
         startDate = createDateLabel(cal)
@@ -142,58 +129,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaultValues() {
-        btnTime.text = defaultTimeMsg
+        btnSetTime.text = defaultTimeMsg
     }
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        // ########## TopBar ##########
-        // 0. ToDo: Menu button
+        datePopup = PopupDate(btnSetDate, settings, this)
+        timePopup = PopupTime(btnSetTime, this)
+        tagPopup = PopupTag(btnSetTag, this)
 
-        // SelectAll, Settings
+        // ##############################
+        // TopBar
+        // ##############################
         btnSelectAll.setOnClickListener { selectAllBtnFn() }
         btnCollapseExpand.setOnClickListener { collapseExpandBtnFn() }
         btnSettings.setOnClickListener { settingsBtnFn() }
 
-        // ########## BottomBar ##########
-        // 1. Update date
-        // Setup listener for date picker dialog
-        val cal = Calendar.getInstance()
-        val dateSetListener =
-            DatePickerDialog.OnDateSetListener { _, y, m, d ->
-                cal.set(Calendar.YEAR, y)
-                cal.set(Calendar.MONTH, m)
-                cal.set(Calendar.DAY_OF_MONTH, d)
+        // ##############################
+        // BottomBar
+        // ##############################
 
-                date = createDateLabel(cal)
-                id = idFormat.format(cal.timeInMillis).toInt()
-                btnChangeDate.text = createDateLabel(cal, true)
-            }
-        btnChangeDate.setOnClickListener {
-            val dialog = DatePickerDialog(this, dateSetListener,
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
-            )
-
-            // Assign min + max date then show dialog box
-            dialog.datePicker.minDate = minDate
-            dialog.datePicker.maxDate = maxDate
-            dialog.show()
-        }
-
-        // Delete, New Task, Reset Values
-        btnDelete.setOnClickListener { deleteBtnFn() }
+        // Add mode
+        btnSetDate.setOnClickListener { datePopup.create() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
+        btnSetTime.setOnClickListener { timePopupFn() }
+        btnSetTag.setOnClickListener { tagPopup.create() }
+
+        // Select mode
+        btnDelete.setOnClickListener { deleteBtnFn() }
     }
 
     private fun newTaskBtnFn() {
         // Get relevant values
         val desc: String = txtTaskDesc.text.toString().trim()
-        val tag: Tag = btnTag.getTagFromImageResource()
+
+        val tag: Tag = tagPopup.selectedTag
+        val date: TaskDate = datePopup.selectedDate
+
         val newTask = Task(desc, tag, time)
 
         // Add new task to adapter
-        taskGroupAdapter.addTask(id, date, newTask)
+        taskGroupAdapter.addTask(date, newTask)
 
         // Reset values
         txtTaskDesc.setText("")
@@ -256,13 +233,9 @@ class MainActivity : AppCompatActivity() {
     private fun resetBtnFn() {}
 
     // ########## Popups ##########
-    private fun setupPopupMenus() {
-        btnTag.setOnClickListener { createTagPopup(btnTag) }
-        btnTime.setOnClickListener { timePopupFn() }
-    }
 
     private fun timePopupFn() {
-        val window:PopupWindow = createTimePopup(btnTime)
+        val window:PopupWindow = timePopup.create()
         val view: View = window.contentView
 
         // Use currently selected times for time and duration
@@ -295,7 +268,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Display time on button
-            btnTime.text = display
+            btnSetTime.text = display
         }
     }
 

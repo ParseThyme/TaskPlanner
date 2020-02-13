@@ -1,19 +1,16 @@
 package com.example.myapplication.adapters
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.createTagPopup
-import kotlinx.android.synthetic.main.tag_popup_window.view.*
+import com.example.myapplication.popup_windows.PopupDate
+import com.example.myapplication.popup_windows.PopupTag
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
-import java.util.*
 
 // val itemClickedListener: (Task) -> Unit
 // Code above takes in a lambda function as a parameter
@@ -21,21 +18,21 @@ import java.util.*
 
 class TasksAdapter(private val group: TaskGroup,
                    private val taskClicked: (Task) -> Unit,
-                   private val changedDate: (Task, String, Int, Int) -> Unit,
+                   private val changedDate: (Task, TaskDate, Int) -> Unit,
                    private val updateSave: () -> Unit,
                    private val settings: Settings)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
+    lateinit var datePopup: PopupDate
+    lateinit var tagPopup: PopupTag
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v =  parent.inflate(R.layout.task_entry_rv, false)
         return ViewHolder(v)
     }
-
     override fun getItemCount(): Int { return group.taskList.size }
-
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(group.taskList[pos]) }
 
-    // ########## ViewHolder ##########
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val taskField = itemView.desc
 
@@ -79,50 +76,29 @@ class TasksAdapter(private val group: TaskGroup,
                 setCancelable(false)
             }
 
+            // Popups
+            datePopup = PopupDate(view.btnEditDate, settings, view.context)
+            tagPopup = PopupTag(view.btnSetTag, view.context)
+
             // Show dialog
             val taskEditDialog = builder.show()
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in previous entry
-            view.btnTag.setImageResourceFromTag(task.tag)
+            view.btnSetTag.setImageResourceFromTag(task.tag)
             view.txtEditTaskDesc.setText(itemView.desc.text.toString())
             view.txtEditTaskDesc.hint = itemView.desc.text
 
             // 2. Set date and setup onClick behaviour
-            view.btnEditDate.text = group.date
-            var newDate = ""
-            var newID = 0
-            val cal = Calendar.getInstance()
-            val dateSetListener =
-                DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                    cal.set(Calendar.YEAR, year)
-                    cal.set(Calendar.MONTH, month)
-                    cal.set(Calendar.DAY_OF_MONTH, day)
-
-                    // Change displayed date
-                    newDate = createDateLabel(cal)
-                    newID = idFormat.format(cal.timeInMillis).toInt()
-                    view.btnEditDate.text = newDate
-                }
-            view.btnEditDate.setOnClickListener {
-                val dialog = DatePickerDialog(view.context, dateSetListener,
-                    cal.get(Calendar.YEAR),
-                    cal.get(Calendar.MONTH),
-                    cal.get(Calendar.DAY_OF_MONTH)
-                )
-
-                // Assign min + max date then show dialog box
-                dialog.datePicker.minDate = minDate
-                dialog.datePicker.maxDate = maxDate
-                dialog.show()
-            }
+            view.btnEditDate.text = group.date.labelShort
+            view.btnEditDate.setOnClickListener { datePopup.create() }
 
             // ########## Listeners ##########
             // Close keyboard when editText loses focus
             view.txtEditTaskDesc.closeKeyboardOnFocusLost()
 
             // Change Tag
-            view.btnTag.setOnClickListener { itemView.context.createTagPopup(view.btnTag) }
+            view.btnSetTag.setOnClickListener { tagPopup.create() }
 
             // Cancel: close dialog
             view.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }
@@ -132,7 +108,7 @@ class TasksAdapter(private val group: TaskGroup,
                 var updated = false
                 val editedText: String = view.txtEditTaskDesc.text.toString()
                 val editedDate: String = view.btnEditDate.text.toString()
-                val editedTag: Tag = view.btnTag.getTagFromImageResource()
+                val editedTag: Tag = view.btnSetTag.getTagFromImageResource()
 
                 // Check if task edit is new
                 if (editedText != task.desc && editedText != "") {
@@ -152,7 +128,7 @@ class TasksAdapter(private val group: TaskGroup,
                 }
 
                 // Check if date has been changed
-                if (editedDate != group.date) {
+                if (editedDate != group.date.label) {
                     updated = true
 
                     // Deselect task if selected
@@ -166,7 +142,7 @@ class TasksAdapter(private val group: TaskGroup,
                     }
 
                     // Notify group adapter to change date
-                    changedDate(task, newDate, group.id, newID)
+                    changedDate(task, datePopup.selectedDate, group.date.id)
                 }
 
                 // Notify main activity to save change made

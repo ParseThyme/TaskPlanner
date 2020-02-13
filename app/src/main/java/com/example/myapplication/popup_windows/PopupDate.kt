@@ -2,6 +2,8 @@ package com.example.myapplication.popup_windows
 
 import android.content.Context
 import android.view.View
+import android.view.WindowManager
+import android.widget.Button
 import android.widget.PopupWindow
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -15,8 +17,10 @@ import com.example.myapplication.data_classes.addDays
 import com.example.myapplication.data_classes.getDate
 import kotlinx.android.synthetic.main.date_popup_window.view.*
 
-class PopupWindowDate(private val parent: View,
-                      private val settings: Settings)
+class PopupDate(private val parent: Button,
+                private val settings: Settings,
+                private val context: Context)
+    : PopupWindowParent()
 {
     // Index of selected date, -1 means today's date otherwise any other subsequent date in the array
     private var selected: Int = -1
@@ -31,17 +35,16 @@ class PopupWindowDate(private val parent: View,
 
     init {
         // Generate subsequent dates from today to add to list for recyclerView
-        for (i in 1..28)
-            dates.add(getDate(i))
+        for (i in 1..28) dates.add(getDate(i))
     }
 
-    fun create(context: Context): PopupWindow {
-        val window:PopupWindow = context.createPopup(R.layout.date_popup_window, parent)
+    fun create(): PopupWindow {
+        val window:PopupWindow = super.create(context, R.layout.date_popup_window)
         val view: View = window.contentView
 
         // Get today's date
         val today:TaskDate = getDate()
-        view.txtToday.text = today.dateShortest
+        view.txtToday.text = today.labelShortest
 
         // 7 entries per column (matching 7 days of the week)
         val colSize = 7
@@ -77,14 +80,19 @@ class PopupWindowDate(private val parent: View,
         view.btnApplyDate.setOnClickListener {
             selected = taskDatesAdapter.selected
 
-            // Selected today's date
-            selectedDate = if (selected == -1) getDate()
-            // Otherwise selected subsequent date
-            else dates[selected]
+            // Selected today's date, otherwise selected subsequent date
+            selectedDate = if (selected == -1)
+                getDate()
+            else
+                dates[selected]
 
+            // Apply text to parent and close window
+            parent.text = selectedDate.labelShort
             window.dismiss()
         }
 
+        // Show window after recyclerView finished setting up
+        window.show(parent)
         return window
     }
 }

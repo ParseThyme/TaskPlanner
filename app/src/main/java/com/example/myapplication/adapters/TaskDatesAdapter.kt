@@ -15,8 +15,7 @@ import kotlinx.android.synthetic.main.task_date_rv.view.*
 class TaskDatesAdapter(private val taskDates: ArrayList<TaskDate>,
                        private val settings: Settings,
                        private val today: CardView)
-    : RecyclerView.Adapter<TaskDatesAdapter.ViewHolder>()
-{
+    : RecyclerView.Adapter<TaskDatesAdapter.ViewHolder>() {
     var selected: Int = -1
     private set
 
@@ -28,18 +27,10 @@ class TaskDatesAdapter(private val taskDates: ArrayList<TaskDate>,
         return ViewHolder(inflatedView)
     }
 
-    fun clearCurrentlySelected() {
-        val current:Int = selected
-        // Change selected to be today's date
-        selected = -1
-        // Notify viewHolder to unhighlight previously selected
-        notifyItemChanged(current)
-    }
-
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bind(entry: TaskDate) {
             // Assign date entry
-            itemView.txtDate.text = entry.dateShortest
+            itemView.txtDate.text = entry.labelShortest
 
             // Set checked if selected and update background color
             if (selected == adapterPosition)
@@ -70,5 +61,17 @@ class TaskDatesAdapter(private val taskDates: ArrayList<TaskDate>,
                 }
             }
         }
+    }
+
+    // ##############################
+    // Additional Functions
+    // ##############################
+
+    fun clearCurrentlySelected() {
+        val current:Int = selected
+        // Change selected to be today's date
+        selected = -1
+        // Notify viewHolder to unhighlight previously selected
+        notifyItemChanged(current)
     }
 }

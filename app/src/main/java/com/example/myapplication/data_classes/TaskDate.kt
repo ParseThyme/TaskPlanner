@@ -11,10 +11,10 @@ private val daysOfWeek: ArrayList<DayOfWeek> = arrayListOf(
 )
 
 data class TaskDate(
-    val date: String,
-    val dateShort:String,
-    val dateShortest:String,
-    val id: Int,
+    val label: String = "",
+    val labelShort: String = "",
+    val labelShortest: String = "",
+    val id: Int = 0,
 
     val dayName: DayOfWeek = DayOfWeek.Mo
 )

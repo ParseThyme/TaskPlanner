@@ -57,7 +57,7 @@
                         android:id="@+id/btnApplyDate"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
+                        android:background="@android:color/white"
                         app:srcCompat="@drawable/ic_check" />
                 </androidx.cardview.widget.CardView>
 
@@ -82,7 +82,7 @@
                     android:text="★"
                     android:textAllCaps="true"
                     android:textColor="@android:color/white"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,7 +103,8 @@
                         android:gravity="center"
                         android:padding="2dp"
                         android:text="12 Feb"
-                        android:textSize="10sp" />
+                        android:textColor="@color/bottomBarText"
+                        android:textSize="12sp" />
 
                 </androidx.cardview.widget.CardView>
 
@@ -135,7 +136,7 @@
                         android:text="1D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/labelTwoDays"
@@ -148,7 +149,7 @@
                         android:text="2D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/labelThreeDays"
@@ -161,7 +162,7 @@
                         android:text="3D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/labelFiveDays"
@@ -174,7 +175,7 @@
                         android:text="5D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/labelFourDays"
@@ -187,7 +188,7 @@
                         android:text="4D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/labelSixDays"
@@ -200,7 +201,7 @@
                         android:text="6D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/labelSevenDays"
@@ -213,7 +214,7 @@
                         android:text="7D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 

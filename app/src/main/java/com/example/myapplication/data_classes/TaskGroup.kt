@@ -9,11 +9,12 @@ import kotlin.collections.ArrayList
 
 // ########## Data Type ##########
 data class TaskGroup (
-    val date: String = "",
+    // val date: String = "",
+    val date: TaskDate = TaskDate(),
     val taskList: ArrayList<Task> = arrayListOf(),
 
     // Identification
-    val id: Int = 0,
+    // val id: Int = 0,
 
     // When tasks selected
     var numSelected: Int = 0,

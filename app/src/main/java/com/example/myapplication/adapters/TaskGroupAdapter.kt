@@ -22,9 +22,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     // Listener function: Date changed for task
     private val changedDate = {
         // Params:
-            task: Task, newDate: String, oldID: Int, newID: Int
+            task: Task, newDate: TaskDate, oldID: Int
         // Function to call:
-        -> changeGroup(task, newDate, oldID, newID)
+        -> changeGroup(task, newDate, oldID)
     }
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
@@ -52,7 +52,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             }
 
             // Set minimum date to first entry and check if expand collapse icon needs updating
-            minDate = taskGroupList[0].id
+            minDate = taskGroupList[0].date.id
             updateExpandCollapseIcon()
         }
         // 2. New list, no previous save, set default values
@@ -72,180 +72,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         return ViewHolder(inflatedView)
     }
 
-    // ########## Getters/Setters ##########
-    fun allCollapsed() : Boolean { return collapsedCount == taskGroupList.size }
-
-    // ########## Group related functionality ##########
-    fun addTask(id: Int, date: String, task: Task)
-    {
-        taskCount++
-
-        // ---------- Auto Sorting Entries ----------
-        // [A]. Check for earliest date
-        if (id < minDate) {
-            // New date is earlier, make it the new min date and insert new group at the top
-            minDate = id
-            addNewTaskGroup(0, date, task, id)
-            return
-        }
-
-        // [B]. Otherwise start from latest entry and move upwards
-        for (pos in taskGroupList.lastIndex downTo 0 step 1) {
-            // [1]. Matching date, append to existing list of tasks
-            if (id == taskGroupList[pos].id) {
-                addToTaskGroup(pos, task)
-                return
-            }
-            // [2]. Date reached is earlier, create new date category with new task
-            if (id > taskGroupList[pos].id) {
-                addNewTaskGroup(pos + 1, date, task, id)
-                return
-            }
-        }
-    }
-
-    private fun addNewTaskGroup(pos: Int, date: String, newTask: Task, id: Int) {
-        taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask), id))
-        notifyItemInserted(pos)
-
-        // Update collapse/expand icon to enable collapsing as new entry will always be expanded
-        changeCollapseExpandIcon(ViewState.EXPANDED)
-    }
-
-    private fun addToTaskGroup(pos: Int, newTask: Task) {
-        taskGroupList[pos].taskList.add(newTask)
-        notifyItemChanged(pos)
-    }
-
-    // ########## Modifying task entries ##########
-    fun deleteSelected(selected : Int) {
-        var groupDeleted: Boolean = false
-
-        // [1]. Clearing entire list
-        if (selected == taskCount) {
-            // Empty everything and reset values
-            taskGroupList.clear()
-            notifyDataSetChanged()
-            taskCount = 0
-            minDate = baseMinDate
-            return
-        }
-
-        // [2]. Deleting specifically selected tasks
-        var count = 0
-        val end = taskGroupList.size - 1
-
-        main_loop@for (groupNum in end downTo 0) {
-            val group = taskGroupList[groupNum]
-            if (group.numSelected > 0) {
-                // Go through task list in group, deleting selected tasks
-                for (taskNum in group.taskList.size - 1 downTo 0) {
-                    val currTask = group.taskList[taskNum]
-                    if (currTask.selected) {
-                        group.taskList.remove(currTask)
-                        notifyItemChanged(groupNum)
-
-                        // Update counters, number selected in current group and overall counter
-                        group.numSelected--
-                        taskCount--
-                        count++
-
-                        // Delete entire group itself once the task count reaches 0
-                        if (group.taskList.size == 0) {
-                            // Update minDate if removed date was the minimum one
-                            if (group.id == minDate)
-                                minDate = taskGroupList[groupNum + 1].id
-
-                            taskGroupList.removeAt(groupNum)
-                            notifyItemRemoved(groupNum)
-                            groupDeleted = true
-                        }
-
-                        // Exit entire loop if all selected tasks have been removed
-                        if (count == selected)
-                            break@main_loop
-
-                        // Exit inner loop early once numSelected = 0 (no more selected tasks in this group)
-                        if (group.numSelected == 0)
-                            break
-                    }
-                }
-            }
-        }
-
-        // Check to see if collapse/expand all icon needs to be updated
-        if(groupDeleted) { updateExpandCollapseIcon() }
-    }
-
-    fun toggleGroupHighlight(groupNum : Int) : Int {
-        val group: TaskGroup = taskGroupList[groupNum]
-        var difference = 0
-        var numSelectedPreToggle = group.numSelected
-
-        group.toggleHighlight()
-        difference = group.numSelected - numSelectedPreToggle
-
-        notifyItemChanged(groupNum)
-        return difference
-    }
-
-    fun toggleAllHighlight(selectAll : Boolean = true) {
-        val end: Int = taskGroupList.size - 1
-        for (groupNum in end downTo 0)
-            taskGroupList[groupNum].setHighlight(selectAll)
-
-        notifyDataSetChanged()
-    }
-
-    fun toggleAllExpandCollapse(newState: ViewState = ViewState.EXPANDED) {
-        val end: Int = taskGroupList.size - 1
-        for (groupNum in end downTo 0)
-            taskGroupList[groupNum].state = newState
-
-        notifyDataSetChanged()
-
-        // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
-        collapsedCount = when (newState) {
-            ViewState.EXPANDED -> 0
-            ViewState.COLLAPSED -> taskGroupList.size
-        }
-    }
-
-    private fun changeGroup(task: Task, newDate: String, oldID: Int, newID: Int) {
-        // "Move" to new position (add new task). -- to balance out addition made in addTask()
-        addTask(newID, newDate, task)
-        taskCount--
-
-        // Find old group and remove it at the old position
-        for (index in 0 until taskGroupList.size) {
-            val group = taskGroupList[index]
-            if (group.id == oldID) {
-                group.taskList.remove(task)
-
-                // Remove group if its list is exhausted
-                if (group.taskList.size == 0) {
-                    // Update minDate if removed date was the minimum one
-                    if (group.id == minDate)
-                        minDate = taskGroupList[index + 1].id
-
-                    taskGroupList.removeAt(index)
-                    notifyItemRemoved(index)
-                }
-                else { notifyItemChanged(index) }
-                break
-            }
-        }
-    }
-
-    private fun updateExpandCollapseIcon() {
-        // Update icon accordingly based on number collapsed
-        when (collapsedCount) {
-            taskGroupList.size - 1 -> changeCollapseExpandIcon(ViewState.EXPANDED)  // Expandable
-            taskGroupList.size -> changeCollapseExpandIcon(ViewState.COLLAPSED)     // All collapsed
-        }
-    }
-
-    // ########## ViewHolder ##########
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
         private val tasksRV = itemView.taskGroupRV
@@ -253,7 +79,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
         fun bind(group: TaskGroup) {
             // Assign date label
-            dateLabel.text = group.date
+            dateLabel.text = group.date.label
 
             // Update view if collapsed/expanded
             setExpandCollapse(group)
@@ -319,6 +145,181 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 else // Clear highlights (via selectAll toggle when collapsed)
                     itemView.collapseExpandBtn.applyBackgroundColor(Color.TRANSPARENT)
             }
+        }
+    }
+
+    // ##############################
+    // Additional Functions
+    // ##############################
+
+    // ########## Getters/Setters ##########
+    fun allCollapsed() : Boolean { return collapsedCount == taskGroupList.size }
+
+    // ########## Group related functionality ##########
+    fun addTask(date: TaskDate, task: Task) {
+        taskCount++
+
+        // ---------- Auto Sorting Entries ----------
+        // [A]. Check for earliest date
+        if (date.id < minDate) {
+            // New date is earlier, make it the new min date and insert new group at the top
+            minDate = date.id
+            addNewTaskGroup(0, date, task)
+            return
+        }
+
+        // [B]. Otherwise start from latest entry and move upwards
+        for (pos in taskGroupList.lastIndex downTo 0 step 1) {
+            // [1]. Matching date, append to existing list of tasks
+            if (date.id == taskGroupList[pos].date.id) {
+                addToTaskGroup(pos, task)
+                return
+            }
+            // [2]. Date reached is earlier, create new date category with new task
+            if (date.id > taskGroupList[pos].date.id) {
+                addNewTaskGroup(pos + 1, date, task)
+                return
+            }
+        }
+    }
+
+    private fun addNewTaskGroup(pos: Int, date: TaskDate, newTask: Task) {
+        taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask)))
+        notifyItemInserted(pos)
+
+        // Update collapse/expand icon to enable collapsing as new entry will always be expanded
+        changeCollapseExpandIcon(ViewState.EXPANDED)
+    }
+
+    private fun addToTaskGroup(pos: Int, newTask: Task) {
+        taskGroupList[pos].taskList.add(newTask)
+        notifyItemChanged(pos)
+    }
+
+    // ########## Modifying task entries ##########
+    fun deleteSelected(selected : Int) {
+        var groupDeleted = false
+
+        // [1]. Clearing entire list
+        if (selected == taskCount) {
+            // Empty everything and reset values
+            taskGroupList.clear()
+            notifyDataSetChanged()
+            taskCount = 0
+            minDate = baseMinDate
+            return
+        }
+
+        // [2]. Deleting specifically selected tasks
+        var count = 0
+        val end = taskGroupList.size - 1
+
+        main_loop@for (groupNum in end downTo 0) {
+            val group = taskGroupList[groupNum]
+            if (group.numSelected > 0) {
+                // Go through task list in group, deleting selected tasks
+                for (taskNum in group.taskList.size - 1 downTo 0) {
+                    val currTask = group.taskList[taskNum]
+                    if (currTask.selected) {
+                        group.taskList.remove(currTask)
+                        notifyItemChanged(groupNum)
+
+                        // Update counters, number selected in current group and overall counter
+                        group.numSelected--
+                        taskCount--
+                        count++
+
+                        // Delete entire group itself once the task count reaches 0
+                        if (group.taskList.size == 0) {
+                            // Update minDate if removed date was the minimum one
+                            if (group.date.id == minDate)
+                                minDate = taskGroupList[groupNum + 1].date.id
+
+                            taskGroupList.removeAt(groupNum)
+                            notifyItemRemoved(groupNum)
+                            groupDeleted = true
+                        }
+
+                        // Exit entire loop if all selected tasks have been removed
+                        if (count == selected)
+                            break@main_loop
+
+                        // Exit inner loop early once numSelected = 0 (no more selected tasks in this group)
+                        if (group.numSelected == 0)
+                            break
+                    }
+                }
+            }
+        }
+
+        // Check to see if collapse/expand all icon needs to be updated
+        if(groupDeleted) { updateExpandCollapseIcon() }
+    }
+
+    fun toggleGroupHighlight(groupNum : Int) : Int {
+        val group: TaskGroup = taskGroupList[groupNum]
+        var numSelectedPreToggle = group.numSelected
+
+        group.toggleHighlight()
+        val difference = group.numSelected - numSelectedPreToggle
+
+        notifyItemChanged(groupNum)
+        return difference
+    }
+
+    fun toggleAllHighlight(selectAll : Boolean = true) {
+        val end: Int = taskGroupList.size - 1
+        for (groupNum in end downTo 0)
+            taskGroupList[groupNum].setHighlight(selectAll)
+
+        notifyDataSetChanged()
+    }
+
+    fun toggleAllExpandCollapse(newState: ViewState = ViewState.EXPANDED) {
+        val end: Int = taskGroupList.size - 1
+        for (groupNum in end downTo 0)
+            taskGroupList[groupNum].state = newState
+
+        notifyDataSetChanged()
+
+        // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
+        collapsedCount = when (newState) {
+            ViewState.EXPANDED -> 0
+            ViewState.COLLAPSED -> taskGroupList.size
+        }
+    }
+
+    private fun changeGroup(task: Task, newDate: TaskDate, oldID: Int) {
+        // "Move" to new position (add new task). -- to balance out addition made in addTask()
+        addTask(newDate, task)
+        taskCount--
+
+        // Find old group and remove it at the old position
+        for (index in 0 until taskGroupList.size) {
+            val group = taskGroupList[index]
+            if (group.date.id == oldID) {
+                group.taskList.remove(task)
+
+                // Remove group if its list is exhausted
+                if (group.taskList.size == 0) {
+                    // Update minDate if removed date was the minimum one
+                    if (group.date.id == minDate)
+                        minDate = taskGroupList[index + 1].date.id
+
+                    taskGroupList.removeAt(index)
+                    notifyItemRemoved(index)
+                }
+                else { notifyItemChanged(index) }
+                break
+            }
+        }
+    }
+
+    private fun updateExpandCollapseIcon() {
+        // Update icon accordingly based on number collapsed
+        when (collapsedCount) {
+            taskGroupList.size - 1 -> changeCollapseExpandIcon(ViewState.EXPANDED)  // Expandable
+            taskGroupList.size -> changeCollapseExpandIcon(ViewState.COLLAPSED)     // All collapsed
         }
     }
 }
