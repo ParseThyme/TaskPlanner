@@ -7,7 +7,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private val daysOfWeek: ArrayList<DayOfWeek> = arrayListOf(
-    DayOfWeek.Su, DayOfWeek.Mo, DayOfWeek.Tu, DayOfWeek.We, DayOfWeek.Th, DayOfWeek.Fr, DayOfWeek.Sa
+    DayOfWeek.Su, DayOfWeek.Mo, DayOfWeek.Tu,
+    DayOfWeek.We, DayOfWeek.Th, DayOfWeek.Fr,
+    DayOfWeek.Sa
 )
 
 data class TaskDate(

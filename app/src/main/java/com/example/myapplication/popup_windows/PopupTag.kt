@@ -1,6 +1,7 @@
 package com.example.myapplication.popup_windows
 
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
 import android.widget.PopupWindow
 import com.example.myapplication.R
@@ -12,8 +13,8 @@ class PopupTag(private val parent: ImageView, private val context: Context) : Po
     var selectedTag = Tag.NONE
     private set
 
-    fun create(): PopupWindow {
-        val window:PopupWindow = super.createAndShow(context, R.layout.tag_popup_window, parent)
+    fun create(anchor: Anchor = Anchor.BottomLeft): PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.tag_popup_window, parent, anchor)
         // Change tag displayed selecting appropriate tag from group
         window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
             selectedTag = when (chosenTag) {

@@ -1,8 +1,12 @@
 package com.example.myapplication
 
+import android.app.Application
+import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupWindow
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popup_windows.*
+import com.example.myapplication.popup_windows.edit.PopupEdit
 // import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.time_popup_window.view.*
@@ -49,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     private var date: String = ""
 
     // Popups
+    private val viewSizeFn = { getViewDimensions() }
     private lateinit var datePopup: PopupDate
     private lateinit var timePopup: PopupTime
     private lateinit var tagPopup: PopupTag
@@ -72,6 +78,11 @@ class MainActivity : AppCompatActivity() {
 
         // Divider between date categories
         dateGroupRV.addDivider()
+
+        val popupEdit: PopupEdit = PopupEdit(btnTest, this)
+        btnTest.setOnClickListener {
+            popupEdit.create()
+        }
 
         runSetup()
         setMode(Mode.ADD)
@@ -393,13 +404,12 @@ class MainActivity : AppCompatActivity() {
             (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
         }
     }
-
     private fun ImageButton.toggle(enabled: Boolean) {
-        if (enabled)
-            updateBtnColor(R.color.btnEnabled, applicationContext)
-        else
-            updateBtnColor(R.color.btnDisabled, applicationContext)
+        if (enabled) updateBtnColor(R.color.btnEnabled, applicationContext)
+        else updateBtnColor(R.color.btnDisabled, applicationContext)
     }
+    // Sizing of current main layout (adjusts depending of factors affecting size, e.g. Opening keyboard)
+    private fun getViewDimensions(): Point { return Point(mainLayout.width, mainLayout.height) }
 }
 
 enum class Mode { START, ADD, SELECTION }

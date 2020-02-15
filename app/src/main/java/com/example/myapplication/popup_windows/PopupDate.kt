@@ -52,7 +52,7 @@ class PopupDate(private val parent: Button,
         // Assign labels of subsequent days based on today
         val labelToday: DayOfWeek = today.dayName
         view.labelToday.text = "$labelToday"
-        view.labelOneDay.text = "${labelToday.addDays()}"
+        view.labelOneDay.text = "${labelToday.addDays(1)}"
         view.labelTwoDays.text = "${labelToday.addDays(2)}"
         view.labelThreeDays.text = "${labelToday.addDays(3)}"
         view.labelFourDays.text = "${labelToday.addDays(4)}"
@@ -60,15 +60,17 @@ class PopupDate(private val parent: Button,
         view.labelSixDays.text = "${labelToday.addDays(6)}"
         view.labelSevenDays.text = "${labelToday.addDays(7)}"
 
-        // Set today's date to be selected by default
-        view.cardToday.applyBackgroundColor(settings.highlightColor)
-
         // Assign adapter to RecyclerView
         val taskDatesAdapter = TaskDatesAdapter(dates, settings, view.cardToday)
         view.datesRV.apply {
             layoutManager = GridLayoutManager(this.context, colSize, GridLayoutManager.HORIZONTAL, false)
             adapter = taskDatesAdapter
         }
+
+        // Set today's date to be selected by default
+        if (selectedDate == today) view.cardToday.applyBackgroundColor(settings.highlightColor)
+        // Otherwise go into taskDatesAdapter and select currently selected date
+        else taskDatesAdapter.select(selected)
 
         // Clicking on today card
         view.cardToday.setOnClickListener {
@@ -81,10 +83,9 @@ class PopupDate(private val parent: Button,
             selected = taskDatesAdapter.selected
 
             // Selected today's date, otherwise selected subsequent date
-            selectedDate = if (selected == -1)
-                getDate()
-            else
-                dates[selected]
+            selectedDate =
+                if (selected == -1) getDate()
+                else dates[selected]
 
             // Apply text to parent and close window
             parent.text = selectedDate.labelShort

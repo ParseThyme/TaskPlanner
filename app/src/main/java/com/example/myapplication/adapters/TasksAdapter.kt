@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
@@ -11,6 +12,7 @@ import com.example.myapplication.popup_windows.PopupDate
 import com.example.myapplication.popup_windows.PopupTag
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
+
 
 // val itemClickedListener: (Task) -> Unit
 // Code above takes in a lambda function as a parameter
@@ -68,20 +70,19 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun editTask(task: Task) {
             // Set view to be applied to alert dialog
-            val view = LayoutInflater.from(itemView.context).
-                inflate(R.layout.task_edit_view, null)
+            val view: View = LayoutInflater.from(itemView.context).inflate(R.layout.task_edit_view, null)
             // Create builder
             val builder = AlertDialog.Builder(itemView.context).apply {
                 setView(view)
                 setCancelable(false)
             }
 
+            // Show dialog
+            val dialog: AlertDialog = builder.show()
+
             // Popups
             datePopup = PopupDate(view.btnEditDate, settings, view.context)
             tagPopup = PopupTag(view.btnSetTag, view.context)
-
-            // Show dialog
-            val taskEditDialog = builder.show()
 
             // ########## Fill values: ##########
             // 1. Set current task as hint text and fill in previous entry
@@ -101,7 +102,7 @@ class TasksAdapter(private val group: TaskGroup,
             view.btnSetTag.setOnClickListener { tagPopup.create() }
 
             // Cancel: close dialog
-            view.cancelBtn.setOnClickListener { taskEditDialog.dismiss() }
+            view.cancelBtn.setOnClickListener { dialog.dismiss() }
 
             // Apply: make changes if edit made
             view.btnApply.setOnClickListener {
@@ -148,7 +149,7 @@ class TasksAdapter(private val group: TaskGroup,
                 // Notify main activity to save change made
                 if (updated) { updateSave() }
 
-                taskEditDialog.dismiss()
+                dialog.dismiss()
             }
         }
 

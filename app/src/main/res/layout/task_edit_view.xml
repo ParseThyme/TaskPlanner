@@ -115,7 +115,6 @@
             android:gravity="top"
             android:maxLines="3"
             android:padding="5dp"
-            android:selectAllOnFocus="true"
             android:text="@string/placeholderText"
             android:textSize="12sp" />
 

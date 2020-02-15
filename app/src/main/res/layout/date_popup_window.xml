@@ -19,8 +19,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cardLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/dateTitleLayout"
@@ -165,19 +165,6 @@
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/labelFiveDays"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="5D"
-                        android:textAllCaps="true"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <TextView
                         android:id="@+id/labelFourDays"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -186,6 +173,19 @@
                         android:gravity="center"
                         android:padding="2dp"
                         android:text="4D"
+                        android:textAllCaps="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/labelFiveDays"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="5D"
                         android:textAllCaps="true"
                         android:textColor="@android:color/white"
                         android:textSize="12sp" />

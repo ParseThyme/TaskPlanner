@@ -74,4 +74,9 @@ class TaskDatesAdapter(private val taskDates: ArrayList<TaskDate>,
         // Notify viewHolder to unhighlight previously selected
         notifyItemChanged(current)
     }
+
+    fun select(dateToSelect: Int){
+        selected = dateToSelect
+        notifyItemChanged(selected)
+    }
 }
