@@ -7,14 +7,14 @@ import android.widget.PopupWindow
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Tag
 import com.example.myapplication.data_classes.setImageResourceFromTag
-import kotlinx.android.synthetic.main.tag_popup_window.view.*
+import kotlinx.android.synthetic.main.popup_tag.view.*
 
-class PopupTag(private val parent: ImageView, private val context: Context) : PopupWindowParent() {
+class PopupTag(private val parent: View, private val context: Context) : PopupWindowParent() {
     var selectedTag = Tag.NONE
     private set
 
-    fun create(anchor: Anchor = Anchor.BottomLeft): PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.tag_popup_window, parent, anchor)
+    fun create(): PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, parent, Anchor.BottomLeft)
         // Change tag displayed selecting appropriate tag from group
         window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
             selectedTag = when (chosenTag) {
@@ -24,7 +24,9 @@ class PopupTag(private val parent: ImageView, private val context: Context) : Po
                 else -> Tag.NONE
             }
 
-            parent.setImageResourceFromTag(selectedTag)
+            // If imageView type parent, we want to update tag icon to newly selected icon
+            if (parent is ImageView) { parent.setImageResourceFromTag(selectedTag) }
+
             window.dismiss()
         }
 

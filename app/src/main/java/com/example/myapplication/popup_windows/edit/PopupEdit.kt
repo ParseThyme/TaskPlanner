@@ -10,19 +10,10 @@ import com.example.myapplication.popup_windows.PopupWindowParent
 import kotlinx.android.synthetic.main.task_edit_popup_window.view.*
 
 class PopupEdit(private val parent: View, private val context: Context) : PopupWindowParent() {
+
     fun create(anchor: Anchor = Anchor.BottomLeft): PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.task_edit_popup_window, parent, anchor)
+        val window:PopupWindow = createAndShow(context, R.layout.popup_date, parent, anchor)
         val view:View = window.contentView
-
-        // Create child popups
-        val tagPopup = PopupTag(view.editTagIcon, parent.context)
-
-        view.editDescCard.setOnClickListener {
-
-        }
-        view.editTagCard.setOnClickListener {
-
-        }
 
         return window
     }

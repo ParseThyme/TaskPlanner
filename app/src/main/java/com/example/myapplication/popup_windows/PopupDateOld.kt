@@ -2,10 +2,8 @@ package com.example.myapplication.popup_windows
 
 import android.content.Context
 import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.PopupWindow
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.Settings
@@ -15,11 +13,11 @@ import com.example.myapplication.data_classes.DayOfWeek
 import com.example.myapplication.data_classes.TaskDate
 import com.example.myapplication.data_classes.addDays
 import com.example.myapplication.data_classes.getDate
-import kotlinx.android.synthetic.main.date_popup_window.view.*
+import kotlinx.android.synthetic.main.popup_date_old.view.*
 
-class PopupDate(private val parent: Button,
-                private val settings: Settings,
-                private val context: Context)
+class PopupDateOld(private val parent: Button,
+                   private val settings: Settings,
+                   private val context: Context)
     : PopupWindowParent()
 {
     // Index of selected date, -1 means today's date otherwise any other subsequent date in the array
@@ -39,7 +37,7 @@ class PopupDate(private val parent: Button,
     }
 
     fun create(): PopupWindow {
-        val window:PopupWindow = super.create(context, R.layout.date_popup_window)
+        val window:PopupWindow = super.create(context, R.layout.popup_date_old)
         val view: View = window.contentView
 
         // Get today's date

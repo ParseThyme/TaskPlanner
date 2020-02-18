@@ -4,11 +4,10 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.PopupDate
+import com.example.myapplication.popup_windows.PopupDateOld
 import com.example.myapplication.popup_windows.PopupTag
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
@@ -25,7 +24,7 @@ class TasksAdapter(private val group: TaskGroup,
                    private val settings: Settings)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
-    lateinit var datePopup: PopupDate
+    lateinit var datePopup: PopupDateOld
     lateinit var tagPopup: PopupTag
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -81,7 +80,7 @@ class TasksAdapter(private val group: TaskGroup,
             val dialog: AlertDialog = builder.show()
 
             // Popups
-            datePopup = PopupDate(view.btnEditDate, settings, view.context)
+            datePopup = PopupDateOld(view.btnEditDate, settings, view.context)
             tagPopup = PopupTag(view.btnSetTag, view.context)
 
             // ########## Fill values: ##########

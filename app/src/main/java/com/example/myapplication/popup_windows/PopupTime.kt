@@ -9,11 +9,11 @@ import com.example.myapplication.R
 import com.example.myapplication.data_classes.durationAsInt
 import com.example.myapplication.data_classes.durationAsString
 import com.example.myapplication.durationMax
-import kotlinx.android.synthetic.main.time_popup_window.view.*
+import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime(private val parent: Button, private val context: Context) : PopupWindowParent() {
     fun create() : PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.time_popup_window, parent)
+        val window:PopupWindow = createAndShow(context, R.layout.popup_time, parent)
         val view:View = window.contentView
 
         // [1]. Time - Set time

@@ -1,12 +1,9 @@
 package com.example.myapplication
 
-import android.app.Application
 import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupWindow
@@ -18,7 +15,7 @@ import com.example.myapplication.popup_windows.*
 import com.example.myapplication.popup_windows.edit.PopupEdit
 // import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_view.*
-import kotlinx.android.synthetic.main.time_popup_window.view.*
+import kotlinx.android.synthetic.main.popup_time.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -55,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     // Popups
     private val viewSizeFn = { getViewDimensions() }
-    private lateinit var datePopup: PopupDate
+    private lateinit var datePopup: PopupDateOld
     private lateinit var timePopup: PopupTime
     private lateinit var tagPopup: PopupTag
 
@@ -79,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         // Divider between date categories
         dateGroupRV.addDivider()
 
-        val popupEdit: PopupEdit = PopupEdit(btnTest, this)
+        val popupEdit = PopupEdit(btnTest, this)
         btnTest.setOnClickListener {
             popupEdit.create()
         }
@@ -145,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        datePopup = PopupDate(btnSetDate, settings, this)
+        datePopup = PopupDateOld(btnSetDate, settings, this)
         timePopup = PopupTime(btnSetTime, this)
         tagPopup = PopupTag(btnSetTag, this)
 
