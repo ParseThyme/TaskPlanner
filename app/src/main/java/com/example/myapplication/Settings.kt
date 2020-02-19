@@ -23,8 +23,6 @@ var maxDate: Long = 0
 
 // Time and Duration of tasks
 var durationMax:Int = 180   // 3 hours, 180 minutes
-var durationHourFormat: Regex = Regex("[0-9]+h")
-var durationMinuteFormat: Regex = Regex("[0-9]+m")
 
 // ########## App settings ##########
 class Settings {

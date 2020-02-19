@@ -46,25 +46,19 @@
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/cardApplyDate"
+                    app:layout_constraintEnd_toStartOf="@+id/btnApplyDate"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardApplyDate"
+                <ImageButton
+                    android:id="@+id/btnApplyDate"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageButton
-                        android:id="@+id/btnApplyDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/white"
-                        app:srcCompat="@drawable/ic_check" />
-                </androidx.cardview.widget.CardView>
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_check" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -114,7 +108,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/textView2"
+                        android:id="@+id/txtTime"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@android:color/white"

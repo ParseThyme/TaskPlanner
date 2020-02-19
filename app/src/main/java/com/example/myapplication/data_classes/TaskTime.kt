@@ -1,18 +1,30 @@
 package com.example.myapplication.data_classes
 
 import android.util.Log
-import com.example.myapplication.durationHourFormat
-import com.example.myapplication.durationMinuteFormat
+
+// Duration regex
+val durationHourFormat: Regex = Regex("[0-9]+h")
+val durationMinuteFormat: Regex = Regex("[0-9]+m")
+
+// Time regex
+val timeHourFormat: Regex = Regex("[0-9]+:")
+val timeMinFormat: Regex = Regex(":[0-9]+")
 
 data class TaskTime (
     var hour: Int = 0,
     var min: Int = 0,
     var timeOfDay: String = "AM",
-    var duration: Int = 0,
-    var durationInc: Int = 5
+    var duration: Int = 0
 )
 
-fun TaskTime.asString(): String { return "$hour:${minutesAsString(min)} $timeOfDay" }
+fun TaskTime.asString(withTimeOfDay: Boolean = true): String {
+    var timeAsString = "$hour:${minutesAsString(min)}"
+
+    // If time of day included, add " AM" OR " PM" to end of string
+    if (withTimeOfDay) timeAsString += " $timeOfDay"
+
+    return timeAsString
+}
 fun TaskTime.isValid(): Boolean { return hour != 0 }
 fun TaskTime.getOppositeTimeOfDay(): String {
     if (timeOfDay == "AM") { return "PM" }
@@ -20,11 +32,10 @@ fun TaskTime.getOppositeTimeOfDay(): String {
 }
 
 fun TaskTime.resetValues() {
-    hour = 0
+    hour = 12
     min = 0
     timeOfDay = "AM"
     duration = 0
-    //durationInc = 5
 }
 
 fun TaskTime.createDisplayedTime(): String {
@@ -54,32 +65,29 @@ fun TaskTime.createDisplayedTime(): String {
             }
 
             // Append t2 to currently displayed time with newline in between
-            displayedTime = "$displayedTime\n${t2Hrs}:${minutesAsString(t2Min)} $t2TimeOfDay"
+            displayedTime = "${displayedTime}\n${t2Hrs}:${minutesAsString(t2Min)} $t2TimeOfDay"
         }
     }
 
     return displayedTime
 }
 
-fun durationAsString(durationAsInt: Int): String {
-    var durationAsString: String
+fun TaskTime.durationAsString(): String {
     // [1]. Duration as Int from 0 to 59 minutes. Return number with "m" appended to the end
-    if (durationAsInt in 0..59) { durationAsString = "${durationAsInt}m" }
-    // [2]. Duration from 60minutes+. Return with hour and minutes format. E.g. 2h30m
-    else {
-        val hours = durationAsInt/60
-        val minutes = durationAsInt % 60
+    if (duration in 0..59) { return "${duration}m" }
 
-        durationAsString = "${hours}h"
+    // [2]. Duration 60m+. Return with hour and minutes format
+    val hours = duration/60
+    val minutes = duration % 60
 
-        // Append on minutes if > 0
-        if (minutes > 0)
-            durationAsString = "$durationAsString${minutes}m"
-    }
+    // Create duration string with hour value
+    var durationString = "${hours}h"
 
-    return durationAsString
+    // Append on minutes if > 0
+    if (minutes > 0) durationString = "$durationString${minutes}m"
+
+    return durationString
 }
-
 fun durationAsInt(durationAsString: String):Int {
     var durationAsInt = 0
     /* Input format will be in format:

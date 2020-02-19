@@ -44,9 +44,6 @@ class MainActivity : AppCompatActivity() {
     private var startDate: String = ""
     private var id: Int = 0
 
-    // Time allocated to task
-    private var time: TaskTime = TaskTime()
-
     // Created task
     private var date: String = ""
 
@@ -161,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         btnSetDate.setOnClickListener { datePopup.create() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
-        btnSetTime.setOnClickListener { timePopupFn() }
+        btnSetTime.setOnClickListener { timePopup.create() }
         btnSetTag.setOnClickListener { tagPopup.create() }
 
         // Select mode
@@ -171,7 +168,7 @@ class MainActivity : AppCompatActivity() {
     private fun newTaskBtnFn() {
         // Get relevant values
         val desc: String = txtTaskDesc.text.toString().trim()
-
+        val time: TaskTime = timePopup.setTime
         val tag: Tag = tagPopup.selectedTag
         val date: TaskDate = datePopup.selectedDate
 
@@ -241,44 +238,6 @@ class MainActivity : AppCompatActivity() {
     private fun resetBtnFn() {}
 
     // ########## Popups ##########
-
-    private fun timePopupFn() {
-        val window:PopupWindow = timePopup.create()
-        val view: View = window.contentView
-
-        // Use currently selected times for time and duration
-        view.txtHour.text = time.hour.toString()
-        view.txtMinute.text = minutesAsString(time.min)
-        view.txtTimeOfDay.text = time.timeOfDay
-
-        view.txtDuration.text = durationAsString(time.duration)
-        view.txtIncDelta.text = durationAsString(time.durationInc)
-
-        // Save updated time when window closed
-        view.btnApplyTime.setOnClickListener {
-            window.dismiss()
-            val hour:Int = view.txtHour.text.toString().toInt()
-            val minutes:Int = view.txtMinute.text.toString().toInt()
-            val timeOfDay:String = view.txtTimeOfDay.text.toString()
-            val duration:Int = durationAsInt(view.txtDuration.text.toString())
-            val durationInc: Int = durationAsInt(view.txtIncDelta.text.toString())
-
-            // Assign time value
-            time = TaskTime(hour, minutes, timeOfDay, duration, durationInc)
-
-            // Generate displayed string
-            var display = time.createDisplayedTime()
-
-            // Clear entry if its hour was "0" and set message to display as default
-            if (!time.isValid()) {
-                time.resetValues()
-                display = defaultTimeMsg
-            }
-
-            // Display time on button
-            btnSetTime.text = display
-        }
-    }
 
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
