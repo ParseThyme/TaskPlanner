@@ -8,6 +8,7 @@
     <!-- Labels -->
     <string name="label_task">Tap to enter a new task</string>
     <string name="label_date">Select date</string>
+    <string name="label_delta">Δ</string>
 
     <!-- Buttons -->
     <string name="btn_add_task">Add Task</string>

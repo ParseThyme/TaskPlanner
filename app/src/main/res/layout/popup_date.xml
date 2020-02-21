@@ -26,7 +26,7 @@
             android:padding="5dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/dateTitleLayout"
+                android:id="@+id/optionsLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -46,14 +46,26 @@
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btnApplyDate"
+                    app:layout_constraintEnd_toStartOf="@+id/btnResetDate"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
+                    android:id="@+id/btnResetDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@android:color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnApplyDate"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_reset_parameters" />
+
+                <ImageButton
                     android:id="@+id/btnApplyDate"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:background="@android:color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -68,57 +80,81 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dateTitleLayout">
+                app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/editDateUpDownLayout"
+                <TextView
+                    android:id="@+id/labelDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:text="Date"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/txtDate"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/btnUpDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@+id/labelDate"
+                    app:srcCompat="@drawable/ic_arrow_filled_up" />
 
-                    <ImageButton
-                        android:id="@+id/btnUpDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_outline"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_arrow_filled_up" />
+                <ImageButton
+                    android:id="@+id/btnDownDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnUpDate"
+                    app:srcCompat="@drawable/ic_arrow_filled_down" />
 
-                    <ImageButton
-                        android:id="@+id/btnDownDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:background="@drawable/bg_outline"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/btnUpDate"
-                        app:srcCompat="@drawable/ic_arrow_filled_down" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/txtDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:background="@android:color/white"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Tu-Feb-18"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnDownDate"
+                    app:layout_constraintStart_toEndOf="@+id/btnUpDate"
+                    app:layout_constraintTop_toTopOf="@+id/btnUpDate" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/editDateDisplayLayout"
+                <TextView
+                    android:id="@+id/labelDeltaDays"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:text="@string/label_delta"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/labelDate"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/labelDate"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtDeltaDays"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
+                    android:background="@android:color/white"
+                    android:ems="2"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="D"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/editDateUpDownLayout"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/txtTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:background="@android:color/white"
-                        android:gravity="center"
-                        android:padding="5dp"
-                        android:text="Tu-Feb-18"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:layout_constraintStart_toEndOf="@+id/txtDate"
+                    app:layout_constraintTop_toBottomOf="@+id/labelDeltaDays" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

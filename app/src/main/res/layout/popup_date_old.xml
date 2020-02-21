@@ -23,7 +23,7 @@
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/dateTitleLayout"
+                android:id="@+id/optionsLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dateTitleLayout">
+                app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
 
                 <TextView
                     android:id="@+id/labelToday"

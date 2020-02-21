@@ -73,9 +73,10 @@ class MainActivity : AppCompatActivity() {
         // Divider between date categories
         dateGroupRV.addDivider()
 
-        val popupEdit = PopupEdit(btnTest, this)
+        // TESTING
+        val popupDate = PopupDate(btnTest, this)
         btnTest.setOnClickListener {
-            popupEdit.create()
+            popupDate.create()
         }
 
         runSetup()

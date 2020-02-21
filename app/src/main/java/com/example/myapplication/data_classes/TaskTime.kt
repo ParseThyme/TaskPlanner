@@ -2,14 +2,6 @@ package com.example.myapplication.data_classes
 
 import android.util.Log
 
-// Duration regex
-val durationHourFormat: Regex = Regex("[0-9]+h")
-val durationMinuteFormat: Regex = Regex("[0-9]+m")
-
-// Time regex
-val timeHourFormat: Regex = Regex("[0-9]+:")
-val timeMinFormat: Regex = Regex(":[0-9]+")
-
 data class TaskTime (
     var hour: Int = 0,
     var min: Int = 0,
@@ -87,34 +79,6 @@ fun TaskTime.durationAsString(): String {
     if (minutes > 0) durationString = "$durationString${minutes}m"
 
     return durationString
-}
-fun durationAsInt(durationAsString: String):Int {
-    var durationAsInt = 0
-    /* Input format will be in format:
-     - 0m    = 0-9   minutes
-     - 00m   = 10-59 minutes
-     - 0h,   = 1-9   hours
-     - 0h0m  = 1-9   hours,   0-9 minutes
-     - 0h00m = 1-9   hours,   10-59 minutes
-     */
-
-    // Find values for hour and minutes, via regex
-    var hour: String? = durationHourFormat.find(durationAsString)?.value
-    var minute:String? = durationMinuteFormat.find(durationAsString)?.value
-
-    // Hour value exists. Convert to minutes
-    if (hour != null) {
-        // Remove "h" at end, then multiply by 60 to get minutes
-        val hourAsInt:Int = hour.dropLast(1).toInt()
-        durationAsInt += hourAsInt * 60
-    }
-    // Minutes value exists
-    if (minute != null) {
-        val minuteAsInt = minute.dropLast(1).toInt()
-        durationAsInt += minuteAsInt
-    }
-
-    return durationAsInt
 }
 
 fun minutesAsString(minutes: Int): String {

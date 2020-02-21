@@ -44,7 +44,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btnResetTime"
+                    app:layout_constraintEnd_toStartOf="@+id/btnResetDate"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,7 +62,7 @@
                     app:srcCompat="@drawable/ic_close" />
 
                 <ImageButton
-                    android:id="@+id/btnResetTime"
+                    android:id="@+id/btnResetDate"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginEnd="5dp"
@@ -104,7 +104,7 @@
                         android:id="@+id/editTimeDisplayLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
+                        android:background="@android:color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -115,7 +115,6 @@
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
                             android:gravity="center"
-                            android:padding="2dp"
                             android:text="Time"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
@@ -127,7 +126,7 @@
                             android:id="@+id/btnTimeUp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/labelTime"
                             app:srcCompat="@drawable/ic_arrow_filled_up" />
@@ -136,16 +135,16 @@
                             android:id="@+id/btnTimeDown"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/btnTimeUp"
                             app:srcCompat="@drawable/ic_arrow_filled_down" />
 
                         <TextView
-                            android:id="@+id/txtTime"
+                            android:id="@+id/txtDate"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             android:ems="3"
                             android:gravity="center"
                             android:text="12:00"
@@ -157,13 +156,13 @@
                             android:id="@+id/txtTimeOfDay"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             android:ems="2"
                             android:gravity="center"
                             android:text="PM"
                             android:textColor="@color/bottomBarText"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/txtTime"
+                            app:layout_constraintStart_toEndOf="@+id/txtDate"
                             app:layout_constraintTop_toBottomOf="@+id/labelTime" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,7 +172,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:layout_marginLeft="5dp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@android:color/white"
                         app:layout_constraintStart_toEndOf="@+id/editTimeDisplayLayout"
                         app:layout_constraintTop_toBottomOf="@+id/editTimeDisplayLayout"
                         app:layout_constraintTop_toTopOf="parent">
@@ -184,7 +183,6 @@
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
                             android:gravity="center"
-                            android:padding="2dp"
                             android:text="Duration"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
@@ -193,25 +191,11 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
-                            android:id="@+id/labelDelta"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:background="@color/colorPrimary"
-                            android:gravity="center"
-                            android:text="Δ"
-                            android:textColor="@android:color/white"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toTopOf="@+id/txtIncDelta"
-                            app:layout_constraintEnd_toEndOf="@+id/txtIncDelta"
-                            app:layout_constraintStart_toStartOf="@+id/txtIncDelta"
-                            app:layout_constraintTop_toTopOf="parent" />
-
                         <ImageButton
                             android:id="@+id/btnDurationUp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/labelDuration"
                             app:srcCompat="@drawable/ic_arrow_filled_up" />
@@ -220,7 +204,7 @@
                             android:id="@+id/txtDuration"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             android:ems="3"
                             android:gravity="center"
                             android:text="0m"
@@ -233,25 +217,48 @@
                             android:id="@+id/btnDurationDown"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/btnDurationUp"
                             app:srcCompat="@drawable/ic_arrow_filled_down" />
 
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/timeDeltaLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:background="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/cardDurationLayout"
+                        app:layout_constraintTop_toTopOf="parent">
+
                         <TextView
-                            android:id="@+id/txtIncDelta"
+                            android:id="@+id/labelDelta"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@color/colorPrimary"
+                            android:gravity="center"
+                            android:text="@string/label_delta"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/txtTimeDelta"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginLeft="5dp"
-                            android:background="@android:color/white"
+                            android:background="@android:color/transparent"
                             android:ems="2"
                             android:gravity="center"
                             android:text="5m"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/labelDuration"
-                            app:layout_constraintTop_toTopOf="@+id/txtDuration" />
-
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/labelDelta" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
