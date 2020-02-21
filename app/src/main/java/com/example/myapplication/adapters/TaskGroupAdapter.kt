@@ -79,7 +79,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
         fun bind(group: TaskGroup) {
             // Assign date label
-            dateLabel.text = group.date.label
+            dateLabel.text = group.date.createLabel()
 
             // Update view if collapsed/expanded
             setExpandCollapse(group)

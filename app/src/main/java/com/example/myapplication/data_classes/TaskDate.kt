@@ -13,46 +13,63 @@ private val daysOfWeek: ArrayList<DayOfWeek> = arrayListOf(
 )
 
 data class TaskDate(
-    val label: String = "",
-    val labelShort: String = "",
-    val labelShortest: String = "",
-    val id: Int = 0,
+    var id: Int = 0,
+    //var dayName: DayOfWeek = DayOfWeek.Mo,
 
-    val dayName: DayOfWeek = DayOfWeek.Mo
+    var day: Int = 0,
+    var month: Int = 0,
+    var year: Int = 0
 )
 
-fun getDate(addedDays: Int = 0): TaskDate {
+fun today(): TaskDate {
     // Get calendar and add additional days, if addedDays == 0 then defaults to today's day
     val cal = Calendar.getInstance()
-    cal.add(Calendar.DATE, addedDays)
-
-    // Time in mills == Long value representing date
-    val timeInMills = cal.timeInMillis
 
     // ID, used for sorting. E.g. 12th Feb 2020 = 20200212 -> 2020 | 02 | 12 (YYYYMMDD ordering)
     val id = idFormat.format(cal.timeInMillis).toInt()
 
-    // Calendar.DAY_OF_WEEK returns day from Sunday -> Saturday. Since from 1 - 7 we need to - 1 to match
-    val dayOfWeek: DayOfWeek = daysOfWeek[cal.get(Calendar.DAY_OF_WEEK) - 1]
+    // Used for calculating subsequent days
+    val day: Int = cal.get(Calendar.DAY_OF_MONTH)
+    val month: Int = cal.get(Calendar.MONTH)
+    val year: Int = cal.get(Calendar.YEAR)
 
-    // Day number and ordinal (e.g. 1st, 2nd, 3rd)
-    val day: String = dayFormat.format(timeInMills)
-    val ordinal = getOrdinal(cal.get(Calendar.DAY_OF_MONTH))
+    return TaskDate(id, day, month, year)
+}
 
-    // Standard length: E.g. Thursday, February
-    val dayName: String = SimpleDateFormat("EEEE").format(timeInMills)
-    val month: String = SimpleDateFormat("MMMM").format(timeInMills)
-    val date = "$dayName $month $day$ordinal"
+fun TaskDate.addDays(addedDays: Int): TaskDate {
+    Log.d("Test", "Date is: ${this.createLabel(Label.Short)}")
 
-    // Short length:
-    val dayNameShort: String = dayOfWeek.toString()
-    val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
-    val dateShort = "$dayNameShort-$day-$monthShort"
+    val cal = Calendar.getInstance()
+    cal.set(this.year, this.month, this.day)
+    cal.add(Calendar.DATE, addedDays)
 
-    // Shortest length (No day name)
-    val dateShortest = "$day-$monthShort"
+    // ID, used for sorting. E.g. 12th Feb 2020 = 20200212 -> 2020 | 02 | 12 (YYYYMMDD ordering)
+    val id = idFormat.format(cal.timeInMillis).toInt()
 
-    return TaskDate(date, dateShort, dateShortest, id, dayOfWeek)
+    // Used for calculating subsequent days
+    val day: Int = cal.get(Calendar.DAY_OF_MONTH)
+    val month: Int = cal.get(Calendar.MONTH)
+    val year: Int = cal.get(Calendar.YEAR)
+
+    Log.d("Test", "Adding $addedDays days: ${this.createLabel(Label.Short)}")
+
+    // Update old values
+    return TaskDate(id, day, month, year)
+}
+
+private fun TaskDate.updateValues(id:Int = -1, day:Int = -1, month:Int = -1, year:Int = -1) {
+    // All values are optional to update, do nothing if value is -1
+    if (id != -1)
+        this.id = id
+
+    if (day != -1)
+        this.day = day
+
+    if (month != -1)
+        this.month = month
+
+    if (year != -1)
+        this.year = year
 }
 
 private fun getOrdinal(dayNum: Int) : String {
@@ -67,6 +84,43 @@ private fun getOrdinal(dayNum: Int) : String {
             else -> "th"
         }
     }
+}
+
+enum class Label { Full, Abbreviated, Short }
+fun TaskDate.createLabel(type: Label = Label.Full): String {
+    // Get task's date
+    val cal:Calendar = Calendar.getInstance()
+    cal.set(this.year, this.month, this.day)
+
+    // Calculate timeInMills, create label
+    val timeInMills = cal.timeInMillis
+    var label: String
+
+    // [1]. Full length:
+    if (type == Label.Full) {
+        // E.g. Friday February 21st
+        val ordinal = getOrdinal(cal.get(Calendar.DAY_OF_MONTH))
+        val dayName: String = SimpleDateFormat("EEEE").format(timeInMills)
+        val month: String = SimpleDateFormat("MMMM").format(timeInMills)
+        label = "$dayName $month $day$ordinal"
+    }
+    else {
+        // val dayNameShort: String = dayOfWeek.toString()
+        val dayNameShort: String = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
+        val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
+
+        // [2]. Abbreviated:
+        label =
+            if (type == Label.Abbreviated) {
+                "$dayNameShort-$day-$monthShort"    // E.g. Fr-21-Feb
+            }
+            // [3]. Short:
+            else {
+                "$day-$monthShort"                  // E.g. 21-Feb
+            }
+    }
+
+    return label
 }
 
 enum class DayOfWeek { Su, Mo, Tu, We, Th, Fr, Sa }

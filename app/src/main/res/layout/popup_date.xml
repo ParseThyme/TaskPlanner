@@ -79,6 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:background="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
 
@@ -118,6 +119,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:background="@android:color/white"
+                    android:ems="5"
                     android:gravity="center"
                     android:padding="5dp"
                     android:text="Tu-Feb-18"
@@ -125,37 +127,44 @@
                     app:layout_constraintStart_toEndOf="@+id/btnUpDate"
                     app:layout_constraintTop_toTopOf="@+id/btnUpDate" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/editDeltaLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:background="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/editDateLayout"
+                app:layout_constraintStart_toEndOf="@+id/editDateLayout"
+                app:layout_constraintTop_toTopOf="@+id/editDateLayout">
+
                 <TextView
                     android:id="@+id/labelDeltaDays"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginLeft="5dp"
                     android:background="@color/colorPrimary"
                     android:gravity="center"
                     android:text="@string/label_delta"
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/labelDate"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/labelDate"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/txtDeltaDays"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:background="@android:color/white"
+                    android:background="@android:color/transparent"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="D"
+                    android:text="M"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/txtDate"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/labelDeltaDays" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

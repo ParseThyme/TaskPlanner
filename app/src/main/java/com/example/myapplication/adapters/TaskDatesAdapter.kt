@@ -9,7 +9,9 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
+import com.example.myapplication.data_classes.Label
 import com.example.myapplication.data_classes.TaskDate
+import com.example.myapplication.data_classes.createLabel
 import kotlinx.android.synthetic.main.task_date_rv.view.*
 
 class TaskDatesAdapter(private val taskDates: ArrayList<TaskDate>,
@@ -30,7 +32,7 @@ class TaskDatesAdapter(private val taskDates: ArrayList<TaskDate>,
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bind(entry: TaskDate) {
             // Assign date entry
-            itemView.txtDate.text = entry.labelShortest
+            itemView.txtDate.text = entry.createLabel(Label.Short)
 
             // Set checked if selected and update background color
             if (selected == adapterPosition)

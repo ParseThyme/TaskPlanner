@@ -35,15 +35,15 @@ class Settings {
     var taskBaseColor: String = "#00000000"
 
     // Calendar values
-    private val defCalendarRange: Int = 30
-    var calendarRange: Int = defCalendarRange
+    private val defMaxDays: Int = 30
+    var maxDays: Int = defMaxDays
 
     fun load() {
 
     }
 
     fun setDefault() {
-        calendarRange = defCalendarRange
+        maxDays = defMaxDays
 
         highlightColor = defHighlightColor
     }

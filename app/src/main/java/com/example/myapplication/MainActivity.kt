@@ -6,16 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageButton
-import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popup_windows.*
-import com.example.myapplication.popup_windows.edit.PopupEdit
 // import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_view.*
-import kotlinx.android.synthetic.main.popup_time.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -39,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var mode: Mode = Mode.START
 
     // Ensure you can only select either today or future dates, ToDo: Customizable
-    private val calMaxDays = settings.calendarRange
+    private val calMaxDays = settings.maxDays
     // Calendar limits + starting values
     private var startDate: String = ""
     private var id: Int = 0
@@ -49,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     // Popups
     private val viewSizeFn = { getViewDimensions() }
-    private lateinit var datePopup: PopupDateOld
+    private lateinit var datePopup: PopupDate
     private lateinit var timePopup: PopupTime
     private lateinit var tagPopup: PopupTag
 
@@ -73,14 +70,14 @@ class MainActivity : AppCompatActivity() {
         // Divider between date categories
         dateGroupRV.addDivider()
 
-        // TESTING
-        val popupDate = PopupDate(btnTest, this)
-        btnTest.setOnClickListener {
-            popupDate.create()
-        }
-
         runSetup()
         setMode(Mode.ADD)
+
+        // TESTING
+        datePopup = PopupDate(btnTest, settings,this)
+        btnTest.setOnClickListener {
+            datePopup.create()
+        }
     }
 
     // ########## Setup related ##########
@@ -140,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        datePopup = PopupDateOld(btnSetDate, settings, this)
+        // datePopup = PopupDate(btnSetDate, settings, this)
         timePopup = PopupTime(btnSetTime, this)
         tagPopup = PopupTag(btnSetTag, this)
 
@@ -156,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         // ##############################
 
         // Add mode
-        btnSetDate.setOnClickListener { datePopup.create() }
+        //btnSetDate.setOnClickListener { datePopup.create() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
         btnSetTime.setOnClickListener { timePopup.create() }
@@ -171,7 +168,7 @@ class MainActivity : AppCompatActivity() {
         val desc: String = txtTaskDesc.text.toString().trim()
         val time: TaskTime = timePopup.setTime
         val tag: Tag = tagPopup.selectedTag
-        val date: TaskDate = datePopup.selectedDate
+        val date: TaskDate = datePopup.setDate
 
         val newTask = Task(desc, tag, time)
 

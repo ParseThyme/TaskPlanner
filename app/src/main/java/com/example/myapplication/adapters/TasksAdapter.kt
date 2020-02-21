@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.PopupDateOld
+import com.example.myapplication.popup_windows.PopupDate
 import com.example.myapplication.popup_windows.PopupTag
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
@@ -24,7 +24,7 @@ class TasksAdapter(private val group: TaskGroup,
                    private val settings: Settings)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
-    lateinit var datePopup: PopupDateOld
+    lateinit var datePopup: PopupDate
     lateinit var tagPopup: PopupTag
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -80,7 +80,7 @@ class TasksAdapter(private val group: TaskGroup,
             val dialog: AlertDialog = builder.show()
 
             // Popups
-            datePopup = PopupDateOld(view.btnEditDate, settings, view.context)
+            datePopup = PopupDate(view.btnEditDate, settings, view.context)
             tagPopup = PopupTag(view.btnSetTag, view.context)
 
             // ########## Fill values: ##########
@@ -90,7 +90,7 @@ class TasksAdapter(private val group: TaskGroup,
             view.txtEditTaskDesc.hint = itemView.desc.text
 
             // 2. Set date and setup onClick behaviour
-            view.btnEditDate.text = group.date.labelShort
+            view.btnEditDate.text = group.date.createLabel(Label.Abbreviated)
             view.btnEditDate.setOnClickListener { datePopup.create() }
 
             // ########## Listeners ##########
@@ -128,7 +128,7 @@ class TasksAdapter(private val group: TaskGroup,
                 }
 
                 // Check if date has been changed
-                if (editedDate != group.date.label) {
+                if (editedDate != group.date.createLabel()) {
                     updated = true
 
                     // Deselect task if selected
@@ -142,7 +142,7 @@ class TasksAdapter(private val group: TaskGroup,
                     }
 
                     // Notify group adapter to change date
-                    changedDate(task, datePopup.selectedDate, group.date.id)
+                    changedDate(task, datePopup.setDate, group.date.id)
                 }
 
                 // Notify main activity to save change made
