@@ -35,13 +35,8 @@ class MainActivity : AppCompatActivity() {
     private var selected: Int = 0
     private var mode: Mode = Mode.START
 
-    // Ensure you can only select either today or future dates, ToDo: Customizable
-    private val calMaxDays = settings.maxDays
-    // Calendar limits + starting values
-    private var startDate: String = ""
-    private var id: Int = 0
-
     // Created task
+    private val today: TaskDate = today()
     private var date: String = ""
 
     // Popups
@@ -72,12 +67,6 @@ class MainActivity : AppCompatActivity() {
 
         runSetup()
         setMode(Mode.ADD)
-
-        // TESTING
-        datePopup = PopupDate(btnTest, settings,this)
-        btnTest.setOnClickListener {
-            datePopup.create()
-        }
     }
 
     // ########## Setup related ##########
@@ -92,20 +81,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupLateInit() {
-        // Add new task variables
-        val cal = Calendar.getInstance()
         // Apply starting date to be today's date at bottom bar
-        btnSetDate.text = createDateLabel(cal, true)
-
-        // Create starting date, id and min date
-        startDate = createDateLabel(cal)
-        id = idFormat.format(cal.timeInMillis).toInt()
-        minDate = cal.timeInMillis
-        // Add extra days to get max date
-        cal.add(Calendar.DATE, calMaxDays)
-        maxDate = cal.timeInMillis
-        // Reset date back to starting date
-        date = startDate
+        btnSetDate.text = today.createLabel(Size.Med)
 
         // Input Validation:
         // TextWatcher. Ensure confirm button only enabled when task entered (can't submit blank tasks)
@@ -137,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        // datePopup = PopupDate(btnSetDate, settings, this)
+        datePopup = PopupDate(btnSetDate, settings, this)
         timePopup = PopupTime(btnSetTime, this)
         tagPopup = PopupTag(btnSetTag, this)
 
@@ -153,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         // ##############################
 
         // Add mode
-        //btnSetDate.setOnClickListener { datePopup.create() }
+        btnSetDate.setOnClickListener { datePopup.create() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
         btnSetTime.setOnClickListener { timePopup.create() }

@@ -1,20 +1,15 @@
 package com.example.myapplication.data_classes
 
 import android.util.Log
-import com.example.myapplication.dayFormat
-import com.example.myapplication.idFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-private val daysOfWeek: ArrayList<DayOfWeek> = arrayListOf(
-    DayOfWeek.Su, DayOfWeek.Mo, DayOfWeek.Tu,
-    DayOfWeek.We, DayOfWeek.Th, DayOfWeek.Fr,
-    DayOfWeek.Sa
-)
+// Add new task formats + variables
+// Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
+val idFormat = SimpleDateFormat("yyyyMMdd")
 
 data class TaskDate(
     var id: Int = 0,
-    //var dayName: DayOfWeek = DayOfWeek.Mo,
 
     var day: Int = 0,
     var month: Int = 0,
@@ -36,40 +31,26 @@ fun today(): TaskDate {
     return TaskDate(id, day, month, year)
 }
 
-fun TaskDate.addDays(addedDays: Int): TaskDate {
-    Log.d("Test", "Date is: ${this.createLabel(Label.Short)}")
+fun TaskDate.addMonths(addedMonths: Int): TaskDate { return this.addPeriod(false, addedMonths) }
+fun TaskDate.addDays(addedDays: Int): TaskDate { return this.addPeriod(true, addedDays) }
 
+private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
     val cal = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
-    cal.add(Calendar.DATE, addedDays)
+
+    // Either add days to current date, or months. Increment/Decrement based on value
+    if (days) { cal.add(Calendar.DATE, value) }
+    else { cal.add(Calendar.MONTH, value) }
 
     // ID, used for sorting. E.g. 12th Feb 2020 = 20200212 -> 2020 | 02 | 12 (YYYYMMDD ordering)
     val id = idFormat.format(cal.timeInMillis).toInt()
-
     // Used for calculating subsequent days
     val day: Int = cal.get(Calendar.DAY_OF_MONTH)
     val month: Int = cal.get(Calendar.MONTH)
     val year: Int = cal.get(Calendar.YEAR)
 
-    Log.d("Test", "Adding $addedDays days: ${this.createLabel(Label.Short)}")
-
-    // Update old values
+    // Return new date
     return TaskDate(id, day, month, year)
-}
-
-private fun TaskDate.updateValues(id:Int = -1, day:Int = -1, month:Int = -1, year:Int = -1) {
-    // All values are optional to update, do nothing if value is -1
-    if (id != -1)
-        this.id = id
-
-    if (day != -1)
-        this.day = day
-
-    if (month != -1)
-        this.month = month
-
-    if (year != -1)
-        this.year = year
 }
 
 private fun getOrdinal(dayNum: Int) : String {
@@ -86,8 +67,8 @@ private fun getOrdinal(dayNum: Int) : String {
     }
 }
 
-enum class Label { Full, Abbreviated, Short }
-fun TaskDate.createLabel(type: Label = Label.Full): String {
+enum class Size { Long, Med, Short }
+fun TaskDate.createLabel(size: Size = Size.Long): String {
     // Get task's date
     val cal:Calendar = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
@@ -97,7 +78,7 @@ fun TaskDate.createLabel(type: Label = Label.Full): String {
     var label: String
 
     // [1]. Full length:
-    if (type == Label.Full) {
+    if (size == Size.Long) {
         // E.g. Friday February 21st
         val ordinal = getOrdinal(cal.get(Calendar.DAY_OF_MONTH))
         val dayName: String = SimpleDateFormat("EEEE").format(timeInMills)
@@ -109,9 +90,9 @@ fun TaskDate.createLabel(type: Label = Label.Full): String {
         val dayNameShort: String = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
         val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
 
-        // [2]. Abbreviated:
+        // [2]. Medium:
         label =
-            if (type == Label.Abbreviated) {
+            if (size == Size.Med) {
                 "$dayNameShort-$day-$monthShort"    // E.g. Fr-21-Feb
             }
             // [3]. Short:
@@ -121,14 +102,4 @@ fun TaskDate.createLabel(type: Label = Label.Full): String {
     }
 
     return label
-}
-
-enum class DayOfWeek { Su, Mo, Tu, We, Th, Fr, Sa }
-// https://stackoverflow.com/questions/17006239/whats-the-best-way-to-implement-next-and-previous-on-an-enum-type
-fun DayOfWeek.addDays(addedDays: Int = 1): DayOfWeek {
-    // Only enable moving day forward, return same day if moving backwards
-    if (addedDays < 0) return this
-
-    // Increment day of week to next, if larger than enum size (E.g. past Sa) reset to Su
-    return daysOfWeek[(this.ordinal + addedDays) % daysOfWeek.count()]
 }

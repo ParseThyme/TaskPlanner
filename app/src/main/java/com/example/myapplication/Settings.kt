@@ -13,14 +13,6 @@ const val spTaskGroupList = "TaskGroupList"
 const val mainTitle = "My Task List"
 const val defaultTimeMsg = "Set Time"
 
-// Add new task formats + variables
-// Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
-val dayFormat = SimpleDateFormat("d")
-val idFormat = SimpleDateFormat("yyyyMMdd")
-
-var minDate: Long = 0
-var maxDate: Long = 0
-
 // Time and Duration of tasks
 var durationMax:Int = 180   // 3 hours, 180 minutes
 
@@ -35,7 +27,7 @@ class Settings {
     var taskBaseColor: String = "#00000000"
 
     // Calendar values
-    private val defMaxDays: Int = 30
+    private val defMaxDays: Int = 28
     var maxDays: Int = defMaxDays
 
     fun load() {

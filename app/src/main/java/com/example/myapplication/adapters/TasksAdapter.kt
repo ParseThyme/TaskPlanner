@@ -90,7 +90,7 @@ class TasksAdapter(private val group: TaskGroup,
             view.txtEditTaskDesc.hint = itemView.desc.text
 
             // 2. Set date and setup onClick behaviour
-            view.btnEditDate.text = group.date.createLabel(Label.Abbreviated)
+            view.btnEditDate.text = group.date.createLabel(Size.Med)
             view.btnEditDate.setOnClickListener { datePopup.create() }
 
             // ########## Listeners ##########

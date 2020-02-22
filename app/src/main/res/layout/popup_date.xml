@@ -97,7 +97,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/btnUpDate"
+                    android:id="@+id/btnDecDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
@@ -106,12 +106,12 @@
                     app:srcCompat="@drawable/ic_arrow_filled_up" />
 
                 <ImageButton
-                    android:id="@+id/btnDownDate"
+                    android:id="@+id/btnIncDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btnUpDate"
+                    app:layout_constraintTop_toBottomOf="@+id/btnDecDate"
                     app:srcCompat="@drawable/ic_arrow_filled_down" />
 
                 <TextView
@@ -123,9 +123,9 @@
                     android:gravity="center"
                     android:padding="5dp"
                     android:text="Tu-Feb-18"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnDownDate"
-                    app:layout_constraintStart_toEndOf="@+id/btnUpDate"
-                    app:layout_constraintTop_toTopOf="@+id/btnUpDate" />
+                    app:layout_constraintBottom_toBottomOf="@+id/btnIncDate"
+                    app:layout_constraintStart_toEndOf="@+id/btnDecDate"
+                    app:layout_constraintTop_toTopOf="@+id/btnDecDate" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -161,7 +161,7 @@
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="M"
+                    android:text="D"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/labelDeltaDays" />

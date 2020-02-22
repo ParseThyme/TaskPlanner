@@ -8,16 +8,6 @@
     android:background="#E7E7E7"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test Popup"
-        app:layout_constraintBottom_toBottomOf="@+id/dateGroupRV"
-        app:layout_constraintEnd_toEndOf="@+id/dateGroupRV"
-        app:layout_constraintStart_toStartOf="@+id/topBar"
-        app:layout_constraintTop_toTopOf="@+id/topBar" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"

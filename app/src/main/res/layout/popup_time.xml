@@ -123,7 +123,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <ImageButton
-                            android:id="@+id/btnTimeUp"
+                            android:id="@+id/btnTimeInc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
@@ -132,12 +132,12 @@
                             app:srcCompat="@drawable/ic_arrow_filled_up" />
 
                         <ImageButton
-                            android:id="@+id/btnTimeDown"
+                            android:id="@+id/btnTimeDec"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/btnTimeUp"
+                            app:layout_constraintTop_toBottomOf="@+id/btnTimeInc"
                             app:srcCompat="@drawable/ic_arrow_filled_down" />
 
                         <TextView
@@ -149,7 +149,7 @@
                             android:gravity="center"
                             android:text="12:00"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/btnTimeUp"
+                            app:layout_constraintStart_toEndOf="@+id/btnTimeInc"
                             app:layout_constraintTop_toBottomOf="@+id/labelTime" />
 
                         <TextView
@@ -186,13 +186,13 @@
                             android:text="Duration"
                             android:textColor="@android:color/white"
                             android:textSize="12sp"
-                            app:layout_constraintBottom_toTopOf="@+id/btnDurationUp"
+                            app:layout_constraintBottom_toTopOf="@+id/btnLengthInc"
                             app:layout_constraintEnd_toEndOf="@+id/txtDuration"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <ImageButton
-                            android:id="@+id/btnDurationUp"
+                            android:id="@+id/btnLengthInc"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
@@ -210,16 +210,16 @@
                             android:text="0m"
                             android:textSize="14sp"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/btnDurationUp"
+                            app:layout_constraintStart_toEndOf="@id/btnLengthInc"
                             app:layout_constraintTop_toBottomOf="@+id/labelDuration" />
 
                         <ImageButton
-                            android:id="@+id/btnDurationDown"
+                            android:id="@+id/btnLengthDec"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/btnDurationUp"
+                            app:layout_constraintTop_toBottomOf="@+id/btnLengthInc"
                             app:srcCompat="@drawable/ic_arrow_filled_down" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -249,7 +249,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/txtTimeDelta"
+                            android:id="@+id/txtDeltaTime"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:background="@android:color/transparent"

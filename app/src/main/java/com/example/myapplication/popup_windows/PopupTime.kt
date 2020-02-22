@@ -26,37 +26,49 @@ class PopupTime(private val parent: Button, private val context: Context) : Popu
         time = setTime.copy()
 
         // For unset times, reset value to default
-        if (!time.isValid()) { window.resetValues() }
+        if (!time.isValid()) {
+            time.resetValues()
+            view.txtDate.text = "12:00"
+            view.txtTimeOfDay.text = "AM"
+            view.txtDuration.text = "0m"
+            view.txtDeltaTime.text = "5m"
+        }
 
         // Apply values based on set time
         view.txtDate.text = time.asString(false)
         view.txtTimeOfDay.text = time.timeOfDay
         view.txtDuration.text = time.durationAsString()
-        view.txtTimeDelta.text = deltaAsString()
+        view.txtDeltaTime.text = deltaAsString()
 
         // Allocate onClick behaviours:
         // Time and time of day
-        view.btnTimeUp.setOnClickListener { view.txtDate.updateTime(view.txtTimeOfDay) }
-        view.btnTimeDown.setOnClickListener { view.txtDate.updateTime(view.txtTimeOfDay, false) }
-        view.txtTimeOfDay.setOnClickListener { view.txtTimeOfDay.changeTimeOfDay() }
+        view.btnTimeInc.setOnClickListener { view.txtDate.updateTime(view.txtTimeOfDay) }
+        view.btnTimeDec.setOnClickListener { view.txtDate.updateTime(view.txtTimeOfDay, false) }
+        view.txtTimeOfDay.setOnClickListener { view.txtTimeOfDay.updateTimeOfDay() }
 
         // Duration
         // Check duration. Hide appropriate button
         when (time.duration ) {
-            0 -> view.btnDurationDown.visibility = View.INVISIBLE           // Prevent decrement
-            durationMax -> view.btnDurationUp.visibility = View.INVISIBLE   // Prevent increment
+            0 -> view.btnLengthDec.visibility = View.INVISIBLE             // Prevent decrement
+            durationMax -> view.btnLengthInc.visibility = View.INVISIBLE   // Prevent increment
         }
 
-        view.btnDurationUp.setOnClickListener {
-            view.txtDuration.updateDuration(view.btnDurationUp, view.btnDurationDown) }
-        view.btnDurationDown.setOnClickListener {
-            view.txtDuration.updateDuration(view.btnDurationUp, view.btnDurationDown, false) }
+        view.btnLengthInc.setOnClickListener {
+            view.txtDuration.updateLength(view.btnLengthInc, view.btnLengthDec) }
+        view.btnLengthDec.setOnClickListener {
+            view.txtDuration.updateLength(view.btnLengthInc, view.btnLengthDec, false) }
 
         // Delta value, affects increment for time and duration
-        view.txtTimeDelta.setOnClickListener { view.txtTimeDelta.updateDelta() }
+        view.txtDeltaTime.setOnClickListener { view.txtDeltaTime.updateDelta() }
 
         // Reset values
-        view.btnResetDate.setOnClickListener { window.resetValues() }
+        view.btnResetDate.setOnClickListener {
+            time.resetValues()
+            view.txtDate.text = "12:00"
+            view.txtTimeOfDay.text = "AM"
+            view.txtDuration.text = "0m"
+            view.txtDeltaTime.text = "5m"
+        }
 
         // Save updated time when window closed
         view.btnApplyTime.setOnClickListener {
@@ -73,16 +85,6 @@ class PopupTime(private val parent: Button, private val context: Context) : Popu
         }
 
         return window
-    }
-
-    private fun PopupWindow.resetValues() {
-        val view:View = this.contentView
-
-        time.resetValues()
-        view.txtDate.text = "12:00"
-        view.txtTimeOfDay.text = "AM"
-        view.txtDuration.text = "0m"
-        view.txtTimeDelta.text = "5m"
     }
 
     private fun TextView.updateTime(timeOfDayView: TextView, increment: Boolean = true) {
@@ -145,7 +147,7 @@ class PopupTime(private val parent: Button, private val context: Context) : Popu
         // Show new displayed time
         this.text = time.asString(false)
     }
-    private fun TextView.updateDuration(btnUp: View, btnDown: View, increment: Boolean = true) {
+    private fun TextView.updateLength(btnUp: View, btnDown: View, increment: Boolean = true) {
         // Increment
         if (increment) {
             // Revert hiding down button, as now possible to decrement
@@ -175,13 +177,6 @@ class PopupTime(private val parent: Button, private val context: Context) : Popu
         // Convert duration value to String format, assign to display
         this.text = time.durationAsString()
     }
-
-    private fun TextView.changeTimeOfDay() {
-        // Flip time of day
-        time.timeOfDay = time.getOppositeTimeOfDay()
-        text = time.timeOfDay
-    }
-
     private fun TextView.updateDelta() {
         when (timeDelta) {
             5 -> timeDelta = 10
@@ -193,6 +188,12 @@ class PopupTime(private val parent: Button, private val context: Context) : Popu
         // Replace string with 1h if 60 minutes, otherwise append on m for minute values
         this.text = deltaAsString()
     }
+    private fun TextView.updateTimeOfDay() {
+        // Flip time of day
+        time.timeOfDay = time.getOppositeTimeOfDay()
+        text = time.timeOfDay
+    }
+
     private fun deltaAsString(): String {
         var result:String = timeDelta.toString()
         if (timeDelta == 60) result = "1h"
