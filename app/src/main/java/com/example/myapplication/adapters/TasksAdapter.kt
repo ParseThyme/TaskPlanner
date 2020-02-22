@@ -23,9 +23,6 @@ class TasksAdapter(private val group: TaskGroup,
                    private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
-    lateinit var datePopup: PopupDate
-    lateinit var tagPopup: PopupTag
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v =  parent.inflate(R.layout.task_entry_rv, false)
         return ViewHolder(v)
@@ -66,6 +63,12 @@ class TasksAdapter(private val group: TaskGroup,
             }
         }
 
+        private fun editTask(task: Task) {
+
+            // updateSave()
+        }
+
+        /*
         private fun editTask(task: Task) {
             // Set view to be applied to alert dialog
             val view: View = LayoutInflater.from(itemView.context).inflate(R.layout.task_edit_view, null)
@@ -150,6 +153,7 @@ class TasksAdapter(private val group: TaskGroup,
                 dialog.dismiss()
             }
         }
+        */
 
         private fun toggleSelected(isSelected: Boolean) {
             if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }

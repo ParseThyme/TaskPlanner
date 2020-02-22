@@ -12,10 +12,8 @@ import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popup_windows.*
 // import com.example.myapplication.popup_windows.createDatePopup
-import kotlinx.android.synthetic.main.main_view.*
-import java.util.*
+import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity() {
     // Settings
@@ -44,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var datePopup: PopupDate
     private lateinit var timePopup: PopupTime
     private lateinit var tagPopup: PopupTag
+    private lateinit var editPopup: PopupEdit
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     // ########## Main ##########
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_view)
+        setContentView(R.layout.main_activity_view)
 
         // Check for existing saved data, attempt to load it then create the adapter
         loadSave()

@@ -14,10 +14,15 @@ class PopupEdit(private val parent: View,
                 private val context: Context)
     : PopupParent()
 {
-
     fun create(anchor: Anchor = Anchor.Above): PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_edit, parent, anchor)
         val view:View = window.contentView
+
+        // Set click listeners
+        view.editDateLayout
+        view.editDescLayout
+        view.editTagLayout
+        view.editTimeLayout
 
         return window
     }
