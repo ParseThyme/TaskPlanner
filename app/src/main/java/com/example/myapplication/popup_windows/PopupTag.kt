@@ -9,12 +9,12 @@ import com.example.myapplication.data_classes.Tag
 import com.example.myapplication.data_classes.setImageResourceFromTag
 import kotlinx.android.synthetic.main.popup_tag.view.*
 
-class PopupTag(private val parent: View, private val context: Context) : PopupWindowParent() {
+class PopupTag(private val parent: View, private val context: Context) : PopupParent() {
     var selectedTag = Tag.NONE
     private set
 
     fun create(): PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, parent, Anchor.BottomLeft)
+        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, parent, Anchor.Above)
         // Change tag displayed selecting appropriate tag from group
         window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
             selectedTag = when (chosenTag) {

@@ -11,7 +11,7 @@ import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.durationMax
 import kotlinx.android.synthetic.main.popup_time.view.*
 
-class PopupTime(private val parent: Button, private val context: Context) : PopupWindowParent() {
+class PopupTime(private val parent: Button, private val context: Context) : PopupParent() {
     var setTime: TaskTime = TaskTime()
         private set
 

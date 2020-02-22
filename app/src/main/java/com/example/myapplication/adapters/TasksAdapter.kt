@@ -20,8 +20,7 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 class TasksAdapter(private val group: TaskGroup,
                    private val taskClicked: (Task) -> Unit,
                    private val changedDate: (Task, TaskDate, Int) -> Unit,
-                   private val updateSave: () -> Unit,
-                   private val settings: Settings)
+                   private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
     lateinit var datePopup: PopupDate
@@ -80,7 +79,7 @@ class TasksAdapter(private val group: TaskGroup,
             val dialog: AlertDialog = builder.show()
 
             // Popups
-            datePopup = PopupDate(view.btnEditDate, settings, view.context)
+            datePopup = PopupDate(view.btnEditDate, view.context)
             tagPopup = PopupTag(view.btnSetTag, view.context)
 
             // ########## Fill values: ##########
@@ -153,8 +152,8 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun toggleSelected(isSelected: Boolean) {
-            if (isSelected) { taskField.applyBackgroundColor(settings.highlightColor) }
-            else { taskField.applyBackgroundColor(settings.taskBaseColor) }
+            if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }
+            else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
         }
 
         private fun toggleTag(tag: Tag) {

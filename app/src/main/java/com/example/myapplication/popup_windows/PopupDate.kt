@@ -12,9 +12,8 @@ import kotlinx.android.synthetic.main.popup_date.view.*
 import kotlinx.android.synthetic.main.popup_time.view.txtDate
 
 class PopupDate(private val parent: Button,
-                private val settings: Settings,
                 private val context: Context)
-    : PopupWindowParent()
+    : PopupParent()
 {
     // Today's date and cap date
     private lateinit var today: TaskDate
@@ -36,7 +35,7 @@ class PopupDate(private val parent: Button,
 
         // Copy over most recent date and get date cap
         date = setDate.copy()
-        endDate = today.addDays(settings.maxDays)
+        endDate = today.addDays(Settings.maxDays)
 
         // Refresh in case 12:00 midnight
         if (date.id < today.id) { date = today() }

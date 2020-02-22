@@ -9,7 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
 
-abstract class PopupWindowParent {
+abstract class PopupParent {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
     fun create(context: Context, layout: Int): PopupWindow {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -28,7 +28,7 @@ abstract class PopupWindowParent {
     }
 
     // Create window and immediately show it
-    fun createAndShow(context: Context, layout: Int, parent: View, anchor: Anchor = Anchor.BottomLeft) : PopupWindow {
+    fun createAndShow(context: Context, layout: Int, parent: View, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = create(context, layout)
         window.show(parent)
         return window
@@ -36,7 +36,7 @@ abstract class PopupWindowParent {
 }
 
 // Manually show window at desired point in time
-fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.BottomLeft) {
+fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
     /* Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
     - Get measurements of content window (gives access to measuredHeight/measuredWidth)
     - By default, y-pos is directly below parent
@@ -48,7 +48,6 @@ fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.BottomLeft) {
 
     val location = IntArray(2)
     parent.getLocationOnScreen(location)
-    Log.d("Test", "Location: (${location[0]}, ${location[1]})")
 
     // X positioning, untouched
     val padding = 5
@@ -58,12 +57,12 @@ fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.BottomLeft) {
     var yOffset = 0
 
     yOffset = when (anchor) {
-        Anchor.BottomLeft -> {
+        Anchor.Above -> {
             // Get window measurements to determine upwards shift then assign it to yOffset
             this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             -this.contentView.measuredHeight - padding
         }
-        Anchor.TopLeft -> -this.height - padding
+        Anchor.Below -> -this.height - padding
     }
 
     // Create window at specified parent
@@ -71,9 +70,9 @@ fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.BottomLeft) {
 }
 
 // Where popup is placed relative to parent
-enum class Anchor { BottomLeft, TopLeft }
+enum class Anchor { Above, Below }
 
-// Bottom left anchoring. Popup's bottom left matching parent's top left
+// (Above) Bottom left anchoring. Popup's bottom left matching parent's top left
  /* Matching bottom left corner [X]
   | Parent + Popup | Added |
   |           222  |  222  |
@@ -81,7 +80,7 @@ enum class Anchor { BottomLeft, TopLeft }
   |  X11      X22  |  X33  |
  */
 
-// TopLeft anchoring. Popup's top left matching parent's top left
+// (Below) TopLeft anchoring. Popup's top left matching parent's top left
  /* Matching top left corner [Y]
    | Parent + Popup | Added |
    |  Y11      Y22  |  Y33  |

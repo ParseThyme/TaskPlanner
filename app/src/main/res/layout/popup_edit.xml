@@ -37,11 +37,40 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/editDateLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTaskLabel">
+
+                <ImageView
+                    android:id="@+id/editDateIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:padding="5dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/editDateLabel"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_date" />
+
+                <TextView
+                    android:id="@+id/editDateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="center|left"
+                    android:padding="5dp"
+                    android:text="Date"
+                    app:layout_constraintStart_toEndOf="@+id/editDateIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/editDescLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTaskLabel">
+                app:layout_constraintTop_toBottomOf="@+id/editDateLayout">
 
                 <ImageView
                     android:id="@+id/editDescIcon"
@@ -57,7 +86,7 @@
                     android:id="@+id/editDescLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="left"
+                    android:gravity="center|left"
                     android:maxEms="10"
                     android:maxLines="2"
                     android:padding="5dp"
@@ -77,8 +106,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/editTagLayout"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editDescLayout">
 
@@ -93,9 +123,9 @@
 
                 <TextView
                     android:id="@+id/editTagLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="center|left"
                     android:padding="5dp"
                     android:text="Tag"
                     app:layout_constraintBottom_toBottomOf="@+id/editTagIcon"
@@ -114,8 +144,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/editTimeLayout"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTagLayout">
 
@@ -131,9 +162,9 @@
 
                 <TextView
                     android:id="@+id/editTimeLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="center|left"
                     android:padding="5dp"
                     android:text="Time"
                     app:layout_constraintStart_toEndOf="@+id/editTimeIcon"

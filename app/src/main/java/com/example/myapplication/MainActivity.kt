@@ -19,7 +19,7 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     // Settings
-    private val settings: Settings = Settings()
+    // private val settings: Settings = Settings()
 
     // TaskList (Center Area)
     private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
@@ -114,9 +114,9 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        datePopup = PopupDate(btnSetDate, settings, this)
+        datePopup = PopupDate(btnSetDate,this)
         timePopup = PopupTime(btnSetTime, this)
-        tagPopup = PopupTag(btnSetTag, this)
+        tagPopup  = PopupTag(btnSetTag, this)
 
         // ##############################
         // TopBar
@@ -313,8 +313,9 @@ class MainActivity : AppCompatActivity() {
         saveLoad = SaveLoad(this)
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
-        taskGroupAdapter = TaskGroupAdapter(taskGroupList, settings,
-            taskClickedFn, dateClickedFn, toTopFn, updateCollapseExpandIconFn, updateSaveFn)
+        taskGroupAdapter =
+            TaskGroupAdapter(taskGroupList, taskClickedFn, dateClickedFn, toTopFn,
+                             updateCollapseExpandIconFn, updateSaveFn)
     }
 
     private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }

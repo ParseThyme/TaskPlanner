@@ -11,7 +11,6 @@ import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
-                       private val settings: Settings,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
@@ -108,7 +107,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             }
 
             // Store reference to task adapter
-            val taskAdapter = TasksAdapter(group, taskClicked, changedDate, updateSave, settings)
+            val taskAdapter = TasksAdapter(group, taskClicked, changedDate, updateSave)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
@@ -141,7 +140,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             if (group.state == ViewState.COLLAPSED) {
                 // If a task has been selected, highlight background to indicate
                 if (group.numSelected != 0)
-                    itemView.collapseExpandBtn.applyBackgroundColor(settings.highlightColor)
+                    itemView.collapseExpandBtn.applyBackgroundColor(Settings.highlightColor)
                 else // Clear highlights (via selectAll toggle when collapsed)
                     itemView.collapseExpandBtn.applyBackgroundColor(Color.TRANSPARENT)
             }
