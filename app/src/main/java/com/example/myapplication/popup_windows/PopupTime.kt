@@ -11,15 +11,15 @@ import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.durationMax
 import kotlinx.android.synthetic.main.popup_time.view.*
 
-class PopupTime(private val parent: Button, private val context: Context) : PopupParent() {
+object PopupTime : PopupParent() {
     var setTime: TaskTime = TaskTime()
         private set
 
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)
     private var timeDelta: Int = 5
 
-    fun create() : PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_time, parent)
+    fun create(attachTo: View, modify: TextView, context: Context) : PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_time, attachTo)
         val view:View = window.contentView
 
         // Copy over most recent time
@@ -74,14 +74,14 @@ class PopupTime(private val parent: Button, private val context: Context) : Popu
         view.btnApplyTime.setOnClickListener {
             window.dismiss()
             setTime = time
-            parent.text = setTime.createDisplayedTime()
+            modify.text = setTime.createDisplayedTime()
         }
 
         // Clear selected time
         view.btnClearTime.setOnClickListener {
             window.dismiss()
             setTime.hour = 0
-            parent.text = defaultTimeMsg
+            modify.text = defaultTimeMsg
         }
 
         return window

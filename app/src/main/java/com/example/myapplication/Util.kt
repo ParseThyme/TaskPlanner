@@ -1,25 +1,23 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.text.InputFilter.LengthFilter
+import android.content.res.Resources
+import android.graphics.Point
+import android.graphics.Rect
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.settings_alertdialog.view.*
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.Calendar.DAY_OF_MONTH
+import kotlinx.android.synthetic.main.main_activity_view.view.*
+
 
 // ########## Keyboard ##########
 // https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
@@ -51,9 +49,7 @@ fun RecyclerView.addDivider(vertical : Boolean = true) {
 // https://stackoverflow.com/questions/2461824/how-to-programmatically-set-maxlength-in-android-textview
 // fun EditText.setMaxLength(length: Int) { this.filters = arrayOf(LengthFilter(length)) }
 
-fun ImageButton.updateBtnColor(color: Int, context: Context) {
-    this.setColorFilter(ContextCompat.getColor(context, color))
-}
+fun ImageButton.updateBtnColor(color: Int, context: Context) { setColorFilter(ContextCompat.getColor(context, color)) }
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
@@ -62,6 +58,33 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 // ########## Other ##########
 // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
+
+// https://stackoverflow.com/questions/35780980/getting-the-actual-screen-height-android/45158798
+fun Context.getDisplaySize() : Point {
+    /*
+    val wm: WindowManager = this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val display: Display = wm.defaultDisplay
+    val size = Point()
+    display.getSize(size)
+    */
+
+    val width: Int = Resources.getSystem().displayMetrics.widthPixels
+    val height: Int = Resources.getSystem().displayMetrics.heightPixels
+    val size: Point = Point(width, height)
+
+    return size
+}
+
+fun View.getDisplaySize() : Point {
+    val root: View = this.rootView.root
+    return Point(root.width, root.height)
+}
+
+fun View.getScreenLocation() : Point {
+    val location = IntArray(2)
+    this.getLocationOnScreen(location)
+    return Point(location[0], location[1])
+}
 
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/

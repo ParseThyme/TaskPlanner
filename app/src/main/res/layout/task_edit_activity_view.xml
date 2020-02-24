@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,8 +13,8 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toTopOf="@+id/editableLayout"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/topBarTitle"
@@ -36,23 +35,61 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/editableLayout"
         android:layout_width="0dp"
-        android:layout_height="600dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleLayout">
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/editTimeLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/labelEditTime"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@color/colorPrimary"
+                android:drawableStart="@drawable/ic_time"
+                android:drawableLeft="@drawable/ic_time"
+                android:drawablePadding="5dp"
+                android:ems="5"
+                android:gravity="left|center_vertical"
+                android:padding="5dp"
+                android:text="Time"
+                android:textColor="@android:color/white"
+                app:drawableTint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/txtEditTime"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/txtEditTime" />
+
+            <TextView
+                android:id="@+id/txtEditTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:ems="5"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/placeholderTime"
+                app:layout_constraintStart_toEndOf="@+id/labelEditTime"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/editDateLayout"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/editTimeLayout"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/editTagLayout">
 
             <TextView
                 android:id="@+id/labelEditDate"
@@ -62,12 +99,12 @@
                 android:drawableStart="@drawable/ic_date"
                 android:drawableLeft="@drawable/ic_date"
                 android:drawablePadding="5dp"
+                android:ems="5"
                 android:gravity="center|left"
                 android:padding="5dp"
                 android:text="Date"
                 android:textColor="@android:color/white"
                 app:drawableTint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/txtEditDate"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -75,14 +112,53 @@
                 android:id="@+id/txtEditDate"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:background="@android:color/white"
-                android:ems="6"
+                android:ems="9"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="@string/placeholderDate"
+                android:text="@string/placeholderDateLong"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/labelEditDate"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/editTagLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTimeLayout">
+
+            <TextView
+                android:id="@+id/labelEditTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:drawableStart="@drawable/ic_tag_base"
+                android:drawableLeft="@drawable/ic_tag_base"
+                android:drawablePadding="5dp"
+                android:ems="5"
+                android:gravity="left|center_vertical"
+                android:padding="5dp"
+                android:text="Tag"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                app:drawableTint="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/labelEditDate" />
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iconEditTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/labelEditTag"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_tag_base" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -90,10 +166,11 @@
             android:id="@+id/editDescLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTimeLayout">
+            app:layout_constraintTop_toBottomOf="@+id/editDateLayout">
 
             <TextView
                 android:id="@+id/editDescLabel"
@@ -126,103 +203,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editDescLabel" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/editTagLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/editTimeLayout"
-            app:layout_constraintStart_toEndOf="@+id/editTimeLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/labelEditTag"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:background="@color/colorPrimary"
-                android:drawableStart="@drawable/ic_tag_base"
-                android:drawableLeft="@drawable/ic_tag_base"
-                android:gravity="left|center_vertical"
-                android:padding="5dp"
-                android:text="Tag"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                app:drawableTint="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/editTagContainer"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/labelEditTag"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/labelEditTag">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/editTagContainerLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/iconEditTag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/white"
-                        android:padding="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_tag_base" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/editTimeLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintStart_toEndOf="@+id/editDateLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/labelEditTime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:drawableStart="@drawable/ic_time"
-                android:drawableLeft="@drawable/ic_time"
-                android:drawablePadding="5dp"
-                android:gravity="left|center_vertical"
-                android:padding="5dp"
-                android:text="Time"
-                android:textColor="@android:color/white"
-                app:drawableTint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/txtEditTime"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/txtEditTime"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:background="@android:color/white"
-                android:ems="5"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/placeholderTimeShort"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/labelEditTime" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

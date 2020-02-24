@@ -12,7 +12,6 @@ import com.example.myapplication.popup_windows.PopupTag
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
-
 // val itemClickedListener: (Task) -> Unit
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
@@ -32,6 +31,7 @@ class TasksAdapter(private val group: TaskGroup,
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val taskField = itemView.desc
+        private val editWindow = AlertDialogEdit(itemView.context)
 
         fun bind(task: Task) {
             // Set description of task when bound
@@ -64,7 +64,7 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun editTask(task: Task) {
-
+            editWindow.create(group, task)
             // updateSave()
         }
 

@@ -83,26 +83,24 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
 
-                <TextView
-                    android:id="@+id/labelDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/iconDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
                     android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:text="Date"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="@+id/txtDate"
+                    android:tint="@android:color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@+id/btnDecDate"
+                    app:srcCompat="@drawable/ic_time" />
 
                 <ImageButton
                     android:id="@+id/btnDecDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/labelDate"
+                    app:layout_constraintStart_toEndOf="@+id/iconDate"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_arrow_filled_up" />
 
                 <ImageButton
@@ -110,7 +108,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/btnDecDate"
                     app:layout_constraintTop_toBottomOf="@+id/btnDecDate"
                     app:srcCompat="@drawable/ic_arrow_filled_down" />
 
@@ -121,8 +119,7 @@
                     android:background="@android:color/white"
                     android:ems="5"
                     android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Tu-Feb-18"
+                    android:text="We-Feb-18"
                     app:layout_constraintBottom_toBottomOf="@+id/btnIncDate"
                     app:layout_constraintStart_toEndOf="@+id/btnDecDate"
                     app:layout_constraintTop_toTopOf="@+id/btnDecDate" />
@@ -140,18 +137,16 @@
                 app:layout_constraintStart_toEndOf="@+id/editDateLayout"
                 app:layout_constraintTop_toTopOf="@+id/editDateLayout">
 
-                <TextView
-                    android:id="@+id/labelDeltaDays"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/iconDelta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
                     android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:text="@string/label_delta"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:tint="@android:color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_delta" />
 
                 <TextView
                     android:id="@+id/txtDeltaDays"
@@ -160,11 +155,10 @@
                     android:background="@android:color/transparent"
                     android:ems="2"
                     android:gravity="center"
-                    android:padding="5dp"
                     android:text="D"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/labelDeltaDays" />
+                    app:layout_constraintStart_toEndOf="@+id/iconDelta"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

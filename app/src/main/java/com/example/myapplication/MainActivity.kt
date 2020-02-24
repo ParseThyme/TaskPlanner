@@ -4,6 +4,7 @@ import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -39,10 +40,10 @@ class MainActivity : AppCompatActivity() {
 
     // Popups
     private val viewSizeFn = { getViewDimensions() }
-    private lateinit var datePopup: PopupDate
-    private lateinit var timePopup: PopupTime
-    private lateinit var tagPopup: PopupTag
-    private lateinit var editPopup: PopupEdit
+    // private lateinit var datePopup: PopupDate
+    // private lateinit var timePopup: PopupTime
+    // private lateinit var tagPopup: PopupTag
+    // private lateinit var editPopup: PopupEdit
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -113,9 +114,9 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        datePopup = PopupDate(btnSetDate,this)
-        timePopup = PopupTime(btnSetTime, this)
-        tagPopup  = PopupTag(btnSetTag, this)
+        // datePopup = PopupDate(btnSetDate,this)
+        // timePopup = PopupTime(btnSetTime, this)
+        // tagPopup  = PopupTag(btnSetTag, this)
 
         // ##############################
         // TopBar
@@ -129,11 +130,11 @@ class MainActivity : AppCompatActivity() {
         // ##############################
 
         // Add mode
-        btnSetDate.setOnClickListener { datePopup.create() }
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
-        btnSetTime.setOnClickListener { timePopup.create() }
-        btnSetTag.setOnClickListener { tagPopup.create() }
+        btnSetDate.setOnClickListener { PopupDate.create(bottomBar, btnSetDate, this) }
+        btnSetTime.setOnClickListener { PopupTime.create(bottomBar, btnSetTime, this) }
+        btnSetTag.setOnClickListener  { PopupTag.create(bottomBar, btnSetTag, this) }
 
         // Select mode
         btnDelete.setOnClickListener { deleteBtnFn() }
@@ -142,9 +143,12 @@ class MainActivity : AppCompatActivity() {
     private fun newTaskBtnFn() {
         // Get relevant values
         val desc: String = txtTaskDesc.text.toString().trim()
-        val time: TaskTime = timePopup.setTime
-        val tag: Tag = tagPopup.selectedTag
-        val date: TaskDate = datePopup.setDate
+        // val time: TaskTime = timePopup.setTime
+        val time: TaskTime = PopupTime.setTime
+        // val tag: Tag = tagPopup.selectedTag
+        val tag: Tag = PopupTag.selectedTag
+        // val date: TaskDate = datePopup.setDate
+        val date: TaskDate = PopupDate.setDate
 
         val newTask = Task(desc, tag, time)
 
@@ -340,7 +344,7 @@ class MainActivity : AppCompatActivity() {
         else updateBtnColor(R.color.btnDisabled, applicationContext)
     }
     // Sizing of current main layout (adjusts depending of factors affecting size, e.g. Opening keyboard)
-    private fun getViewDimensions(): Point { return Point(mainLayout.width, mainLayout.height) }
+    fun getViewDimensions(): Point { return Point(root.width, root.height) }
 }
 
 enum class Mode { START, ADD, SELECTION }

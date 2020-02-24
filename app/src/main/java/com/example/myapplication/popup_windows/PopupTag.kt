@@ -9,12 +9,12 @@ import com.example.myapplication.data_classes.Tag
 import com.example.myapplication.data_classes.setImageResourceFromTag
 import kotlinx.android.synthetic.main.popup_tag.view.*
 
-class PopupTag(private val parent: View, private val context: Context) : PopupParent() {
+object PopupTag : PopupParent() {
     var selectedTag = Tag.NONE
     private set
 
-    fun create(): PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, parent, Anchor.Above)
+    fun create(attachTo: View, modify: ImageView, context: Context): PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, attachTo)
         // Change tag displayed selecting appropriate tag from group
         window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
             selectedTag = when (chosenTag) {
@@ -24,9 +24,7 @@ class PopupTag(private val parent: View, private val context: Context) : PopupPa
                 else -> Tag.NONE
             }
 
-            // If imageView type parent, we want to update tag icon to newly selected icon
-            if (parent is ImageView) { parent.setImageResourceFromTag(selectedTag) }
-
+            modify.setImageResourceFromTag(selectedTag)
             window.dismiss()
         }
 

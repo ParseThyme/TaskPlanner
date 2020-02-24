@@ -1,13 +1,15 @@
 package com.example.myapplication.popup_windows
 
 import android.content.Context
-import android.util.DisplayMetrics
+import android.graphics.Point
 import android.util.Log
-import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
+import com.example.myapplication.getDisplaySize
+import com.example.myapplication.getScreenLocation
+
 
 abstract class PopupParent {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
@@ -28,7 +30,7 @@ abstract class PopupParent {
     }
 
     // Create window and immediately show it
-    fun createAndShow(context: Context, layout: Int, parent: View, anchor: Anchor = Anchor.Above) : PopupWindow {
+    fun createAndShow(context: Context, layout: Int, parent: View) : PopupWindow {
         val window:PopupWindow = create(context, layout)
         window.show(parent)
         return window
@@ -36,65 +38,32 @@ abstract class PopupParent {
 }
 
 // Manually show window at desired point in time
-fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
+fun PopupWindow.show(parent: View) {
     /* Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
     - Get measurements of content window (gives access to measuredHeight/measuredWidth)
     - By default, y-pos is directly below parent
+
+    1. Get distance from bottom of screen to parent
+    2. Distance top of screen to parent == parent's coordinates
+    3. Whichever distance is shorter, use relevant anchoring
     */
 
-    // Get distance from bottom of screen to parent
-    // Get distance from top of screen to parent
-    // Whichever distance is shorter, use relevant anchoring
+    val location: Point = parent.getScreenLocation()
+    val displaySize: Point = parent.getDisplaySize()
+    val distance: Int = displaySize.y - location.y       // From bottom of screen to parent
 
-    val location = IntArray(2)
-    parent.getLocationOnScreen(location)
+    // Get created window measurements to determine shifts
+    this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+    val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
 
-    // X positioning, untouched
-    val padding = 5
-    val xOffset:Int = -padding              // Default a bit right of parent, shift left
+    val padding = 10
+    val xOffset:Int = (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
+    var yOffset = 0                                         // Y positioning. Place either above or below
 
-    // Y positioning, dependant on anchoring
-    var yOffset = 0
+    // Determining Y Positioning
+    // If View closer to bottom of screen, place above parent. Otherwise no offset and set to default below
+    if (distance < location.y) { yOffset = -viewSize.y - padding - parent.height }
 
-    yOffset = when (anchor) {
-        Anchor.Above -> {
-            // Get window measurements to determine upwards shift then assign it to yOffset
-            this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-            -this.contentView.measuredHeight - padding
-        }
-        Anchor.Below -> -this.height - padding
-    }
-
-    // Create window at specified parent
+    // Show popup with offsets applied
     this.showAsDropDown(parent, xOffset, yOffset)
 }
-
-// Where popup is placed relative to parent
-enum class Anchor { Above, Below }
-
-// (Above) Bottom left anchoring. Popup's bottom left matching parent's top left
- /* Matching bottom left corner [X]
-  | Parent + Popup | Added |
-  |           222  |  222  |
-  |  111      222  |  333  |
-  |  X11      X22  |  X33  |
- */
-
-// (Below) TopLeft anchoring. Popup's top left matching parent's top left
- /* Matching top left corner [Y]
-   | Parent + Popup | Added |
-   |  Y11      Y22  |  Y33  |
-   |  111      222  |  333  |
-   |           222  |  222  |
- */
-
-// If popup same size as parent, regardless of anchoring, it wouldn't matter
-/* Example: Top Left
-  | Parent + Popup | Added |
-  |  X11      X22  |  X33  |
-  |  111      222  |  333  |
-  Example: Bot Left
-  | Parent + Popup | Added |
-  |  111      222  |  333  |
-  |  X11      X22  |  X33  |
- */

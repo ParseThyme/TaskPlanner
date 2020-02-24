@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
 import android.util.Log
+import com.example.myapplication.defaultTimeMsg
 
 data class TaskTime (
     var hour: Int = 0,
@@ -10,6 +11,9 @@ data class TaskTime (
 )
 
 fun TaskTime.asString(withTimeOfDay: Boolean = true): String {
+    // If time is 0:00, return base string message
+    if (this.hour == 0) return defaultTimeMsg
+
     var timeAsString = "$hour:${minutesAsString(min)}"
 
     // If time of day included, add " AM" OR " PM" to end of string
