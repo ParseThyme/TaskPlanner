@@ -56,7 +56,7 @@ fun PopupWindow.show(parent: View) {
     this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
     val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
 
-    val padding = 10
+    val padding = 5
     val xOffset:Int = (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
     var yOffset = 0                                         // Y positioning. Place either above or below
 

@@ -2,167 +2,158 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout"
+    android:id="@+id/root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/background"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/colorPrimaryDark"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="0dp"
+        android:background="@color/colorPrimaryDark"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cardLayout"
-            android:layout_width="wrap_content"
+            android:id="@+id/optionsLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="5dp">
+            app:layout_constraintEnd_toEndOf="@+id/editDeltaLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/optionsLayout"
+            <TextView
+                android:id="@+id/labelTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Set Date"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnResetDate"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/labelTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Set Date"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btnResetDate"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageButton
-                    android:id="@+id/btnResetDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp"
-                    android:background="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btnApplyDate"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_reset_parameters" />
-
-                <ImageButton
-                    android:id="@+id/btnApplyDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_check" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/editDateLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
-
-                <ImageView
-                    android:id="@+id/iconDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@color/colorPrimary"
-                    android:tint="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/btnDecDate"
-                    app:srcCompat="@drawable/ic_time" />
-
-                <ImageButton
-                    android:id="@+id/btnDecDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    app:layout_constraintStart_toEndOf="@+id/iconDate"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_filled_up" />
-
-                <ImageButton
-                    android:id="@+id/btnIncDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    app:layout_constraintStart_toStartOf="@+id/btnDecDate"
-                    app:layout_constraintTop_toBottomOf="@+id/btnDecDate"
-                    app:srcCompat="@drawable/ic_arrow_filled_down" />
-
-                <TextView
-                    android:id="@+id/txtDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@android:color/white"
-                    android:ems="5"
-                    android:gravity="center"
-                    android:text="We-Feb-18"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnIncDate"
-                    app:layout_constraintStart_toEndOf="@+id/btnDecDate"
-                    app:layout_constraintTop_toTopOf="@+id/btnDecDate" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/editDeltaLayout"
+            <ImageButton
+                android:id="@+id/btnResetDate"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
                 android:background="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/editDateLayout"
-                app:layout_constraintStart_toEndOf="@+id/editDateLayout"
-                app:layout_constraintTop_toTopOf="@+id/editDateLayout">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnApplyDate"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_reset_parameters" />
 
-                <ImageView
-                    android:id="@+id/iconDelta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@color/colorPrimary"
-                    android:tint="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_delta" />
-
-                <TextView
-                    android:id="@+id/txtDeltaDays"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@android:color/transparent"
-                    android:ems="2"
-                    android:gravity="center"
-                    android:text="D"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/iconDelta"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/btnApplyDate"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_check" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/editDateLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
+
+            <ImageView
+                android:id="@+id/iconDate"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@color/colorPrimary"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btnDecDate"
+                app:srcCompat="@drawable/ic_date" />
+
+            <ImageButton
+                android:id="@+id/btnDecDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:layout_constraintStart_toEndOf="@+id/iconDate"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_filled_up" />
+
+            <ImageButton
+                android:id="@+id/btnIncDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                app:layout_constraintStart_toStartOf="@+id/btnDecDate"
+                app:layout_constraintTop_toBottomOf="@+id/btnDecDate"
+                app:srcCompat="@drawable/ic_arrow_filled_down" />
+
+            <TextView
+                android:id="@+id/txtDate"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:ems="5"
+                android:gravity="center"
+                android:text="We-Feb-18"
+                app:layout_constraintBottom_toBottomOf="@+id/btnIncDate"
+                app:layout_constraintStart_toEndOf="@+id/btnDecDate"
+                app:layout_constraintTop_toTopOf="@+id/btnDecDate" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/editDeltaLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/editDateLayout"
+            app:layout_constraintStart_toEndOf="@+id/editDateLayout"
+            app:layout_constraintTop_toTopOf="@+id/editDateLayout">
+
+            <ImageView
+                android:id="@+id/iconDelta"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@color/colorPrimary"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_delta" />
+
+            <TextView
+                android:id="@+id/txtDeltaDays"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@android:color/transparent"
+                android:ems="2"
+                android:gravity="center"
+                android:text="D"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iconDelta"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

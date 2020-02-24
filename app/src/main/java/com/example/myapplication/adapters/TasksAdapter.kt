@@ -31,7 +31,7 @@ class TasksAdapter(private val group: TaskGroup,
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val taskField = itemView.desc
-        private val editWindow = AlertDialogEdit(itemView.context)
+        private val editWindow = DialogEdit(itemView.context)
 
         fun bind(task: Task) {
             // Set description of task when bound
