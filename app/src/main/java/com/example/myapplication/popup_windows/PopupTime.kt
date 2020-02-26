@@ -1,6 +1,7 @@
 package com.example.myapplication.popup_windows
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.PopupWindow
@@ -11,28 +12,19 @@ import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.durationMax
 import kotlinx.android.synthetic.main.popup_time.view.*
 
-object PopupTime : PopupParent() {
-    var setTime: TaskTime = TaskTime()
-        private set
-
+class PopupTime : PopupParent() {
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)
     private var timeDelta: Int = 5
 
-    fun create(attachTo: View, modify: TextView, context: Context) : PopupWindow {
+    fun create(attachTo: View, modify: View, context: Context, edited: Task) : PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_time, attachTo)
         val view:View = window.contentView
 
         // Copy over most recent time
-        time = setTime.copy()
+        time = edited.time.copy()
 
         // For unset times, reset value to default
-        if (!time.isValid()) {
-            time.resetValues()
-            view.txtDate.text = "12:00"
-            view.txtTimeOfDay.text = "AM"
-            view.txtDuration.text = "0m"
-            view.txtDeltaTime.text = "5m"
-        }
+        if (!time.isValid()) { view.resetValues() }
 
         // Apply values based on set time
         view.txtDate.text = time.asString(false)
@@ -62,29 +54,31 @@ object PopupTime : PopupParent() {
         view.txtDeltaTime.setOnClickListener { view.txtDeltaTime.updateDelta() }
 
         // Reset values
-        view.btnResetDate.setOnClickListener {
-            time.resetValues()
-            view.txtDate.text = "12:00"
-            view.txtTimeOfDay.text = "AM"
-            view.txtDuration.text = "0m"
-            view.txtDeltaTime.text = "5m"
-        }
+        view.btnResetDate.setOnClickListener { view.resetValues() }
 
         // Save updated time when window closed
         view.btnApplyTime.setOnClickListener {
             window.dismiss()
-            setTime = time
-            modify.text = setTime.createDisplayedTime()
+            edited.time = time.copy()
+            (modify as TextView).text = time.createDisplayedTime()
         }
 
         // Clear selected time
         view.btnClearTime.setOnClickListener {
             window.dismiss()
-            setTime.hour = 0
-            modify.text = defaultTimeMsg
+            edited.time.hour = 0
+            (modify as TextView).text = defaultTimeMsg
         }
 
         return window
+    }
+
+    private fun View.resetValues() {
+        time.resetValues()
+        txtDate.text = "12:00"
+        txtTimeOfDay.text = "AM"
+        txtDuration.text = "0m"
+        txtDeltaTime.text = "5m"
     }
 
     private fun TextView.updateTime(timeOfDayView: TextView, increment: Boolean = true) {

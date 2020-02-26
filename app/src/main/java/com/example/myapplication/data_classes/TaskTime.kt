@@ -14,6 +14,7 @@ fun TaskTime.asString(withTimeOfDay: Boolean = true): String {
     // If time is 0:00, return base string message
     if (this.hour == 0) return defaultTimeMsg
 
+    // Create start time
     var timeAsString = "$hour:${minutesAsString(min)}"
 
     // If time of day included, add " AM" OR " PM" to end of string
@@ -35,34 +36,28 @@ fun TaskTime.resetValues() {
 }
 
 fun TaskTime.createDisplayedTime(): String {
-    var displayedTime = ""
+    var displayedTime = this.asString()
 
-    // Check if hour value is not "0" (valid time)
-    if (this.isValid()) {
-        // Convert it to string format
-        displayedTime = this.asString()
+    // Check if duration allocated. If so append end time based on duration.
+    if (this.duration > 0) {
+        // Convert duration to hours and minutes
+        val addedHours:Int = duration / 60
+        val addedMinutes:Int = duration % 60
 
-        // Check if duration allocated. If so append end time based on duration.
-        if (this.duration > 0) {
-            // Convert duration to hours and minutes
-            val addedHours:Int = duration / 60
-            val addedMinutes:Int = duration % 60
+        // Add together hours and minutes from time and duration
+        var t2TimeOfDay:String = this.timeOfDay
+        var t2Min: Int = addedMinutes + this.min
+        var t2Hrs: Int = addedHours + this.hour + (t2Min/60)  // Add overflow (e.g. 70/60 = 1h10min)
+        t2Min %= 60                                           // Ensure minutes between 0-59
 
-            // Add together hours and minutes from time and duration
-            var t2TimeOfDay:String = this.timeOfDay
-            var t2Min: Int = addedMinutes + this.min
-            var t2Hrs: Int = addedHours + this.hour + (t2Min/60)  // Add overflow (e.g. 70/60 = 1h10min)
-            t2Min %= 60                                           // Ensure minutes between 0-59
-
-            // Check hours value, if > 12 then we swapped time of day. E.g. 12am -> 2pm
-            if (t2Hrs > 12) {
-                t2Hrs %= 12
-                t2TimeOfDay = this.getOppositeTimeOfDay()
-            }
-
-            // Append t2 to currently displayed time with newline in between
-            displayedTime = "${displayedTime}\n${t2Hrs}:${minutesAsString(t2Min)} $t2TimeOfDay"
+        // Check hours value, if > 12 then we swapped time of day. E.g. 12am -> 2pm
+        if (t2Hrs > 12) {
+            t2Hrs %= 12
+            t2TimeOfDay = this.getOppositeTimeOfDay()
         }
+
+        // Append t2 to currently displayed time with newline in between
+        displayedTime = "${displayedTime}\n${t2Hrs}:${minutesAsString(t2Min)} $t2TimeOfDay"
     }
 
     return displayedTime

@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.graphics.Point
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -35,15 +34,9 @@ class MainActivity : AppCompatActivity() {
     private var mode: Mode = Mode.START
 
     // Created task
+    private var newTask: Task = Task()
+    private var newDate: TaskDate = today()
     private val today: TaskDate = today()
-    private var date: String = ""
-
-    // Popups
-    private val viewSizeFn = { getViewDimensions() }
-    // private lateinit var datePopup: PopupDate
-    // private lateinit var timePopup: PopupTime
-    // private lateinit var tagPopup: PopupTag
-    // private lateinit var editPopup: PopupEdit
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -114,10 +107,6 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Buttons ##########
     private fun setupButtons() {
-        // datePopup = PopupDate(btnSetDate,this)
-        // timePopup = PopupTime(btnSetTime, this)
-        // tagPopup  = PopupTag(btnSetTag, this)
-
         // ##############################
         // TopBar
         // ##############################
@@ -132,9 +121,9 @@ class MainActivity : AppCompatActivity() {
         // Add mode
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
-        btnSetDate.setOnClickListener { PopupDate.create(bottomBar, btnSetDate, this) }
-        btnSetTime.setOnClickListener { PopupTime.create(bottomBar, btnSetTime, this) }
-        btnSetTag.setOnClickListener  { PopupTag.create(bottomBar, btnSetTag, this) }
+        btnSetDate.setOnClickListener { PopupManager.datePopup(bottomBar, btnSetDate, this, newDate) }
+        btnSetTime.setOnClickListener { PopupManager.timePopup(bottomBar, btnSetTime, this, newTask) }
+        btnSetTag.setOnClickListener  { PopupManager.tagPopup(bottomBar, btnSetTag, this, newTask) }
 
         // Select mode
         btnDelete.setOnClickListener { deleteBtnFn() }
@@ -142,15 +131,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun newTaskBtnFn() {
         // Get relevant values
-        val desc: String = txtTaskDesc.text.toString().trim()
-        // val time: TaskTime = timePopup.setTime
-        val time: TaskTime = PopupTime.setTime
-        // val tag: Tag = tagPopup.selectedTag
-        val tag: Tag = PopupTag.selectedTag
-        // val date: TaskDate = datePopup.setDate
-        val date: TaskDate = PopupDate.setDate
-
-        val newTask = Task(desc, tag, time)
+        newTask.desc = txtTaskDesc.text.toString().trim()
+        val time: TaskTime = newTask.time
+        val date: TaskDate = newDate
+        val tag: TaskTag = newTask.tag
 
         // Add new task to adapter
         taskGroupAdapter.addTask(date, newTask)
@@ -343,8 +327,6 @@ class MainActivity : AppCompatActivity() {
         if (enabled) updateBtnColor(R.color.btnEnabled, applicationContext)
         else updateBtnColor(R.color.btnDisabled, applicationContext)
     }
-    // Sizing of current main layout (adjusts depending of factors affecting size, e.g. Opening keyboard)
-    fun getViewDimensions(): Point { return Point(root.width, root.height) }
 }
 
 enum class Mode { START, ADD, SELECTION }

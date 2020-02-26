@@ -16,6 +16,13 @@ data class TaskDate(
     var year: Int = 0
 )
 
+fun TaskDate.reassign(newDate: TaskDate) {
+    id = newDate.id
+    day = newDate.day
+    month = newDate.month
+    year = newDate.year
+}
+
 fun today(): TaskDate {
     // Get calendar and add additional days, if addedDays == 0 then defaults to today's day
     val cal = Calendar.getInstance()

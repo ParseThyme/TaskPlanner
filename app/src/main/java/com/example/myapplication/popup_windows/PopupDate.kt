@@ -11,27 +11,23 @@ import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.popup_date.view.*
 import kotlinx.android.synthetic.main.popup_time.view.txtDate
 
-object PopupDate : PopupParent() {
+class PopupDate : PopupParent() {
     // Today's date and cap date
     private lateinit var today: TaskDate
     lateinit var endDate: TaskDate
 
-    // By default set to today's date
-    var setDate: TaskDate = today()
-        private set
-
     private var date: TaskDate = TaskDate()
     private var dateDelta: DateDelta = DateDelta.D
 
-    fun create(attachTo: View, modify: TextView, context: Context) : PopupWindow {
+    fun create(attachTo: View, modify: View, context: Context, edited: TaskDate) : PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo)
         val view:View = window.contentView
 
         // Get today's date. Should update when clock strikes 12:00AM for new day
         today = today()
 
-        // Copy over most recent date and get date cap
-        date = setDate.copy()
+        // Copy over most recent date (or edited date) and get date cap
+        date = edited.copy()
         endDate = today.addDays(Settings.maxDays)
 
         // Refresh in case 12:00 midnight
@@ -59,8 +55,8 @@ object PopupDate : PopupParent() {
         }
         view.btnApplyDate.setOnClickListener {
             window.dismiss()
-            setDate = date.copy()
-            modify.text = setDate.createLabel(Size.Med)
+            edited.reassign(date)
+            (modify as TextView).text = date.createLabel(Size.Med)
         }
 
         return window

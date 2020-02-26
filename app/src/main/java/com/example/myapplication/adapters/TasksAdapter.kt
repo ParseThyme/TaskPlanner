@@ -1,15 +1,11 @@
 package com.example.myapplication.adapters
 
-import android.app.AlertDialog
-import android.view.LayoutInflater
+import android.app.Dialog
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.PopupDate
-import com.example.myapplication.popup_windows.PopupTag
-import kotlinx.android.synthetic.main.task_edit_view.view.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 // val itemClickedListener: (Task) -> Unit
@@ -18,7 +14,7 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 class TasksAdapter(private val group: TaskGroup,
                    private val taskClicked: (Task) -> Unit,
-                   private val changedDate: (Task, TaskDate, Int) -> Unit,
+                   private val changeGroup: (Task, TaskDate, Int) -> Unit,
                    private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
@@ -31,7 +27,7 @@ class TasksAdapter(private val group: TaskGroup,
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val taskField = itemView.desc
-        private val editWindow = DialogEdit(itemView.context)
+        private val editWindow = DialogEdit(itemView.context, updateSave)
 
         fun bind(task: Task) {
             // Set description of task when bound
@@ -64,105 +60,22 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun editTask(task: Task) {
-            editWindow.create(group, task)
-            // updateSave()
+            // Store copy of current group task belongs to
+            val taskGroup: TaskDate = group.date.copy()
+            val dialog: Dialog =
+                editWindow.create(taskGroup, task,
+                    { notifyItemChanged(adapterPosition) },     // Update display when task updated
+                    changeGroup)                                // Switch group when changed
         }
-
-        /*
-        private fun editTask(task: Task) {
-            // Set view to be applied to alert dialog
-            val view: View = LayoutInflater.from(itemView.context).inflate(R.layout.task_edit_view, null)
-            // Create builder
-            val builder = AlertDialog.Builder(itemView.context).apply {
-                setView(view)
-                setCancelable(false)
-            }
-
-            // Show dialog
-            val dialog: AlertDialog = builder.show()
-
-            // Popups
-            datePopup = PopupDate(view.btnEditDate, view.context)
-            tagPopup = PopupTag(view.btnSetTag, view.context)
-
-            // ########## Fill values: ##########
-            // 1. Set current task as hint text and fill in previous entry
-            view.btnSetTag.setImageResourceFromTag(task.tag)
-            view.txtEditTaskDesc.setText(itemView.desc.text.toString())
-            view.txtEditTaskDesc.hint = itemView.desc.text
-
-            // 2. Set date and setup onClick behaviour
-            view.btnEditDate.text = group.date.createLabel(Size.Med)
-            view.btnEditDate.setOnClickListener { datePopup.create() }
-
-            // ########## Listeners ##########
-            // Close keyboard when editText loses focus
-            view.txtEditTaskDesc.closeKeyboardOnFocusLost()
-
-            // Change Tag
-            view.btnSetTag.setOnClickListener { tagPopup.create() }
-
-            // Cancel: close dialog
-            view.cancelBtn.setOnClickListener { dialog.dismiss() }
-
-            // Apply: make changes if edit made
-            view.btnApply.setOnClickListener {
-                var updated = false
-                val editedText: String = view.txtEditTaskDesc.text.toString()
-                val editedDate: String = view.btnEditDate.text.toString()
-                val editedTag: Tag = view.btnSetTag.getTagFromImageResource()
-
-                // Check if task edit is new
-                if (editedText != task.desc && editedText != "") {
-                    updated = true
-
-                    // Apply text change to display and internal value
-                    task.desc = view.txtEditTaskDesc.text.toString()
-                    itemView.desc.text = task.desc
-                }
-                // Check if tag has been changed
-                if (editedTag != task.tag) {
-                    updated = true
-
-                    // Apply change to display and internal value
-                    task.tag = editedTag
-                    toggleTag(task.tag)
-                }
-
-                // Check if date has been changed
-                if (editedDate != group.date.createLabel()) {
-                    updated = true
-
-                    // Deselect task if selected
-                    if (task.selected) {
-                        task.selected = !task.selected
-                        toggleSelected(task.selected)
-                        group.numSelected--
-
-                        // Call listener function in main activity
-                        taskClicked(task)
-                    }
-
-                    // Notify group adapter to change date
-                    changedDate(task, datePopup.setDate, group.date.id)
-                }
-
-                // Notify main activity to save change made
-                if (updated) { updateSave() }
-
-                dialog.dismiss()
-            }
-        }
-        */
 
         private fun toggleSelected(isSelected: Boolean) {
             if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }
             else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
         }
 
-        private fun toggleTag(tag: Tag) {
+        private fun toggleTag(tag: TaskTag) {
             // No tag, don't display anything
-            if (tag == Tag.NONE) { itemView.taskTag.visibility = View.GONE }
+            if (tag == TaskTag.NONE) { itemView.taskTag.visibility = View.GONE }
             // Get image, set tag accordingly and display
             else {
                 itemView.taskTag.setImageResourceFromTag(tag)

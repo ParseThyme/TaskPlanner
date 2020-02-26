@@ -19,7 +19,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
 
     // Listener function: Date changed for task
-    private val changedDate = {
+    private val changeDate = {
         // Params:
             task: Task, newDate: TaskDate, oldID: Int
         // Function to call:
@@ -107,7 +107,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             }
 
             // Store reference to task adapter
-            val taskAdapter = TasksAdapter(group, taskClicked, changedDate, updateSave)
+            val taskAdapter = TasksAdapter(group, taskClicked, changeDate, updateSave)
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
@@ -288,6 +288,12 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
     }
 
+    /**
+     * Change group task belongs to
+     * @param task: Task being updated
+     * @param newDate: New group task is switching to
+     * @param oldID: Old group task belonged to
+     */
     private fun changeGroup(task: Task, newDate: TaskDate, oldID: Int) {
         // "Move" to new position (add new task). -- to balance out addition made in addTask()
         addTask(newDate, task)

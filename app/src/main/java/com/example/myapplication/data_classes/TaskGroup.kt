@@ -2,13 +2,10 @@ package com.example.myapplication.data_classes
 
 import android.util.Log
 import android.view.View
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 // ########## Data Type ##########
 data class TaskGroup (
-    // val date: String = "",
     val date: TaskDate = TaskDate(),
     val taskList: ArrayList<Task> = arrayListOf(),
 
