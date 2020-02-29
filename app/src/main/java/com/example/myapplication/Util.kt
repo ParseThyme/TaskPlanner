@@ -1,10 +1,7 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Point
-import android.graphics.Rect
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -24,6 +22,11 @@ import kotlinx.android.synthetic.main.main_activity_view.view.*
 fun View.hideKeyboard() {
     val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(this.windowToken, 0)
+}
+
+fun View.showKeyboard() {
+    val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.toggleSoftInputFromWindow(this.windowToken, InputMethodManager.SHOW_FORCED, 0)
 }
 
 // https://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
@@ -60,20 +63,6 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 
 // https://stackoverflow.com/questions/35780980/getting-the-actual-screen-height-android/45158798
-fun Context.getDisplaySize() : Point {
-    /*
-    val wm: WindowManager = this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    val display: Display = wm.defaultDisplay
-    val size = Point()
-    display.getSize(size)
-    */
-
-    val width: Int = Resources.getSystem().displayMetrics.widthPixels
-    val height: Int = Resources.getSystem().displayMetrics.heightPixels
-    val size: Point = Point(width, height)
-
-    return size
-}
 
 fun View.getDisplaySize() : Point {
     val root: View = this.rootView.root

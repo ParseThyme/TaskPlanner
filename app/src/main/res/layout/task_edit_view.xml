@@ -5,23 +5,21 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#B3000000"
-    android:orientation="vertical">
+    android:background="#80000000"
+    android:orientation="vertical"
+    android:scrollbarSize="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/windowLayout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
         android:background="@color/colorPrimaryDark"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.75">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/titleLayout"
@@ -134,21 +132,55 @@
             app:layout_constraintTop_toTopOf="@+id/txtEditTime"
             app:srcCompat="@drawable/ic_tag_base" />
 
-        <EditText
-            android:id="@+id/txtEditDesc"
-            android:layout_width="0dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/taskEditDescCard"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:background="@android:color/white"
-            android:drawablePadding="5dp"
-            android:gravity="top"
-            android:maxLines="4"
-            android:padding="5dp"
-            android:text="@string/placeholderTextLong"
-            android:textSize="14sp"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtEditTime" />
+            app:layout_constraintTop_toBottomOf="@+id/txtEditTime">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/taskEditDescLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/txtEditDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:background="@android:color/white"
+                    android:drawablePadding="5dp"
+                    android:gravity="top"
+                    android:maxLines="4"
+                    android:padding="5dp"
+                    android:scrollbars="vertical"
+                    android:text="@string/placeholderTextLong"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/iconKeyboard"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iconKeyboard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:padding="5dp"
+                    android:tint="@color/iconTint"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtEditDesc"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/txtEditDesc"
+                    app:srcCompat="@drawable/ic_keyboard" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
