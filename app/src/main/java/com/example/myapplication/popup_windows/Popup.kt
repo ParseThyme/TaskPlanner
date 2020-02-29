@@ -52,6 +52,8 @@ fun PopupWindow.show(parent: View) {
     val displaySize: Point = parent.getDisplaySize()
     val distance: Int = displaySize.y - location.y       // From bottom of screen to parent
 
+    Log.d("Test", "Size: ${displaySize.x}, ${displaySize.y}")
+
     // Get created window measurements to determine shifts
     this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
     val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)

@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         val tag: TaskTag = newTask.tag
 
         // Add new task to adapter
-        taskGroupAdapter.addTask(date, newTask)
+        taskGroupAdapter.addTask(date, newTask.copy())
 
         // Reset values
         txtTaskDesc.setText("")
@@ -298,6 +298,8 @@ class MainActivity : AppCompatActivity() {
     // ########## Save/Load ##########
     private fun loadSave() {
         saveLoad = SaveLoad(this)
+        // ToDo: REMOVE
+        saveLoad.clearAllData()
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
         taskGroupAdapter =

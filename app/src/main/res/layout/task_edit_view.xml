@@ -17,9 +17,7 @@
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.75">
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/titleLayout"
@@ -159,7 +157,7 @@
                     android:background="@android:color/white"
                     android:drawablePadding="5dp"
                     android:gravity="top"
-                    android:maxLines="4"
+                    android:maxLines="3"
                     android:padding="5dp"
                     android:scrollbars="vertical"
                     android:text="@string/placeholderTextLong"
