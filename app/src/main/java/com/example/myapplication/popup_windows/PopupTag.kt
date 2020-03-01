@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.popup_tag.view.*
 class PopupTag : PopupParent() {
     private var tag = TaskTag.NONE
 
-    fun create(attachTo: View, modify: View, context: Context, edited: Task): PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, attachTo)
+    fun create(attachTo: View, modify: View, context: Context, edited: Task, anchor: Anchor = Anchor.Above): PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, attachTo, anchor)
 
         // Change tag displayed selecting appropriate tag from group
         tag = edited.tag

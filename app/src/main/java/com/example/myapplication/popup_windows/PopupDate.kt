@@ -19,8 +19,8 @@ class PopupDate : PopupParent() {
     private var date: TaskDate = TaskDate()
     private var dateDelta: DateDelta = DateDelta.D
 
-    fun create(attachTo: View, modify: View, context: Context, edited: TaskDate) : PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo)
+    fun create(attachTo: View, modify: View, context: Context, edited: TaskDate, anchor: Anchor = Anchor.Above) : PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo, anchor)
         val view:View = window.contentView
 
         // Get today's date. Should update when clock strikes 12:00AM for new day

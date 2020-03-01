@@ -298,8 +298,7 @@ class MainActivity : AppCompatActivity() {
     // ########## Save/Load ##########
     private fun loadSave() {
         saveLoad = SaveLoad(this)
-        // ToDo: REMOVE
-        saveLoad.clearAllData()
+        // saveLoad.clearAllData()
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
         taskGroupAdapter =

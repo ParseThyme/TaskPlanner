@@ -8,8 +8,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
 import com.example.myapplication.getDisplaySize
-import com.example.myapplication.getScreenLocation
-
 
 abstract class PopupParent {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
@@ -30,42 +28,33 @@ abstract class PopupParent {
     }
 
     // Create window and immediately show it
-    fun createAndShow(context: Context, layout: Int, parent: View) : PopupWindow {
+    fun createAndShow(context: Context, layout: Int, parent: View, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = create(context, layout)
-        window.show(parent)
+        window.show(parent, anchor)
         return window
     }
 }
 
 // Manually show window at desired point in time
-fun PopupWindow.show(parent: View) {
-    /* Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
-    - Get measurements of content window (gives access to measuredHeight/measuredWidth)
-    - By default, y-pos is directly below parent
-
-    1. Get distance from bottom of screen to parent
-    2. Distance top of screen to parent == parent's coordinates
-    3. Whichever distance is shorter, use relevant anchoring
-    */
-
-    val location: Point = parent.getScreenLocation()
-    val displaySize: Point = parent.getDisplaySize()
-    val distance: Int = displaySize.y - location.y       // From bottom of screen to parent
-
-    Log.d("Test", "Size: ${displaySize.x}, ${displaySize.y}")
+fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
+    // Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
 
     // Get created window measurements to determine shifts
     this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-    val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
 
+    val displaySize: Point = parent.getDisplaySize()
+    val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
     val padding = 5
     val xOffset:Int = (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
-    var yOffset = 0                                         // Y positioning. Place either above or below
 
-    // Determining Y Positioning
-    // If View closer to bottom of screen, place above parent. Otherwise no offset and set to default below
-    if (distance < location.y) { yOffset = -viewSize.y - padding - parent.height }
+    // Determining Y Positioning depending on anchor. Place above or below
+    val yOffset = when(anchor) {
+        Anchor.Above -> -viewSize.y - padding - parent.height
+        Anchor.Below -> 0
+    }
 
     // Show popup with offsets applied
     this.showAsDropDown(parent, xOffset, yOffset)
 }
+
+enum class Anchor { Above, Below }

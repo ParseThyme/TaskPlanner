@@ -16,8 +16,8 @@ class PopupTime : PopupParent() {
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)
     private var timeDelta: Int = 5
 
-    fun create(attachTo: View, modify: View, context: Context, edited: Task) : PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_time, attachTo)
+    fun create(attachTo: View, modify: View, context: Context, edited: Task, anchor: Anchor = Anchor.Above) : PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_time, attachTo, anchor)
         val view:View = window.contentView
 
         // Copy over most recent time
