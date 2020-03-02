@@ -21,25 +21,13 @@ class DialogEdit(
     fun create(
         date: TaskDate,
         task: Task,
-        notifyItemChanged : () -> Unit,
+        notifyItemChanged: () -> Unit,
         changeGroup: (Task, TaskDate, Int) -> Unit
     ): Dialog {
         updated = false
-        keyBoardOpen = false
 
         // ########## Create dialog ##########
         // https://demonuts.com/android-custom-dialog-with-transparent-background/
-        /*
-        val dialog = Dialog(context, android.R.style.Theme_Translucent_NoTitleBar)
-        val view: View = LayoutInflater.from(context).inflate(R.layout.task_edit_view, null)
-        dialog.apply {
-            //requestWindowFeature(FEATURE_NO_TITLE)
-            setCancelable(false)
-            setContentView(view)
-            show()
-        }
-        */
-
         val dialog = Dialog(context, R.style.EditDialog)
         val view: View = LayoutInflater.from(context).inflate(R.layout.task_edit_view, null)
         dialog.apply {
@@ -59,45 +47,10 @@ class DialogEdit(
 
         // ########## Fill values: ##########
         // Description
-        view.iconKeyboard.setOnClickListener {
-            keyBoardOpen = !keyBoardOpen
-
-            when (keyBoardOpen) {
-                // Open keyboard, enable text editing
-                true -> {
-                    view.iconKeyboard.setImageResource(R.drawable.ic_keyboard_hide)
-                    view.txtEditDesc.requestFocus()
-                    view.txtEditDesc.showKeyboard()
-                }
-                // Close keyboard and lose focus on edit text
-                else -> {
-                    view.iconKeyboard.setImageResource(R.drawable.ic_keyboard)
-                    view.txtEditDesc.hideKeyboard()
-                }
-            }
-        }
-        view.txtEditDesc.apply {
-            // Set text and hint text to description
-            setText(task.desc)
-            hint = task.desc
-            // Toggling focus on text
-            setOnFocusChangeListener { _, focused ->
-                // Close keyboard when editText loses focus
-                if (!focused) {
-                    keyBoardOpen = false
-                    this.hideKeyboard()
-                    view.iconKeyboard.setImageResource(R.drawable.ic_keyboard)
-                }
-            }
-
-            setOnClickListener {
-                // When keyboard isn't open, change icon when keyboard opened by system
-                if (!keyBoardOpen) {
-                    keyBoardOpen = true
-                    view.iconKeyboard.setImageResource(R.drawable.ic_keyboard_hide)
-                }
-            }
-        }
+        // Create keyboard reference
+        val keyboard: Keyboard = Keyboard(view.txtEditDesc)
+        // Set text and hint text to description
+        view.txtEditDesc.setText(task.desc)
 
         // Tag
         view.iconEditTag.setImageResourceFromTag(task.tag)
@@ -123,15 +76,12 @@ class DialogEdit(
         // Close Dialog. Cancel changes made to data.
         view.btnClose.setOnClickListener {
             // Hide keyboard if open then close dialog
-            if (keyBoardOpen) view.txtEditDesc.hideKeyboard()
+            keyboard.close()
             dialog.dismiss()
         }
 
         // Apply Changes
         view.btnApply.setOnClickListener {
-            // Check for open keyboard
-            if (keyBoardOpen) view.txtEditDesc.hideKeyboard()
-
             // Check if changes have been made. If yes, then apply changes to task
             // Description
             val description: String = view.txtEditDesc.text.trim().toString()
@@ -164,6 +114,7 @@ class DialogEdit(
                 updateSave()
             }
 
+            keyboard.close()
             dialog.dismiss()
         }
 

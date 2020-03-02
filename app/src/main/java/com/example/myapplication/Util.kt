@@ -16,28 +16,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.main_activity_view.view.*
 
-
-// ########## Keyboard ##########
-// https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
-fun View.hideKeyboard() {
-    val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(this.windowToken, 0)
-}
-
-fun View.showKeyboard() {
-    val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.toggleSoftInputFromWindow(this.windowToken, InputMethodManager.SHOW_FORCED, 0)
-}
-
-// https://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext
-fun View.closeKeyboardOnFocusLost() {
-    this.setOnFocusChangeListener { _, focused ->
-        // Hide keyboard when user presses out of taskDesc
-        if (!focused)
-            this.hideKeyboard()
-    }
-}
-
 // ########## Creation ##########
 fun RecyclerView.addDivider(vertical : Boolean = true) {
     // Divider between date categories

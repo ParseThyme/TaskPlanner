@@ -152,8 +152,6 @@
                     android:id="@+id/txtEditDesc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginLeft="5dp"
                     android:background="@android:color/white"
                     android:drawablePadding="5dp"
                     android:gravity="top"
@@ -163,20 +161,10 @@
                     android:text="@string/placeholderTextLong"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/iconKeyboard"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/iconKeyboard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:padding="5dp"
-                    android:tint="@color/iconTint"
-                    app:layout_constraintBottom_toBottomOf="@+id/txtEditDesc"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/txtEditDesc"
-                    app:srcCompat="@drawable/ic_keyboard" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 

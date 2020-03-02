@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private var newTask: Task = Task()
     private var newDate: TaskDate = today()
     private val today: TaskDate = today()
+    private lateinit var keyboard: Keyboard
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -67,38 +68,13 @@ class MainActivity : AppCompatActivity() {
         setDefaultValues()
 
         // Initialize variable references
-        setupLateInit()
+        // Apply starting date to be today's date at bottom bar
+        btnSetDate.text = today.createLabel(Size.Med)
+        keyboard = Keyboard(txtTaskDesc)
+        keyboard.addInputValidation(btnNewTask)
 
         // Buttons (topBar and bottomBar)
         setupButtons()
-    }
-
-    private fun setupLateInit() {
-        // Apply starting date to be today's date at bottom bar
-        btnSetDate.text = today.createLabel(Size.Med)
-
-        // Input Validation:
-        // TextWatcher. Ensure confirm button only enabled when task entered (can't submit blank tasks)
-        btnNewTask.isEnabled = false
-        btnNewTask.toggle(false)
-
-        // When text changed, check for non-empty input
-        txtTaskDesc.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable) { }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-            // Check when text is being changed
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                // Toggle confirm button based on whether text is empty or not
-                btnNewTask.isEnabled = txtTaskDesc.text.isNotEmpty()
-                btnNewTask.toggle(btnNewTask.isEnabled)
-            }
-        })
-        // When pressing out of taskDesc, close the keyboard
-        txtTaskDesc.closeKeyboardOnFocusLost()
-
-        // Settings
-        // taskDesc.setMaxLength(settings.taskMaxLength)
     }
 
     private fun setDefaultValues() {
@@ -142,7 +118,6 @@ class MainActivity : AppCompatActivity() {
         // Reset values
         txtTaskDesc.setText("")
         txtTaskDesc.clearFocus()
-        txtTaskDesc.hideKeyboard()
 
         // Save changes
         updateSave()
@@ -321,12 +296,11 @@ class MainActivity : AppCompatActivity() {
 
         // Scroll bit extra for last position
         if (position == taskGroupList.lastIndex) {
-            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
+            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                position,
+                20
+            )
         }
-    }
-    private fun ImageButton.toggle(enabled: Boolean) {
-        if (enabled) updateBtnColor(R.color.btnEnabled, applicationContext)
-        else updateBtnColor(R.color.btnDisabled, applicationContext)
     }
 }
 
