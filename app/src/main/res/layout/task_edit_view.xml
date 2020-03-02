@@ -35,8 +35,6 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginRight="5dp"
                 android:background="@color/colorPrimary"
-                android:drawableStart="@drawable/ic_description"
-                android:drawableLeft="@drawable/ic_description"
                 android:drawablePadding="5dp"
                 android:gravity="center_vertical"
                 android:padding="5dp"
@@ -56,21 +54,9 @@
                 android:layout_marginRight="5dp"
                 android:background="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnReset"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_close" />
-
-            <ImageButton
-                android:id="@+id/btnReset"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnApply"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_reset_parameters" />
+                app:srcCompat="@drawable/ic_close" />
 
             <ImageButton
                 android:id="@+id/btnApply"
@@ -130,43 +116,70 @@
             app:layout_constraintTop_toTopOf="@+id/txtEditTime"
             app:srcCompat="@drawable/ic_tag_base" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/taskEditDescCard"
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@+id/txtEditTime"
+            tools:layout_editor_absoluteX="5dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/taskEditDescLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtEditTime">
+            app:layout_constraintTop_toBottomOf="@+id/divider">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/taskEditDescLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/btnDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/txtEditDesc"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/txtEditDesc"
+                app:srcCompat="@drawable/ic_description" />
 
-                <EditText
-                    android:id="@+id/txtEditDesc"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:drawablePadding="5dp"
-                    android:gravity="top"
-                    android:maxLines="3"
-                    android:padding="5dp"
-                    android:scrollbars="vertical"
-                    android:text="@string/placeholderTextLong"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <EditText
+                android:id="@+id/txtEditDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@android:color/white"
+                android:drawablePadding="5dp"
+                android:gravity="top"
+                android:maxLines="3"
+                android:padding="5dp"
+                android:scrollbars="vertical"
+                android:text="@string/placeholderTextLong"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnReset"
+                app:layout_constraintStart_toEndOf="@+id/btnDescription"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+            <ImageButton
+                android:id="@+id/btnReset"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_reset_parameters" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

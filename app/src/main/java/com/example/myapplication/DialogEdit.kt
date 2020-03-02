@@ -70,8 +70,16 @@ class DialogEdit(
             PopupManager.timePopup(view.windowLayout, view.txtEditTime, context, taskData)
         }
 
-        // Reset settings
-        view.btnReset.setOnClickListener { }
+        // Reset settings, place cursor at bottom
+        view.btnReset.setOnClickListener {
+            view.txtEditDesc.setText(task.desc)
+            view.txtEditDesc.setSelection(view.txtEditDesc.text.length)
+        }
+
+        // Secret - Place cursor at bottom
+        view.btnDescription.setOnClickListener {
+            view.txtEditDesc.setSelection(view.txtEditDesc.text.length)
+        }
 
         // Close Dialog. Cancel changes made to data.
         view.btnClose.setOnClickListener {
