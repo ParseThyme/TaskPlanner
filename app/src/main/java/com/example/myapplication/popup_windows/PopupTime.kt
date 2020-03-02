@@ -66,7 +66,7 @@ class PopupTime : PopupParent() {
         // Clear selected time
         view.btnClearTime.setOnClickListener {
             window.dismiss()
-            edited.time.hour = 0
+            edited.time = TaskTime(0, 0, "AM", 0)
             (modify as TextView).text = defaultTimeMsg
         }
 

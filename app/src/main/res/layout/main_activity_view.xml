@@ -222,6 +222,8 @@
                     android:id="@+id/btnStar"
                     android:layout_width="23dp"
                     android:layout_height="30dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
                     android:background="@android:color/transparent"
                     android:button="@drawable/ic_star_toggle"
                     android:includeFontPadding="false"
