@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
-        btnSetDate.text = today.createLabel(Size.Med)
+        txtSetDate.text = today.createLabel(Size.Med)
         keyboard = Keyboard(txtTaskDesc)
         keyboard.addInputValidation(btnNewTask)
 
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDefaultValues() {
-        btnSetTime.text = defaultTimeMsg
+        txtSetTime.text = defaultTimeMsg
     }
 
     // ########## Buttons ##########
@@ -97,8 +97,8 @@ class MainActivity : AppCompatActivity() {
         // Add mode
         btnNewTask.setOnClickListener { newTaskBtnFn() }
         btnReset.setOnClickListener { resetBtnFn() }
-        btnSetDate.setOnClickListener { PopupManager.datePopup(bottomBar, btnSetDate, this, newDate) }
-        btnSetTime.setOnClickListener { PopupManager.timePopup(bottomBar, btnSetTime, this, newTask) }
+        txtSetDate.setOnClickListener { PopupManager.datePopup(bottomBar, txtSetDate, this, newDate) }
+        txtSetTime.setOnClickListener { PopupManager.timePopup(bottomBar, txtSetTime, this, newTask) }
         btnSetTag.setOnClickListener  { PopupManager.tagPopup(bottomBar, btnSetTag, this, newTask) }
 
         // Select mode

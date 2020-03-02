@@ -38,6 +38,7 @@ class PopupDate : PopupParent() {
 
         // Apply values based on set date
         view.txtDate.text = date.createLabel(Size.Med)
+        view.txtDeltaDays.text = dateDelta.toString()
 
         // onClick behaviours:
         view.btnDecDate.setOnClickListener { view.txtDate.updateDate(view.btnIncDate, view.btnDecDate, false) }
