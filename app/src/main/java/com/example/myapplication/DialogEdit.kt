@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popup_windows.PopupManager
 import kotlinx.android.synthetic.main.task_edit_view.view.*
@@ -48,7 +47,7 @@ class DialogEdit(
         // ########## Fill values: ##########
         // Description
         // Create keyboard reference
-        val keyboard: Keyboard = Keyboard(view.txtEditDesc)
+        val keyboardOld: KeyboardOld = KeyboardOld(view.txtEditDesc)
         // Set text and hint text to description
         view.txtEditDesc.setText(task.desc)
 
@@ -84,7 +83,7 @@ class DialogEdit(
         // Close Dialog. Cancel changes made to data.
         view.btnClose.setOnClickListener {
             // Hide keyboard if open then close dialog
-            keyboard.close()
+            keyboardOld.close()
             dialog.dismiss()
         }
 
@@ -122,7 +121,7 @@ class DialogEdit(
                 updateSave()
             }
 
-            keyboard.close()
+            keyboardOld.close()
             dialog.dismiss()
         }
 

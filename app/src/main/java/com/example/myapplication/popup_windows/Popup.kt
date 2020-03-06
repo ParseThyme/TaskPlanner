@@ -3,10 +3,12 @@ package com.example.myapplication.popup_windows
 import android.content.Context
 import android.graphics.Point
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
+import com.example.myapplication.Keyboard
 import com.example.myapplication.getDisplaySize
 
 abstract class PopupParent {
@@ -39,22 +41,39 @@ abstract class PopupParent {
 fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
     // Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
 
-    // Get created window measurements to determine shifts
-    this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+    // 1. If keyboard open, then place popup on top of keyboard and stretch to match
+    if (Keyboard.visible) {
+        apply {
+            // Match keyboard width and height
+            width = Keyboard.dimensions.x
+            height = Keyboard.height
+            // Ensure popup overlaps keyboard
+            inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
+        }
 
-    val displaySize: Point = parent.getDisplaySize()
-    val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
-    val padding = 5
-    val xOffset:Int = (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
-
-    // Determining Y Positioning depending on anchor. Place above or below
-    val yOffset = when(anchor) {
-        Anchor.Above -> -viewSize.y - padding - parent.height
-        Anchor.Below -> 0
+        // Move popup to bottom of screen
+        this.showAtLocation(parent, Gravity.CENTER, 0, Keyboard.dimensions.y)
     }
+    // 2. Otherwise shift position accordingly above/below parent
+    else {
+        // Get created window measurements to determine shifts
+        this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
-    // Show popup with offsets applied
-    this.showAsDropDown(parent, xOffset, yOffset)
+        val displaySize: Point = parent.getDisplaySize()
+        val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
+        val padding = 5
+        val xOffset: Int =
+            (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
+
+        // Determining Y Positioning depending on anchor. Place above or below
+        val yOffset = when (anchor) {
+            Anchor.Above -> -viewSize.y - padding - parent.height
+            Anchor.Below -> 0
+        }
+
+        // Show popup with offsets applied
+        this.showAsDropDown(parent, xOffset, yOffset)
+    }
 }
 
 enum class Anchor { Above, Below }

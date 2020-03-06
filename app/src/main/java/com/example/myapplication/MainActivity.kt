@@ -1,11 +1,7 @@
 package com.example.myapplication
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.View
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
@@ -37,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private var newTask: Task = Task()
     private var newDate: TaskDate = today()
     private val today: TaskDate = today()
-    private lateinit var keyboard: Keyboard
+    private lateinit var keyboardOld: KeyboardOld
 
     // Saved/Loaded data using SharedPreferences
     private lateinit var saveLoad: SaveLoad
@@ -65,13 +61,16 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Setup related ##########
     private fun runSetup() {
+        // Setup keyboard management
+        Keyboard.setup(this)
+
         setDefaultValues()
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
         txtSetDate.text = today.createLabel(Size.Med)
-        keyboard = Keyboard(txtTaskDesc)
-        keyboard.addInputValidation(btnNewTask)
+        keyboardOld = KeyboardOld(txtTaskDesc)
+        keyboardOld.addInputValidation(btnNewTask)
 
         // Buttons (topBar and bottomBar)
         setupButtons()
