@@ -2,14 +2,14 @@ package com.example.myapplication
 
 import android.content.Context
 import android.graphics.Point
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -43,15 +43,17 @@ inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, 
 // https://stackoverflow.com/questions/35780980/getting-the-actual-screen-height-android/45158798
 
 fun View.getDisplaySize() : Point {
-    val root: View = this.rootView.root
+    val root: View = this.rootView.layout
     return Point(root.width, root.height)
 }
 
+/*
 fun View.getScreenLocation() : Point {
     val location = IntArray(2)
     this.getLocationOnScreen(location)
     return Point(location[0], location[1])
 }
+ */
 
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/

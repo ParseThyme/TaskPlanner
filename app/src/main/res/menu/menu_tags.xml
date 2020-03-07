@@ -4,18 +4,18 @@
 
     <item
         android:id="@+id/tag_event"
-        android:icon="@drawable/ic_tag_event"
+        android:icon="@drawable/tag_event"
         android:title="@string/tag_event" />
     <item
         android:id="@+id/tag_buy"
-        android:icon="@drawable/ic_tag_buy"
+        android:icon="@drawable/tag_buy"
         android:title="@string/tag_buy" />
     <item
         android:id="@+id/tag_booking"
-        android:icon="@drawable/ic_tag_booking"
+        android:icon="@drawable/tag_booking"
         android:title="@string/tag_booking" />
     <item
         android:id="@+id/tag_base"
-        android:icon="@drawable/ic_tag_base"
+        android:icon="@drawable/tag_base"
         android:title="@string/tag_base" />
 </menu>

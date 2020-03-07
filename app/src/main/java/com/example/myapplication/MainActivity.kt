@@ -9,6 +9,8 @@ import com.example.myapplication.data_classes.*
 import com.example.myapplication.popup_windows.*
 // import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_activity_view.*
+import kotlinx.android.synthetic.main.main_activity_view.btnReset
+import kotlinx.android.synthetic.main.main_activity_view.topBarTitle
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
@@ -16,13 +18,11 @@ class MainActivity : AppCompatActivity() {
     // private val settings: Settings = Settings()
 
     // TaskList (Center Area)
-    private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
     private val taskClickedFn = { task : Task -> taskClicked(task) }
     private val dateClickedFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
     private val updateCollapseExpandIconFn = { state: ViewState -> updateCollapseExpandIcon(state)}
     private val updateSaveFn = { updateSave() }
-    private lateinit var taskGroupAdapter: TaskGroupAdapter
 
     // Selecting tasks
     private var taskCount: Int = 0
@@ -33,10 +33,14 @@ class MainActivity : AppCompatActivity() {
     private var newTask: Task = Task()
     private var newDate: TaskDate = today()
     private val today: TaskDate = today()
-    private lateinit var keyboardOld: KeyboardOld
 
-    // Saved/Loaded data using SharedPreferences
+    // Data
+    private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
+    private var tagsList: ArrayList<TaskTag> = ArrayList()
+
+    // Late initialized variables
     private lateinit var saveLoad: SaveLoad
+    private lateinit var taskGroupAdapter: TaskGroupAdapter
 
     // ########## Main ##########
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,23 +65,30 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Setup related ##########
     private fun runSetup() {
-        // Setup keyboard management
-        Keyboard.setup(this)
+        // Setup singletons
+        Keyboard.setup(this, txtTaskDesc)
+        Keyboard.addInputValidation(btnNewTask)
 
-        setDefaultValues()
+        // ToDo: Implement tags list to be saved and loaded
+        tagsList = arrayListOf(
+            TaskTag(R.drawable.tag_base),
+            TaskTag(R.drawable.tag_booking),
+            TaskTag(R.drawable.tag_buy),
+            TaskTag(R.drawable.tag_event),
+            TaskTag(R.drawable.tag_flight),
+            TaskTag(R.drawable.tag_food),
+            TaskTag(R.drawable.tag_medicine),
+            TaskTag(R.drawable.tag_movies)
+        )
+        PopupManager.setup(tagsList)
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
         txtSetDate.text = today.createLabel(Size.Med)
-        keyboardOld = KeyboardOld(txtTaskDesc)
-        keyboardOld.addInputValidation(btnNewTask)
+        txtSetTime.text = defaultTimeMsg
 
         // Buttons (topBar and bottomBar)
         setupButtons()
-    }
-
-    private fun setDefaultValues() {
-        txtSetTime.text = defaultTimeMsg
     }
 
     // ########## Buttons ##########

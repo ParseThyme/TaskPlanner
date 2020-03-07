@@ -3,6 +3,7 @@ package com.example.myapplication.adapters
 import android.app.Dialog
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
@@ -60,12 +61,17 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun editTask(task: Task) {
-            // Store copy of current group task belongs to
-            val taskGroup: TaskDate = group.date.copy()
+            val previousEditText: EditText = Keyboard.editText      // Previous editText attached to Keyboard
+            val taskGroup: TaskDate = group.date.copy()             // Copy of current group task belongs to
+
+            // Create new dialog
             val dialog: Dialog =
                 editWindow.create(taskGroup, task,
                     { notifyItemChanged(adapterPosition) },     // Update display when task updated
                     changeGroup)                                // Switch group when changed
+
+            // Reattach old editText when done editing task
+            dialog.setOnDismissListener { Keyboard.attachTo(previousEditText) }
         }
 
         private fun toggleSelected(isSelected: Boolean) {
@@ -75,10 +81,10 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun toggleTag(tag: TaskTag) {
             // No tag, don't display anything
-            if (tag == TaskTag.NONE) { itemView.taskTag.visibility = View.GONE }
+            if (tag.icon == R.drawable.tag_base) { itemView.taskTag.visibility = View.GONE }
             // Get image, set tag accordingly and display
             else {
-                itemView.taskTag.setImageResourceFromTag(tag)
+                itemView.taskTag.setImageResource(tag.icon)
                 itemView.taskTag.visibility = View.VISIBLE
             }
         }

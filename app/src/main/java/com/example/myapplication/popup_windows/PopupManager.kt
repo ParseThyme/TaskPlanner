@@ -6,9 +6,16 @@ import android.view.View
 import com.example.myapplication.data_classes.*
 
 object PopupManager {
-    val time: PopupTime = PopupTime()
-    val tag: PopupTag = PopupTag()
-    val date: PopupDate = PopupDate()
+
+    private lateinit var time: PopupTime
+    private lateinit var tag: PopupTag
+    private lateinit var date: PopupDate
+
+    fun setup(tagList: ArrayList<TaskTag>) {
+        time = PopupTime()
+        tag = PopupTag(tagList)
+        date = PopupDate()
+    }
 
     // Create relevant popups
     fun timePopup(attachTo: View, modify: View, context: Context, edited: Task) {
@@ -21,5 +28,3 @@ object PopupManager {
         date.create(attachTo, modify, context, edited)
     }
 }
-
-enum class PopupType { Time, Tag, Date }

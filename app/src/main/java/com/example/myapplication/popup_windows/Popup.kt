@@ -45,14 +45,14 @@ fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
     if (Keyboard.visible) {
         apply {
             // Match keyboard width and height
-            width = Keyboard.dimensions.x
+            width = Keyboard.width
             height = Keyboard.height
             // Ensure popup overlaps keyboard
             inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
         }
 
         // Move popup to bottom of screen
-        this.showAtLocation(parent, Gravity.CENTER, 0, Keyboard.dimensions.y)
+        this.showAtLocation(parent, Gravity.CENTER, 0, Keyboard.maxHeight)
     }
     // 2. Otherwise shift position accordingly above/below parent
     else {

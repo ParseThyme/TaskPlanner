@@ -47,12 +47,12 @@ class DialogEdit(
         // ########## Fill values: ##########
         // Description
         // Create keyboard reference
-        val keyboardOld: KeyboardOld = KeyboardOld(view.txtEditDesc)
+        Keyboard.attachTo(view.txtEditDesc)
         // Set text and hint text to description
         view.txtEditDesc.setText(task.desc)
 
         // Tag
-        view.iconEditTag.setImageResourceFromTag(task.tag)
+        view.iconEditTag.setImageResource(task.tag.icon)
         view.iconEditTag.setOnClickListener {
             PopupManager.tagPopup(view.windowLayout, view.iconEditTag, context, taskData)
         }
@@ -83,7 +83,7 @@ class DialogEdit(
         // Close Dialog. Cancel changes made to data.
         view.btnClose.setOnClickListener {
             // Hide keyboard if open then close dialog
-            keyboardOld.close()
+            Keyboard.close()
             dialog.dismiss()
         }
 
@@ -104,9 +104,9 @@ class DialogEdit(
             }
 
             // Tag
-            if (task.tag != taskData.tag) {
+            if (task.tag.icon != taskData.tag.icon) {
                 updated = true
-                task.tag = taskData.tag
+                task.tag = taskData.tag.copy()
             }
 
             // Date
@@ -121,7 +121,7 @@ class DialogEdit(
                 updateSave()
             }
 
-            keyboardOld.close()
+            Keyboard.close()
             dialog.dismiss()
         }
 

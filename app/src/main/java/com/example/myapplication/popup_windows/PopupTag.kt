@@ -1,36 +1,42 @@
 package com.example.myapplication.popup_windows
 
 import android.content.Context
+import android.media.Image
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.PopupWindow
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.myapplication.R
+import com.example.myapplication.adapters.TaskTagAdapter
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.data_classes.TaskTag
+import com.example.myapplication.data_classes.TaskTagOld
 import com.example.myapplication.data_classes.setImageResourceFromTag
-import kotlinx.android.synthetic.main.popup_tag.view.*
+import kotlinx.android.synthetic.main.popup_tag_grid_rv.view.*
 
-class PopupTag : PopupParent() {
-    private var tag = TaskTag.NONE
-
+class PopupTag(private val tagsList: ArrayList<TaskTag>) : PopupParent() {
     fun create(attachTo: View, modify: View, context: Context, edited: Task, anchor: Anchor = Anchor.Above): PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_tag, attachTo, anchor)
+        // Calculate number of icons per row. Ideally max is 10 per row.
+        var spanCount = tagsList.size
+        spanCount =
+            if (tagsList.size < 10) tagsList.size
+            else 10
 
-        // Change tag displayed selecting appropriate tag from group
-        tag = edited.tag
-        window.contentView.tagGroup.setOnCheckedChangeListener { _, chosenTag ->
-            tag = when (chosenTag) {
-                R.id.tagEvent -> TaskTag.EVENT
-                R.id.tagBooking -> TaskTag.BOOKING
-                R.id.tagBuy -> TaskTag.BUY
-                else -> TaskTag.NONE
+        val window = create(context, R.layout.popup_tag_grid_rv)
+        val view: View = window.contentView
+        view.tagsRv.apply {
+            layoutManager = GridLayoutManager(context, spanCount)
+            adapter = TaskTagAdapter(tagsList)
+            // Select and close function passed into TaskTagAdapter
+            { taskTag: TaskTag ->           // Input Param
+                (modify as ImageView).setImageResource(taskTag.icon)
+                edited.tag = taskTag
+                window.dismiss()
             }
-
-            (modify as ImageView).setImageResourceFromTag(tag)
-            edited.tag = tag
-            window.dismiss()
         }
 
+        window.show(attachTo)
         return window
     }
 }
