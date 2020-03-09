@@ -75,19 +75,23 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // Defining reference to task description text in layout
         private val tasksRV = itemView.taskGroupRV
         private val dateLabel = itemView.dateLabel
+        private val dayLabel = itemView.dayLabel
+        private val dateCard = itemView.dateCard
+        private val collapseExpandBtn = itemView.collapseExpandBtn
 
         fun bind(group: TaskGroup) {
             // Assign date label
             dateLabel.text = group.date.createLabel()
+            dayLabel.text = group.date.getDayNameShort()
 
             // Update view if collapsed/expanded
             setExpandCollapse(group)
 
-            // When date label clicked, call ActivityMain click listener function
-            itemView.dateCard.setOnClickListener { if (group.isExpanded()) dateClicked(adapterPosition) }
+            // When day label clicked, call ActivityMain click listener function (De/Select entire group)
+            dayLabel.setOnClickListener { if (group.isExpanded()) dateClicked(adapterPosition) }
 
             // Update view if collapsed/expanded (Clicked)
-            itemView.collapseExpandBtn.setOnClickListener {
+            collapseExpandBtn.setOnClickListener {
                 val newState: ViewState = group.toggleExpandCollapse()
                 setExpandCollapse(group)
 

@@ -37,7 +37,7 @@ class PopupDate : PopupParent() {
         else if (date.id == endDate.id) { view.btnIncDate.visibility = View.INVISIBLE }
 
         // Apply values based on set date
-        view.txtDate.text = date.createLabel(Size.Med)
+        view.txtDate.text = date.createShortLabel()
         view.txtDeltaDays.text = dateDelta.toString()
 
         // onClick behaviours:
@@ -51,13 +51,13 @@ class PopupDate : PopupParent() {
             date = today
 
             view.btnDecDate.visibility = View.INVISIBLE
-            view.txtDate.text = date.createLabel(Size.Med)
+            view.txtDate.text = date.createShortLabel()
             view.txtDeltaDays.text = "D"
         }
         view.btnApplyDate.setOnClickListener {
             window.dismiss()
             edited.reassign(date)
-            (modify as TextView).text = date.createLabel(Size.Med)
+            (modify as TextView).text = date.createShortLabel()
         }
 
         return window
@@ -103,7 +103,7 @@ class PopupDate : PopupParent() {
         }
 
         // Assign new value
-        this.text = date.createLabel(Size.Med)
+        this.text = date.createShortLabel()
     }
     private fun TextView.updateDelta() {
         dateDelta = dateDelta.next()

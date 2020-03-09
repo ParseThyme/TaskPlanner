@@ -1,6 +1,5 @@
 package com.example.myapplication.data_classes
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -74,8 +73,17 @@ private fun getOrdinal(dayNum: Int) : String {
     }
 }
 
-enum class Size { Long, Med, Short }
-fun TaskDate.createLabel(size: Size = Size.Long): String {
+fun TaskDate.createShortLabel(): String {
+    val cal:Calendar = Calendar.getInstance()
+    cal.set(this.year, this.month, this.day)
+    val timeInMills = cal.timeInMillis
+    val dayNameShort: String = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
+    val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
+
+    // Mo-1-Feb
+    return "$dayNameShort-$day-$monthShort"    // E.g. Fr-21-Feb
+}
+fun TaskDate.createLabel(): String {
     // Get task's date
     val cal:Calendar = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
@@ -84,29 +92,17 @@ fun TaskDate.createLabel(size: Size = Size.Long): String {
     val timeInMills = cal.timeInMillis
     var label: String
 
-    // [1]. Full length:
-    if (size == Size.Long) {
-        // E.g. Friday February 21st
-        val ordinal = getOrdinal(cal.get(Calendar.DAY_OF_MONTH))
-        val dayName: String = SimpleDateFormat("EEEE").format(timeInMills)
-        val month: String = SimpleDateFormat("MMMM").format(timeInMills)
-        label = "$dayName $month $day$ordinal"
-    }
-    else {
-        // val dayNameShort: String = dayOfWeek.toString()
-        val dayNameShort: String = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
-        val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
+    val ordinal = getOrdinal(cal.get(Calendar.DAY_OF_MONTH))
+    val month: String = SimpleDateFormat("MMMM").format(timeInMills)
 
-        // [2]. Medium:
-        label =
-            if (size == Size.Med) {
-                "$dayNameShort-$day-$monthShort"    // E.g. Fr-21-Feb
-            }
-            // [3]. Short:
-            else {
-                "$day-$monthShort"                  // E.g. 21-Feb
-            }
-    }
+    // 21st February
+    return "$day$ordinal $month"
+}
+fun TaskDate.getDayNameShort(): String {
+    val cal:Calendar = Calendar.getInstance()
+    cal.set(this.year, this.month, this.day)
+    val timeInMills = cal.timeInMillis
 
-    return label
+    // Mo, Tu, We, Th, Fr, Sa, Su
+    return SimpleDateFormat("EE").format(timeInMills).dropLast(1)
 }

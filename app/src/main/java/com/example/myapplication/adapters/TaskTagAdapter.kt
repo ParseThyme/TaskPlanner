@@ -8,8 +8,8 @@ import com.example.myapplication.data_classes.TaskTag
 import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.popup_tag_entry.view.*
 
-class TaskTagAdapter(private val tagsList: ArrayList<TaskTag>,
-                     private val selectAndClose: (TaskTag) -> Unit)
+class TaskTagAdapter(private val tagsList: ArrayList<Int>,
+                     private val selectAndClose: (Int) -> Unit)
     : RecyclerView.Adapter<TaskTagAdapter.ViewHolder>()
 {
 
@@ -20,9 +20,9 @@ class TaskTagAdapter(private val tagsList: ArrayList<TaskTag>,
     }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bind(entry: TaskTag) {
+        fun bind(entry: Int) {
             itemView.iconTag.apply {
-                setImageResource(entry.icon)                    // Set icon to match taskTag
+                setImageResource(entry)                         // Set icon to match taskTag
                 setOnClickListener { selectAndClose(entry) }    // When tag clicked, close popup window
             }
         }

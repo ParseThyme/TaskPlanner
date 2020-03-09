@@ -79,12 +79,12 @@ class TasksAdapter(private val group: TaskGroup,
             else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
         }
 
-        private fun toggleTag(tag: TaskTag) {
+        private fun toggleTag(tag: Int) {
             // No tag, don't display anything
-            if (tag.icon == R.drawable.tag_base) { itemView.taskTag.visibility = View.GONE }
+            if (tag == R.drawable.tag_base) { itemView.taskTag.visibility = View.GONE }
             // Get image, set tag accordingly and display
             else {
-                itemView.taskTag.setImageResource(tag.icon)
+                itemView.taskTag.setImageResource(tag)
                 itemView.taskTag.visibility = View.VISIBLE
             }
         }

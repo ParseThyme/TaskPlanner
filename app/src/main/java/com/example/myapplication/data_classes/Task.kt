@@ -7,12 +7,13 @@ import com.example.myapplication.R
 data class Task (
     var desc : String = "",
 
-    var tag: TaskTag = TaskTag(0),
+    var tag: Int = R.drawable.tag_base,
     var time: TaskTime = TaskTime(0,0,"AM", 0),
 
     var selected : Boolean = false
 )
 
+/*
 enum class TaskTagOld { NONE, BOOKING, BUY, EVENT }
 
 fun ImageView.setImageResourceFromTag(tagOld: TaskTagOld) {
@@ -27,3 +28,4 @@ fun ImageView.setImageResourceFromTag(tagOld: TaskTagOld) {
     this.setImageResource(imageResource)
     this.tag = tagOld
 }
+*/

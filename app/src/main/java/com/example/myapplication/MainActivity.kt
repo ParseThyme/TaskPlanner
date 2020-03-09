@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     // Data
     private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
-    private var tagsList: ArrayList<TaskTag> = ArrayList()
+    private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables
     private lateinit var saveLoad: SaveLoad
@@ -71,20 +71,20 @@ class MainActivity : AppCompatActivity() {
 
         // ToDo: Implement tags list to be saved and loaded
         tagsList = arrayListOf(
-            TaskTag(R.drawable.tag_base),
-            TaskTag(R.drawable.tag_booking),
-            TaskTag(R.drawable.tag_buy),
-            TaskTag(R.drawable.tag_event),
-            TaskTag(R.drawable.tag_flight),
-            TaskTag(R.drawable.tag_food),
-            TaskTag(R.drawable.tag_medicine),
-            TaskTag(R.drawable.tag_movies)
+            R.drawable.tag_base,
+            R.drawable.tag_booking,
+            R.drawable.tag_buy,
+            R.drawable.tag_event,
+            R.drawable.tag_flight,
+            R.drawable.tag_food,
+            R.drawable.tag_medicine,
+            R.drawable.tag_movies
         )
         PopupManager.setup(tagsList)
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
-        txtSetDate.text = today.createLabel(Size.Med)
+        txtSetDate.text = today.createShortLabel()
         txtSetTime.text = defaultTimeMsg
 
         // Buttons (topBar and bottomBar)
@@ -117,13 +117,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun newTaskBtnFn() {
         // Get relevant values
-        newTask.desc = txtTaskDesc.text.toString().trim()
-        val time: TaskTime = newTask.time
-        val date: TaskDate = newDate
-        val tag: TaskTag = newTask.tag
+        val desc: String = txtTaskDesc.text.toString().trim()
+        val time: TaskTime = newTask.time.copy()
+        val date: TaskDate = newDate.copy()
+        val tag: Int = newTask.tag
+        val addedTask = Task(desc, tag, time)
 
         // Add new task to adapter
-        taskGroupAdapter.addTask(date, newTask.copy())
+        taskGroupAdapter.addTask(date, addedTask)
 
         // Reset values
         txtTaskDesc.setText("")

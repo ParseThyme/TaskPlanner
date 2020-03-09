@@ -52,13 +52,13 @@ class DialogEdit(
         view.txtEditDesc.setText(task.desc)
 
         // Tag
-        view.iconEditTag.setImageResource(task.tag.icon)
+        view.iconEditTag.setImageResource(task.tag)
         view.iconEditTag.setOnClickListener {
             PopupManager.tagPopup(view.windowLayout, view.iconEditTag, context, taskData)
         }
 
         // Date
-        view.txtEditDate.text = date.createLabel(Size.Med)
+        view.txtEditDate.text = date.createShortLabel()
         view.txtEditDate.setOnClickListener {
             PopupManager.datePopup(view.windowLayout, view.txtEditDate, context, dateData)
         }
@@ -104,9 +104,9 @@ class DialogEdit(
             }
 
             // Tag
-            if (task.tag.icon != taskData.tag.icon) {
+            if (task.tag != taskData.tag) {
                 updated = true
-                task.tag = taskData.tag.copy()
+                task.tag = taskData.tag
             }
 
             // Date

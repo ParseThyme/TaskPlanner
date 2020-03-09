@@ -11,7 +11,7 @@ object PopupManager {
     private lateinit var tag: PopupTag
     private lateinit var date: PopupDate
 
-    fun setup(tagList: ArrayList<TaskTag>) {
+    fun setup(tagList: ArrayList<Int>) {
         time = PopupTime()
         tag = PopupTag(tagList)
         date = PopupDate()
