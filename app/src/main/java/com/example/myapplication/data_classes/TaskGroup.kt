@@ -2,6 +2,7 @@ package com.example.myapplication.data_classes
 
 import android.util.Log
 import android.view.View
+import com.example.myapplication.adapters.TaskGroupAdapter
 import kotlin.collections.ArrayList
 
 // ########## Data Type ##########
@@ -9,14 +10,31 @@ data class TaskGroup (
     val date: TaskDate = TaskDate(),
     val taskList: ArrayList<Task> = arrayListOf(),
 
-    // Identification
-    // val id: Int = 0,
-
     // When tasks selected
     var numSelected: Int = 0,
     // Toggle state (expanded/collapsed)
     var state: ViewState = ViewState.EXPANDED
 )
+
+fun TaskGroup.deleteSelected(): Boolean {
+    // Return value represents whether deletion performed
+    when (numSelected) {
+        0 -> return false                              // None selected
+        taskList.size -> taskList.clear()              // All selected
+
+        // Variable number selected
+        else -> {
+            // Iterate through task list to find selected
+            for (index: Int in taskList.size - 1 downTo 0) {
+                if (taskList[index].selected)
+                    taskList.removeAt(index)
+            }
+        }
+    }
+
+    numSelected = 0
+    return true
+}
 
 // ########## Collapsing/Expanding view state ##########
 fun ViewState.isNewState(view: View): Boolean {

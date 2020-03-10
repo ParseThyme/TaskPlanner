@@ -1,20 +1,21 @@
 package com.example.myapplication.popup_windows
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import com.example.myapplication.data_classes.*
 
 object PopupManager {
-
     private lateinit var time: PopupTime
     private lateinit var tag: PopupTag
     private lateinit var date: PopupDate
 
     fun setup(tagList: ArrayList<Int>) {
-        time = PopupTime()
-        tag = PopupTag(tagList)
-        date = PopupDate()
+        time =
+            PopupTime()
+        tag =
+            PopupTag(tagList)
+        date =
+            PopupDate()
     }
 
     // Create relevant popups

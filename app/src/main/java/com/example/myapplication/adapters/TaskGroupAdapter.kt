@@ -1,7 +1,6 @@
 package com.example.myapplication.adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +16,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val changeCollapseExpandIcon: (ViewState) -> Unit,
                        private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
+    // https://proandroiddev.com/optimizing-nested-recyclerview-a9b7830a4ba7
+    private val viewPool: RecyclerView.RecycledViewPool = RecyclerView.RecycledViewPool()
 
     // Listener function: Date changed for task
     private val changeDate = {
@@ -57,6 +58,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // 2. New list, no previous save, set default values
         else {
             minDate = baseMinDate
+            taskCount = 0
+            collapsedCount = 0
         }
     }
 
@@ -76,7 +79,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         private val tasksRV = itemView.taskGroupRV
         private val dateLabel = itemView.dateLabel
         private val dayLabel = itemView.dayLabel
-        private val dateCard = itemView.dateCard
         private val collapseExpandBtn = itemView.collapseExpandBtn
 
         fun bind(group: TaskGroup) {
@@ -110,12 +112,11 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 updateSave()
             }
 
-            // Store reference to task adapter
-            val taskAdapter = TasksAdapter(group, taskClicked, changeDate, updateSave)
             // Assign layout manager + adapter
             tasksRV.apply {
+                setRecycledViewPool(viewPool)
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
-                adapter = taskAdapter
+                adapter = TasksAdapter(group, taskClicked, changeDate, updateSave)
             }
         }
 
@@ -215,9 +216,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
         // [2]. Deleting specifically selected tasks
         var count = 0
-        val end = taskGroupList.size - 1
 
-        main_loop@for (groupNum in end downTo 0) {
+        // Go through each group and delete any selected tasks
+        main_loop@for (groupNum in taskGroupList.size - 1 downTo 0) {
             val group = taskGroupList[groupNum]
             if (group.numSelected > 0) {
                 // Go through task list in group, deleting selected tasks

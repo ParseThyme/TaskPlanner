@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.*
+import com.example.myapplication.popup_windows.PopupManager
 // import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlinx.android.synthetic.main.main_activity_view.btnReset
@@ -96,8 +96,40 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         // TopBar
         // ##############################
-        btnSelectAll.setOnClickListener { selectAllBtnFn() }
-        btnCollapseExpand.setOnClickListener { collapseExpandBtnFn() }
+        btnSelectAll.setOnClickListener {
+            // If not all selected, select all
+            if (selected != taskGroupAdapter.taskCount) {
+                // Change icon to opposite icon (deselect all)
+                btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+
+                // Toggle all to selected state
+                taskGroupAdapter.toggleAllHighlight()
+                selected = taskGroupAdapter.taskCount
+                updateSelectedCountDisplay()
+
+                // Switch to select mode if in add mode
+                setMode(Mode.SELECTION)
+            }
+            // All selected, deselect all and return to add mode
+            else {
+                // Toggle all to off state and return to add mode
+                taskGroupAdapter.toggleAllHighlight(false)
+                setMode(Mode.ADD)
+            }
+        }
+        btnCollapseExpand.setOnClickListener {
+            // Expand all when all are collapsed, switch icon to collapse all icon
+            if (taskGroupAdapter.allCollapsed()) {
+                taskGroupAdapter.toggleAllExpandCollapse()
+                updateCollapseExpandIcon(ViewState.EXPANDED)
+            }
+            // Otherwise collapse all and switch icon to expand all icon
+            else {
+                taskGroupAdapter.toggleAllExpandCollapse(ViewState.COLLAPSED)
+                updateCollapseExpandIcon(ViewState.COLLAPSED)
+            }
+            updateSave()
+        }
         btnSettings.setOnClickListener { settingsBtnFn() }
 
         // ##############################
@@ -105,87 +137,45 @@ class MainActivity : AppCompatActivity() {
         // ##############################
 
         // Add mode
-        btnNewTask.setOnClickListener { newTaskBtnFn() }
+        btnNewTask.setOnClickListener {
+            // Get relevant values
+            val desc: String = txtTaskDesc.text.toString().trim()
+            val time: TaskTime = newTask.time.copy()
+            val date: TaskDate = newDate.copy()
+            val tag: Int = newTask.tag
+            val addedTask = Task(desc, tag, time)
+
+            // Add new task to adapter
+            taskGroupAdapter.addTask(date, addedTask)
+
+            // Reset values
+            txtTaskDesc.setText("")
+            txtTaskDesc.clearFocus()
+
+            // Save changes
+            updateSave()
+        }
         btnReset.setOnClickListener { resetBtnFn() }
         txtSetDate.setOnClickListener { PopupManager.datePopup(bottomBar, txtSetDate, this, newDate) }
         txtSetTime.setOnClickListener { PopupManager.timePopup(bottomBar, txtSetTime, this, newTask) }
         btnSetTag.setOnClickListener  { PopupManager.tagPopup(bottomBar, btnSetTag, this, newTask) }
 
         // Select mode
-        btnDelete.setOnClickListener { deleteBtnFn() }
-    }
+        btnDelete.setOnClickListener {
+            taskGroupAdapter.deleteSelected(selected)
+            taskCount -= selected
 
-    private fun newTaskBtnFn() {
-        // Get relevant values
-        val desc: String = txtTaskDesc.text.toString().trim()
-        val time: TaskTime = newTask.time.copy()
-        val date: TaskDate = newDate.copy()
-        val tag: Int = newTask.tag
-        val addedTask = Task(desc, tag, time)
-
-        // Add new task to adapter
-        taskGroupAdapter.addTask(date, addedTask)
-
-        // Reset values
-        txtTaskDesc.setText("")
-        txtTaskDesc.clearFocus()
-
-        // Save changes
-        updateSave()
-    }
-
-    private fun selectAllBtnFn() {
-        // If not all selected, select all
-        if (selected != taskGroupAdapter.taskCount) {
-            // Change icon to opposite icon (deselect all)
-            btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
-
-            // Toggle all to selected state
-            taskGroupAdapter.toggleAllHighlight()
-            selected = taskGroupAdapter.taskCount
-            updateSelectedCountDisplay()
-
-            // Switch to select mode if in add mode
-            setMode(Mode.SELECTION)
-        }
-        // All selected, deselect all and return to add mode
-        else {
-            // Toggle all to off state and return to add mode
-            taskGroupAdapter.toggleAllHighlight(false)
+            // Clear selections and return to add mode
             setMode(Mode.ADD)
+            updateSave()
         }
-    }
-
-    private fun collapseExpandBtnFn() {
-        // Expand all when all are collapsed, switch icon to collapse all icon
-        if (taskGroupAdapter.allCollapsed()) {
-            taskGroupAdapter.toggleAllExpandCollapse()
-            updateCollapseExpandIcon(ViewState.EXPANDED)
-        }
-        // Otherwise collapse all and switch icon to expand all icon
-        else {
-            taskGroupAdapter.toggleAllExpandCollapse(ViewState.COLLAPSED)
-            updateCollapseExpandIcon(ViewState.COLLAPSED)
-        }
-        updateSave()
     }
 
     //ToDo
     private fun settingsBtnFn() { }
 
-    private fun deleteBtnFn() {
-        taskGroupAdapter.deleteSelected(selected)
-        taskCount -= selected
-
-        // Clear selections and return to add mode
-        setMode(Mode.ADD)
-        updateSave()
-    }
-
     //ToDo
     private fun resetBtnFn() {}
-
-    // ########## Popups ##########
 
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {

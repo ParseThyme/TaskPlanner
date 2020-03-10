@@ -86,17 +86,17 @@ object Keyboard {
         visible = true
         imm.toggleSoftInputFromWindow(editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
     }
-}
 
-private fun ImageButton.toggle(enabled: Boolean) {
-    if (enabled) updateBtnColor(R.color.btnEnabled, this.context)
-    else updateBtnColor(R.color.btnDisabled, this.context)
-}
+    private fun ImageButton.toggle(enabled: Boolean) {
+        if (enabled) updateBtnColor(R.color.btnEnabled, this.context)
+        else updateBtnColor(R.color.btnDisabled, this.context)
+    }
 
-private fun View.getOccupiedSpace() : Point {
-    // How much space currently the view takes up
-    // https://stackoverflow.com/questions/22589322/what-does-top-left-right-and-bottom-mean-in-android-rect-object
-    val r = Rect()  // Has top, bottom, left, right values. We only care about right/bottom in this case
-    this.getWindowVisibleDisplayFrame(r)
-    return Point(r.right, r.bottom)
+    private fun View.getOccupiedSpace() : Point {
+        // How much space currently the view takes up
+        // https://stackoverflow.com/questions/22589322/what-does-top-left-right-and-bottom-mean-in-android-rect-object
+        val r = Rect()  // Has top, bottom, left, right values. We only care about right/bottom in this case
+        this.getWindowVisibleDisplayFrame(r)
+        return Point(r.right, r.bottom)
+    }
 }
