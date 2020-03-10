@@ -16,9 +16,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val changeCollapseExpandIcon: (ViewState) -> Unit,
                        private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
-    // https://proandroiddev.com/optimizing-nested-recyclerview-a9b7830a4ba7
-    private val viewPool: RecyclerView.RecycledViewPool = RecyclerView.RecycledViewPool()
-
     // Listener function: Date changed for task
     private val changeDate = {
         // Params:
@@ -114,7 +111,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
             // Assign layout manager + adapter
             tasksRV.apply {
-                setRecycledViewPool(viewPool)
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
                 adapter = TasksAdapter(group, taskClicked, changeDate, updateSave)
             }
