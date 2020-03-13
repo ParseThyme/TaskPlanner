@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private val taskClickedFn = { task : Task -> taskClicked(task) }
     private val dateClickedFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
-    private val updateCollapseExpandIconFn = { state: ViewState -> updateCollapseExpandIcon(state)}
+    private val updateCollapseExpandIconFn = { state: Fold -> updateCollapseExpandIcon(state)}
     private val updateSaveFn = { updateSave() }
 
     // Selecting tasks
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
                 // Toggle all to selected state
-                taskGroupAdapter.toggleAllHighlight()
+                taskGroupAdapter.toggleSelectAll()
                 data.selectAll()
                 updateSelectedCountDisplay()
 
@@ -113,20 +113,20 @@ class MainActivity : AppCompatActivity() {
             // All selected, deselect all and return to add mode
             else {
                 // Toggle all to off state and return to add mode
-                taskGroupAdapter.toggleAllHighlight(false)
+                taskGroupAdapter.toggleSelectAll(false)
                 setMode(Mode.ADD)
             }
         }
         btnCollapseExpand.setOnClickListener {
             // Expand all when all are collapsed, switch icon to collapse all icon
             if (taskGroupAdapter.allCollapsed()) {
-                taskGroupAdapter.toggleAllExpandCollapse()
-                updateCollapseExpandIcon(ViewState.EXPANDED)
+                taskGroupAdapter.toggleFoldAll()
+                updateCollapseExpandIcon(Fold.OUT)
             }
             // Otherwise collapse all and switch icon to expand all icon
             else {
-                taskGroupAdapter.toggleAllExpandCollapse(ViewState.COLLAPSED)
-                updateCollapseExpandIcon(ViewState.COLLAPSED)
+                taskGroupAdapter.toggleFoldAll(Fold.IN)
+                updateCollapseExpandIcon(Fold.IN)
             }
             updateSave()
         }
@@ -173,15 +173,22 @@ class MainActivity : AppCompatActivity() {
         btnSetTag.setOnClickListener  { PopupManager.tagPopup(bottomBar, btnSetTag, this, newTask) }
 
         // Select mode
+        // When modifying entries, clear selections and then return to add mode
         btnToDate.setOnClickListener {  }
         btnToTag.setOnClickListener {  }
 
-        btnClearTag.setOnClickListener {  }
-        btnClearTime.setOnClickListener {  }
-
+        btnClearTag.setOnClickListener {
+            taskGroupAdapter.clearSelected(TaskParam.Tag)
+            setMode(Mode.ADD)
+            updateSave()
+        }
+        btnClearTime.setOnClickListener {
+            taskGroupAdapter.clearSelected(TaskParam.Time)
+            setMode(Mode.ADD)
+            updateSave()
+        }
         btnDelete.setOnClickListener {
-            // Delete entries, clear selections and return to add mode
-            taskGroupAdapter.deleteSelected()
+            taskGroupAdapter.delete()
             setMode(Mode.ADD)
             updateSave()
         }
@@ -270,10 +277,10 @@ class MainActivity : AppCompatActivity() {
     // private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
 
-    private fun updateCollapseExpandIcon(state: ViewState) {
+    private fun updateCollapseExpandIcon(state: Fold) {
         when(state) {
-            ViewState.EXPANDED -> btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
-            ViewState.COLLAPSED -> btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
+            Fold.OUT -> btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
+            Fold.IN -> btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
         }
     }
 

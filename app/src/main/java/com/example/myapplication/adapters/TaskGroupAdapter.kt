@@ -14,7 +14,7 @@ class TaskGroupAdapter(private val data: TaskListData,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
-                       private val changeCollapseExpandIcon: (ViewState) -> Unit,
+                       private val changeCollapseExpandIcon: (Fold) -> Unit,
                        private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
     // Listener function: Date changed for task
@@ -38,9 +38,9 @@ class TaskGroupAdapter(private val data: TaskListData,
                 data.taskCount += group.taskList.size
 
                 // Clear previous selections and update collapse count if group is collapsed
-                group.setHighlight(false)
-                if (!group.isExpanded())
-                    data.numCollapsed++
+                group.setSelected(false)
+                if (!group.isFoldedOut())
+                    data.numFoldedIn++
             }
 
             // Set minimum date to first entry and check if expand collapse icon needs updating
@@ -62,10 +62,10 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Defining reference to task description text in layout
-        private val tasksRV = itemView.taskGroupRV
-        private val dateLabel = itemView.dateLabel
-        private val dayLabel = itemView.dayLabel
-        private val collapseExpandBtn = itemView.collapseExpandBtn
+        private val tasksRV = itemView.rvTaskGroup
+        private val dateLabel = itemView.labelDate
+        private val dayLabel = itemView.labelDay
+        private val foldBtn = itemView.btnFold
 
         fun bind(group: TaskGroup) {
             // Assign date label
@@ -73,24 +73,24 @@ class TaskGroupAdapter(private val data: TaskListData,
             dayLabel.text = group.date.getDayNameShort()
 
             // Update view if collapsed/expanded
-            setExpandCollapse(group)
+            setFold(group)
 
             // When day label clicked, call ActivityMain click listener function (De/Select entire group)
-            dayLabel.setOnClickListener { if (group.isExpanded()) dateClicked(adapterPosition) }
+            dayLabel.setOnClickListener { if (group.isFoldedOut()) dateClicked(adapterPosition) }
 
             // Update view if collapsed/expanded (Clicked)
-            collapseExpandBtn.setOnClickListener {
-                val newState: ViewState = group.toggleExpandCollapse()
-                setExpandCollapse(group)
+            foldBtn.setOnClickListener {
+                val newState: Fold = group.toggleFold()
+                setFold(group)
 
                 // Update collapsed counts, scroll position if expanded, ensure entire group visible
                 when (newState) {
-                    ViewState.EXPANDED -> {
+                    Fold.OUT -> {
                         scrollTo(adapterPosition)
-                        data.numCollapsed--
+                        data.numFoldedIn--
                     }
-                    ViewState.COLLAPSED ->
-                        data.numCollapsed++
+                    Fold.IN ->
+                        data.numFoldedIn++
                 }
                 updateExpandCollapseIcon()
 
@@ -105,34 +105,34 @@ class TaskGroupAdapter(private val data: TaskListData,
             }
         }
 
-        private fun setExpandCollapse(group: TaskGroup) {
+        private fun setFold(group: TaskGroup) {
             // Only apply if change is being made (e.g. Expand on already expanded date should do nothing)
-            if (group.state.isNewState(itemView.taskGroupRV)) {
+            if (group.state.isNew(itemView.rvTaskGroup)) {
                 when (group.state) {
-                    ViewState.EXPANDED -> {
+                    Fold.OUT -> {
                         // Change background color back to normal (if modified)
-                        itemView.collapseExpandBtn.setBackgroundColor(Color.TRANSPARENT)
+                        itemView.btnFold.setBackgroundColor(Color.TRANSPARENT)
 
                         // Open group and update icon (only do so if not done already)
-                        itemView.taskGroupRV.visibility = View.VISIBLE
-                        itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_down)
+                        itemView.rvTaskGroup.visibility = View.VISIBLE
+                        itemView.btnFold.setImageResource(R.drawable.ic_arrow_filled_down)
                     }
 
-                    ViewState.COLLAPSED -> {
+                    Fold.IN -> {
                         // Close group, and change icon
-                        itemView.taskGroupRV.visibility = View.GONE
-                        itemView.collapseExpandBtn.setImageResource(R.drawable.ic_arrow_filled_up)
+                        itemView.rvTaskGroup.visibility = View.GONE
+                        itemView.btnFold.setImageResource(R.drawable.ic_arrow_filled_up)
                     }
                 }
             }
 
             // Toggling arrow icon highlighting when group collapsed
-            if (group.state == ViewState.COLLAPSED) {
+            if (group.state == Fold.IN) {
                 // If a task has been selected, highlight background to indicate
                 if (group.numSelected != 0)
-                    itemView.collapseExpandBtn.applyBackgroundColor(Settings.highlightColor)
+                    itemView.btnFold.applyBackgroundColor(Settings.highlightColor)
                 else // Clear highlights (via selectAll toggle when collapsed)
-                    itemView.collapseExpandBtn.applyBackgroundColor(Color.TRANSPARENT)
+                    itemView.btnFold.applyBackgroundColor(Color.TRANSPARENT)
             }
         }
     }
@@ -142,7 +142,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     // ##############################
 
     // ########## Getters/Setters ##########
-    fun allCollapsed() : Boolean { return data.numCollapsed == taskGroupList.size }
+    fun allCollapsed() : Boolean { return data.numFoldedIn == taskGroupList.size }
 
     // ########## Group related functionality ##########
     fun addTask(date: TaskDate, task: Task) {
@@ -177,7 +177,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         notifyItemInserted(pos)
 
         // Update collapse/expand icon to enable collapsing as new entry will always be expanded
-        changeCollapseExpandIcon(ViewState.EXPANDED)
+        changeCollapseExpandIcon(Fold.OUT)
     }
 
     private fun addToTaskGroup(pos: Int, newTask: Task) {
@@ -185,87 +185,81 @@ class TaskGroupAdapter(private val data: TaskListData,
         notifyItemChanged(pos)
     }
 
-    // ########## Modifying task entries ##########
-    fun deleteSelected() {
-        var groupDeleted = false
-
-        // [1]. Clearing entire list
+    // ########## Modifying selected entries ##########
+    fun delete() {
+        // Delete all selected
         if (data.allSelected()) {
             // Empty everything and reset values
             taskGroupList.clear()
-            notifyDataSetChanged()
             data.deleteSelected()
             minDate = baseMinDate
+            notifyDataSetChanged()
             return
         }
 
-        // [2]. Deleting specifically selected tasks
-        var count = 0
+        // Otherwise go through groups
+        var groupDeleted = false
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val group: TaskGroup = taskGroupList[groupNum]
+            // If group has children selected, perform deletion
+            if (group.numSelected != 0) {
+                group.selectedDelete(data)
+                notifyItemChanged(groupNum)
 
-        // Go through each group and delete any selected tasks
-        main_loop@for (groupNum in taskGroupList.size - 1 downTo 0) {
-            val group = taskGroupList[groupNum]
-            if (group.numSelected > 0) {
-                // Go through task list in group, deleting selected tasks
-                for (taskNum in group.taskList.size - 1 downTo 0) {
-                    val currTask = group.taskList[taskNum]
-                    if (currTask.selected) {
-                        group.taskList.remove(currTask)
-                        notifyItemChanged(groupNum)
+                // Check if we need to delete group itself (when number of children == 0)
+                if (group.isEmpty()) {
+                    // Update minDate if removed date was the minimum one
+                    if (group.date.id == minDate)
+                        minDate = taskGroupList[groupNum + 1].date.id
 
-                        // Update counters, number selected in current group and overall counter
-                        group.numSelected--
-                        // data.taskCount--
-                        count++
-
-                        // Delete entire group itself once the task count reaches 0
-                        if (group.taskList.size == 0) {
-                            // Update minDate if removed date was the minimum one
-                            if (group.date.id == minDate)
-                                minDate = taskGroupList[groupNum + 1].date.id
-
-                            taskGroupList.removeAt(groupNum)
-                            notifyItemRemoved(groupNum)
-                            groupDeleted = true
-                        }
-
-                        // Exit entire loop if all selected tasks have been removed
-                        if (count == data.numSelected)
-                            break@main_loop
-
-                        // Exit inner loop early once numSelected = 0 (no more selected tasks in this group)
-                        if (group.numSelected == 0)
-                            break
-                    }
+                    taskGroupList.removeAt(groupNum)
+                    notifyItemRemoved(groupNum)
+                    groupDeleted = true
                 }
+
+                // Once all selected tasks deleted, exit early
+                if (data.numSelected == 0) break
             }
         }
 
-        // Check to see if collapse/expand all icon needs to be updated
+        // Check to see if collapse/expand all icon needs to be updated (from group deletion)
         if(groupDeleted) { updateExpandCollapseIcon() }
-        data.deleteSelected()
     }
 
+    fun clearSelected(paramType: TaskParam) {
+        // Uses same logic as delete(). We don't track group size in this case.
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val group: TaskGroup = taskGroupList[groupNum]
+            if (group.numSelected != 0) {
+                group.selectedClear(data, paramType)
+                notifyItemChanged(groupNum)
+
+                if (data.numSelected == 0) break
+            }
+        }
+    }
+
+    // ########## Toggling ##########
     fun toggleGroupSelected(groupNum : Int) : Int {
         val group: TaskGroup = taskGroupList[groupNum]
         val numSelectedPreToggle = group.numSelected
 
-        group.toggleHighlight()
+        group.toggleSelected()
         val difference = group.numSelected - numSelectedPreToggle
 
         notifyItemChanged(groupNum)
         return difference
     }
 
-    fun toggleAllHighlight(selectAll : Boolean = true) {
+    fun toggleSelectAll(selectAll : Boolean = true) {
         val end: Int = taskGroupList.size - 1
         for (groupNum in end downTo 0)
-            taskGroupList[groupNum].setHighlight(selectAll)
+            taskGroupList[groupNum].setSelected(selectAll)
 
         notifyDataSetChanged()
     }
 
-    fun toggleAllExpandCollapse(newState: ViewState = ViewState.EXPANDED) {
+    fun toggleFoldAll(newState: Fold = Fold.OUT) {
         val end: Int = taskGroupList.size - 1
         for (groupNum in end downTo 0)
             taskGroupList[groupNum].state = newState
@@ -273,9 +267,9 @@ class TaskGroupAdapter(private val data: TaskListData,
         notifyDataSetChanged()
 
         // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
-        data.numCollapsed = when (newState) {
-            ViewState.EXPANDED -> 0
-            ViewState.COLLAPSED -> taskGroupList.size
+        data.numFoldedIn = when (newState) {
+            Fold.OUT -> 0
+            Fold.IN -> taskGroupList.size
         }
     }
 
@@ -313,9 +307,9 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     private fun updateExpandCollapseIcon() {
         // Update icon accordingly based on number collapsed
-        when (data.numCollapsed) {
-            taskGroupList.size - 1 -> changeCollapseExpandIcon(ViewState.EXPANDED)  // Expandable
-            taskGroupList.size -> changeCollapseExpandIcon(ViewState.COLLAPSED)     // All collapsed
+        when (data.numFoldedIn) {
+            taskGroupList.size - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
+            taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)     // All collapsed
         }
     }
 }
