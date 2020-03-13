@@ -1,20 +1,15 @@
 <resources>
     <string name="app_name">Planner App</string>
 
+    <string name="task_planner">Task Planner</string>
+
     <!-- Placeholder -->
     <string name="placeholderText">This is some placeholder text</string>
     <string name="placeholderTextLong">
-        Lea nushe ri\nPishfa lehati\nYelet kai shtnesa\nValva safa luli\n
-        \n
-        Teetha lethghraloo\nShale nekrahoo\nOmnefla hayo vivga\nAnni doeksi shnahalan\n
-        \n
-        Sho le thal hali\n
-        Venio va hashalgha ulimishla\n
-        Yele vlegha taiyelegfni\n
-        Ploshlogu tettna\n
-        Lehakra\n
-        Mishan disheru\n
-        Ttisa luvivra naa
+        Lea nushe ri Pishfa lehati Yelet kai shtnesa Valva safa luli\n
+        Teetha lethghraloo Shale nekrahoo Omnefla hayo vivga Anni doeksi shnahalan\n
+        Sho le thal hali Venio va hashalgha ulimishla Yele vlegha taiyelegfni\n
+        Ploshlogu tettna Lehakra Mishan disheru Ttisa luvivra naa
     </string>
     <string name="placeholderTime">10:00am\n12:30pm</string>
     <string name="placeholderTimeShort">10:00am</string>
@@ -23,8 +18,9 @@
 
     <!-- Labels -->
     <string name="label_task">Tap to enter a new task</string>
-    <string name="label_date">Select date</string>
-    <string name="label_delta">Δ</string>
+    <string name="label_select_date">Select Date</string>
+    <string name="label_select_time">Select Time + Duration</string>
+    <string name="label_select_tag">Select Tag</string>
 
     <!-- Buttons -->
     <string name="btn_add_task">Add Task</string>

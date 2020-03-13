@@ -1,12 +1,11 @@
-package com.example.myapplication.popup_windows
+package com.example.myapplication.popups
 
 import android.content.Context
 import android.view.View
-import android.widget.Button
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
-import com.example.myapplication.Settings
+import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.popup_date.view.*
 import kotlinx.android.synthetic.main.popup_time.view.txtDate

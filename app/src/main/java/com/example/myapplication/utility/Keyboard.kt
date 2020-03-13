@@ -1,17 +1,16 @@
-package com.example.myapplication
+package com.example.myapplication.utility
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Point
 import android.graphics.Rect
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
-import kotlinx.android.synthetic.main.main_activity_view.*
+import com.example.myapplication.MainActivity
+import com.example.myapplication.R
 
 object Keyboard {
     var visible: Boolean = false
@@ -53,7 +52,9 @@ object Keyboard {
 
         // Focus changed listener. When focus lost on textView, close keyboard
         editText.setOnFocusChangeListener { _, focused ->
-            if (!focused) { close() }
+            if (!focused) {
+                close()
+            }
         }
     }
 
@@ -78,13 +79,16 @@ object Keyboard {
     }
 
     // Manually force close keyboard, assuming it is open. Called when a dialog window itself is closed
-    fun close() { if (visible) hide() }
+    fun close() { if (visible) hide()
+    }
 
     // https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
-    private fun hide() { imm.hideSoftInputFromWindow(editText.windowToken, 0) }
+    private fun hide() { imm.hideSoftInputFromWindow(
+        editText.windowToken, 0) }
     private fun show() {
         visible = true
-        imm.toggleSoftInputFromWindow(editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
+        imm.toggleSoftInputFromWindow(
+            editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
     }
 
     private fun ImageButton.toggle(enabled: Boolean) {

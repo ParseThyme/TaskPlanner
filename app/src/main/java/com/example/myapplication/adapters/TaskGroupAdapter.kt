@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.applyBackgroundColor
+import com.example.myapplication.utility.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class TaskGroupAdapter(private val data: TaskListData,
@@ -224,6 +227,7 @@ class TaskGroupAdapter(private val data: TaskListData,
 
         // Check to see if collapse/expand all icon needs to be updated (from group deletion)
         if(groupDeleted) { updateExpandCollapseIcon() }
+        notifyDataSetChanged()
     }
 
     fun clearSelected(paramType: TaskParam) {
@@ -263,7 +267,6 @@ class TaskGroupAdapter(private val data: TaskListData,
         val end: Int = taskGroupList.size - 1
         for (groupNum in end downTo 0)
             taskGroupList[groupNum].state = newState
-
         notifyDataSetChanged()
 
         // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed

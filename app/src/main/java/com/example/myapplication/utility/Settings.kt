@@ -1,8 +1,7 @@
-package com.example.myapplication
+package com.example.myapplication.utility
 
 import android.graphics.Color
 import android.view.View
-import java.text.SimpleDateFormat
 
 // ########## Hardcoded values (unmodified by app) ##########
 // SharedPreferences (Saving/Loading data)
@@ -10,7 +9,7 @@ const val spName: String = "SavedData"
 const val spTaskGroupList = "TaskGroupList"
 
 // Activity.main
-const val mainTitle = "My Task List"
+const val mainTitle = "Task Planner"
 const val defaultTimeMsg = "Set Time"
 
 // Time and Duration of tasks
@@ -39,9 +38,11 @@ object Settings {
     }
 
     fun setDefault() {
-        maxDays = defMaxDays
+        maxDays =
+            defMaxDays
 
-        highlightColor = defHighlightColor
+        highlightColor =
+            defHighlightColor
     }
 }
 

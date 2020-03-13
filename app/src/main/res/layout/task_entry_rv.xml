@@ -15,6 +15,9 @@
         app:cardCornerRadius="0dp"
         app:cardElevation="0dp"
         app:cardMaxElevation="0dp"
+        app:contentPaddingBottom="5dp"
+        app:contentPaddingLeft="5dp"
+        app:contentPaddingTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,22 +28,21 @@
             android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/details"
+                android:id="@+id/detailsLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@id/taskCard"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/taskCard">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/taskTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="5dp"
                     android:paddingBottom="5dp"
                     android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/taskTime"
+                    app:layout_constraintStart_toStartOf="@+id/taskTime"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/tag_booking" />
 
@@ -48,39 +50,38 @@
                     android:id="@+id/taskTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:ems="4"
+                    android:gravity="center"
                     android:text="@string/placeholderTime"
                     android:textAllCaps="false"
                     android:textSize="10sp"
                     android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/taskTag"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/taskTag" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/taskCard"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/textLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
-                app:contentPadding="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/editBtn"
-                app:layout_constraintStart_toEndOf="@+id/details"
+                app:layout_constraintStart_toEndOf="@+id/detailsLayout"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
                     android:text="@string/placeholderText"
                     android:textAllCaps="false"
-                    android:textSize="12sp" />
-            </androidx.cardview.widget.CardView>
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageButton
                 android:id="@+id/editBtn"

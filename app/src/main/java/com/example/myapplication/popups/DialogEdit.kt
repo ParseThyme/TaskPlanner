@@ -1,11 +1,12 @@
-package com.example.myapplication
+package com.example.myapplication.popups
 
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.PopupManager
+import com.example.myapplication.utility.Keyboard
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 
 
@@ -27,7 +28,9 @@ class DialogEdit(
 
         // ########## Create dialog ##########
         // https://demonuts.com/android-custom-dialog-with-transparent-background/
-        val dialog = Dialog(context, R.style.EditDialog)
+        val dialog = Dialog(context,
+            R.style.EditDialog
+        )
         val view: View = LayoutInflater.from(context).inflate(R.layout.task_edit_view, null)
         dialog.apply {
             setCancelable(false)

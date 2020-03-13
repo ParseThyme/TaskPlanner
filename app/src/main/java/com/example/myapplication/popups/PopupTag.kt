@@ -1,8 +1,6 @@
-package com.example.myapplication.popup_windows
+package com.example.myapplication.popups
 
 import android.content.Context
-import android.media.Image
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.PopupWindow

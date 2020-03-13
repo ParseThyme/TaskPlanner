@@ -1,4 +1,4 @@
-package com.example.myapplication.popup_windows
+package com.example.myapplication.popups
 
 import android.content.Context
 import android.view.View

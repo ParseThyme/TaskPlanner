@@ -7,6 +7,11 @@ import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.popups.DialogEdit
+import com.example.myapplication.utility.Keyboard
+import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.applyBackgroundColor
+import com.example.myapplication.utility.inflate
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 // val itemClickedListener: (Task) -> Unit
@@ -28,7 +33,11 @@ class TasksAdapter(private val group: TaskGroup,
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         private val taskField = itemView.desc
-        private val editWindow = DialogEdit(itemView.context, updateSave)
+        private val editWindow =
+            DialogEdit(
+                itemView.context,
+                updateSave
+            )
 
         fun bind(task: Task) {
             // Set description of task when bound

@@ -4,8 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
-import com.example.myapplication.data_classes.TaskTag
-import com.example.myapplication.inflate
+import com.example.myapplication.utility.inflate
 import kotlinx.android.synthetic.main.popup_tag_entry.view.*
 
 class TaskTagAdapter(private val tagsList: ArrayList<Int>,

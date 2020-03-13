@@ -1,4 +1,4 @@
-package com.example.myapplication.popup_windows
+package com.example.myapplication.popups
 
 import android.content.Context
 import android.view.View
@@ -6,10 +6,9 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.defaultTimeMsg
-import com.example.myapplication.durationMax
+import com.example.myapplication.utility.defaultTimeMsg
+import com.example.myapplication.utility.durationMax
 import kotlinx.android.synthetic.main.popup_time.view.*
-import org.w3c.dom.Text
 
 class PopupTime : PopupParent() {
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)

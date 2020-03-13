@@ -1,15 +1,14 @@
-package com.example.myapplication.popup_windows
+package com.example.myapplication.popups
 
 import android.content.Context
 import android.graphics.Point
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
-import com.example.myapplication.Keyboard
-import com.example.myapplication.getDisplaySize
+import com.example.myapplication.utility.Keyboard
+import com.example.myapplication.utility.getDisplaySize
 
 abstract class PopupParent {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button

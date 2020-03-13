@@ -3,10 +3,12 @@ package com.example.myapplication
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popup_windows.PopupManager
+import com.example.myapplication.popups.PopupManager
+import com.example.myapplication.utility.*
 // import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlinx.android.synthetic.main.main_activity_view.btnReset
@@ -49,14 +51,20 @@ class MainActivity : AppCompatActivity() {
         // Check for existing saved data, attempt to load it then create the adapter
         loadSave()
 
+        // Spacing for taskList
+        val spacing: Int = resources.getDimensionPixelSize(R.dimen.grid_layout_margin)
+
         // Assign layout manager and adapter to recycler view
         dateGroupRV.apply {
-            layoutManager = LinearLayoutManager(this.context)
+            // layoutManager = LinearLayoutManager(this.context)
+            // addItemDecoration(TaskListDecoration(1, spacing, true, 0))
+            layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
+            addItemDecoration(TaskListDecoration(2, spacing, true, 0))
             adapter = taskGroupAdapter
         }
 
         // Divider between date categories
-        dateGroupRV.addDivider()
+        // dateGroupRV.addDivider()
 
         runSetup()
         setMode(Mode.ADD)
@@ -274,7 +282,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTopBar(newTitle: String) { topBarTitle.text = newTitle }
-    // private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
 
     private fun updateCollapseExpandIcon(state: Fold) {

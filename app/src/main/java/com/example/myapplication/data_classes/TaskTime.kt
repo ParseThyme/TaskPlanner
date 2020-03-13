@@ -1,8 +1,7 @@
 package com.example.myapplication.data_classes
 
-import android.view.View
 import android.widget.TextView
-import com.example.myapplication.defaultTimeMsg
+import com.example.myapplication.utility.defaultTimeMsg
 
 data class TaskTime (
     var hour: Int = 0,
@@ -38,7 +37,8 @@ fun TaskTime.resetValues() {
 
 fun TaskTime.clear(applyToView: TextView? = null) {
     // Optional, update textView with default time message
-    if (applyToView != null) applyToView.text = defaultTimeMsg
+    if (applyToView != null) applyToView.text =
+        defaultTimeMsg
 
     hour = 0
     min = 0
