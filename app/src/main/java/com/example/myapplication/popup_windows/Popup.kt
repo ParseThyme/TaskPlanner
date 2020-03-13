@@ -35,45 +35,45 @@ abstract class PopupParent {
         window.show(parent, anchor)
         return window
     }
-}
 
-// Manually show window at desired point in time
-fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
-    // Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
+    // Manually show window at desired point in time
+    fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
+        // Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
 
-    // 1. If keyboard open, then place popup on top of keyboard and stretch to match
-    if (Keyboard.visible) {
-        apply {
-            // Match keyboard width and height
-            width = Keyboard.width
-            height = Keyboard.height
-            // Ensure popup overlaps keyboard
-            inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
+        // 1. If keyboard open, then place popup on top of keyboard and stretch to match
+        if (Keyboard.visible) {
+            apply {
+                // Match keyboard width and height
+                width = Keyboard.width
+                height = Keyboard.height
+                // Ensure popup overlaps keyboard
+                inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
+            }
+
+            // Move popup to bottom of screen
+            this.showAtLocation(parent, Gravity.CENTER, 0, Keyboard.maxHeight)
         }
+        // 2. Otherwise shift position accordingly above/below parent
+        else {
+            // Get created window measurements to determine shifts
+            this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
-        // Move popup to bottom of screen
-        this.showAtLocation(parent, Gravity.CENTER, 0, Keyboard.maxHeight)
-    }
-    // 2. Otherwise shift position accordingly above/below parent
-    else {
-        // Get created window measurements to determine shifts
-        this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            val displaySize: Point = parent.getDisplaySize()
+            val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
+            val padding = 5
+            val xOffset: Int =
+                (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
 
-        val displaySize: Point = parent.getDisplaySize()
-        val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
-        val padding = 5
-        val xOffset: Int =
-            (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
+            // Determining Y Positioning depending on anchor. Place above or below
+            val yOffset = when (anchor) {
+                Anchor.Above -> -viewSize.y - padding - parent.height
+                Anchor.Below -> 0
+            }
 
-        // Determining Y Positioning depending on anchor. Place above or below
-        val yOffset = when (anchor) {
-            Anchor.Above -> -viewSize.y - padding - parent.height
-            Anchor.Below -> 0
+            // Show popup with offsets applied
+            this.showAsDropDown(parent, xOffset, yOffset)
         }
-
-        // Show popup with offsets applied
-        this.showAsDropDown(parent, xOffset, yOffset)
     }
-}
 
-enum class Anchor { Above, Below }
+    enum class Anchor { Above, Below }
+}

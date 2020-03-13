@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
-import android.util.Log
+import android.view.View
+import android.widget.TextView
 import com.example.myapplication.defaultTimeMsg
 
 data class TaskTime (
@@ -30,6 +31,16 @@ fun TaskTime.getOppositeTimeOfDay(): String {
 
 fun TaskTime.resetValues() {
     hour = 12
+    min = 0
+    timeOfDay = "AM"
+    duration = 0
+}
+
+fun TaskTime.clear(applyToView: TextView? = null) {
+    // Optional, update textView with default time message
+    if (applyToView != null) applyToView.text = defaultTimeMsg
+
+    hour = 0
     min = 0
     timeOfDay = "AM"
     duration = 0

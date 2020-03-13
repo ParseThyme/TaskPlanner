@@ -25,8 +25,6 @@ class MainActivity : AppCompatActivity() {
     private val updateSaveFn = { updateSave() }
 
     // Selecting tasks
-    private var taskCount: Int = 0
-    private var selected: Int = 0
     private var mode: Mode = Mode.START
 
     // Created task
@@ -35,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val today: TaskDate = today()
 
     // Data
+    private var data: TaskListData = TaskListData()
     private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
     private var tagsList: ArrayList<Int> = ArrayList()
 
@@ -85,7 +84,8 @@ class MainActivity : AppCompatActivity() {
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
         txtSetDate.text = today.createShortLabel()
-        txtSetTime.text = defaultTimeMsg
+        // Set time to be blank
+        newTask.time.clear(txtSetTime)
 
         // Buttons (topBar and bottomBar)
         setupButtons()
@@ -98,13 +98,13 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         btnSelectAll.setOnClickListener {
             // If not all selected, select all
-            if (selected != taskGroupAdapter.taskCount) {
+            if (!data.allSelected()) {
                 // Change icon to opposite icon (deselect all)
                 btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
                 // Toggle all to selected state
                 taskGroupAdapter.toggleAllHighlight()
-                selected = taskGroupAdapter.taskCount
+                data.selectAll()
                 updateSelectedCountDisplay()
 
                 // Switch to select mode if in add mode
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
             }
             updateSave()
         }
-        btnSettings.setOnClickListener { settingsBtnFn() }
+        btnSettings.setOnClickListener { }
 
         // ##############################
         // BottomBar
@@ -148,40 +148,50 @@ class MainActivity : AppCompatActivity() {
             // Add new task to adapter
             taskGroupAdapter.addTask(date, addedTask)
 
-            // Reset values
+            // Reset text entry and time
             txtTaskDesc.setText("")
             txtTaskDesc.clearFocus()
+            newTask.time.clear(txtSetTime)
 
             // Save changes
             updateSave()
         }
-        btnReset.setOnClickListener { resetBtnFn() }
+        btnReset.setOnClickListener {
+            // Reset all values (exclude text entry)
+            newTask.tag = R.drawable.tag_base
+            newDate = today()
+            newTask.time.clear()
+
+            // Update views
+            btnSetTag.setImageResource(newTask.tag)
+            txtSetTime.text = defaultTimeMsg
+            txtSetDate.text = newDate.createShortLabel()
+        }
+
         txtSetDate.setOnClickListener { PopupManager.datePopup(bottomBar, txtSetDate, this, newDate) }
         txtSetTime.setOnClickListener { PopupManager.timePopup(bottomBar, txtSetTime, this, newTask) }
         btnSetTag.setOnClickListener  { PopupManager.tagPopup(bottomBar, btnSetTag, this, newTask) }
 
         // Select mode
-        btnDelete.setOnClickListener {
-            taskGroupAdapter.deleteSelected(selected)
-            taskCount -= selected
+        btnToDate.setOnClickListener {  }
+        btnToTag.setOnClickListener {  }
 
-            // Clear selections and return to add mode
+        btnClearTag.setOnClickListener {  }
+        btnClearTime.setOnClickListener {  }
+
+        btnDelete.setOnClickListener {
+            // Delete entries, clear selections and return to add mode
+            taskGroupAdapter.deleteSelected()
             setMode(Mode.ADD)
             updateSave()
         }
     }
 
-    //ToDo
-    private fun settingsBtnFn() { }
-
-    //ToDo
-    private fun resetBtnFn() {}
-
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
-        val difference: Int = taskGroupAdapter.toggleGroupHighlight(groupNum)
-        val selectedPreClick = selected
-        selected += difference
+        val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
+        val selectedPreClick = data.numSelected
+        data.numSelected += difference
 
         when {
             // [1]. From 0 -> x selected. Enter select mode
@@ -189,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                 setMode(Mode.SELECTION)
             }
             // [2]. From x -> 0 selected. Return to add mode
-            selected == 0 -> {
+            data.numSelected == 0 -> {
                 setMode(Mode.ADD)
             }
             // [3]. From x -> x + y OR x -> x - y. Update value display
@@ -200,30 +210,26 @@ class MainActivity : AppCompatActivity() {
     private fun taskClicked (task: Task) {
         // Update counts based on whether task selected/deselected
         if (task.selected) {
-            selected++
-
+            data.numSelected++
             // Selected 0 -> 1, change to selection mode. Otherwise update as usual
-            if (selected == 1)
+            if (data.numSelected == 1)
                 setMode(Mode.SELECTION)
             else {
                 updateSelectedCountDisplay()
-
                 // If all selected, change topBar icon (selectAll to off)
-                if (selected == taskGroupAdapter.taskCount)
+                if (data.allSelected())
                     btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
             }
         }
         else {
-            selected--
-
+            data.numSelected--
             // Selected tasks 1 -> 0, return to add mode. Otherwise update as usual
-            if (selected == 0)
+            if (data.numSelected == 0)
                 setMode(Mode.ADD)
             else {
                 updateSelectedCountDisplay()
-
                 // If went from max to max - 1, change topBar icon (selectAll to on)
-                if (selected == taskGroupAdapter.taskCount - 1)
+                if (data.numSelected == data.taskCount - 1)
                     btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
         }
@@ -239,7 +245,7 @@ class MainActivity : AppCompatActivity() {
         when (newMode) {
             Mode.ADD -> {
                 // Set none selected and show main title
-                selected = 0
+                data.numSelected = 0
                 updateTopBar(mainTitle)
 
                 // Switch display of bottomBar
@@ -248,7 +254,6 @@ class MainActivity : AppCompatActivity() {
 
                 // Reset icon: Select all
                 btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
-
             }
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
@@ -262,7 +267,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTopBar(newTitle: String) { topBarTitle.text = newTitle }
-    private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
+    // private fun updateSelectedCountDisplay() { updateTopBar("Selected: $selected") }
+    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
 
     private fun updateCollapseExpandIcon(state: ViewState) {
         when(state) {
@@ -278,8 +284,9 @@ class MainActivity : AppCompatActivity() {
         taskGroupList = saveLoad.loadTaskGroupList()
         // settings = saveLoad.loadSettings()
         taskGroupAdapter =
-            TaskGroupAdapter(taskGroupList, taskClickedFn, dateClickedFn, toTopFn,
-                             updateCollapseExpandIconFn, updateSaveFn)
+            TaskGroupAdapter(data, taskGroupList,
+                taskClickedFn, dateClickedFn, toTopFn,
+                updateCollapseExpandIconFn, updateSaveFn)
     }
 
     private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }

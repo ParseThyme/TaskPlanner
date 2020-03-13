@@ -1,9 +1,7 @@
 package com.example.myapplication.popup_windows
 
 import android.content.Context
-import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
@@ -11,12 +9,13 @@ import com.example.myapplication.data_classes.*
 import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.durationMax
 import kotlinx.android.synthetic.main.popup_time.view.*
+import org.w3c.dom.Text
 
 class PopupTime : PopupParent() {
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)
     private var timeDelta: Int = 5
 
-    fun create(attachTo: View, modify: View, context: Context, edited: Task, anchor: Anchor = Anchor.Above) : PopupWindow {
+    fun create(attachTo: View, modify: TextView, context: Context, edited: Task, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_time, attachTo, anchor)
         val view:View = window.contentView
 
@@ -60,14 +59,14 @@ class PopupTime : PopupParent() {
         view.btnApplyTime.setOnClickListener {
             window.dismiss()
             edited.time = time.copy()
-            (modify as TextView).text = time.createDisplayedTime()
+            modify.text = time.createDisplayedTime()
         }
 
         // Clear selected time
         view.btnClearTime.setOnClickListener {
             window.dismiss()
-            edited.time = TaskTime(0, 0, "AM", 0)
-            (modify as TextView).text = defaultTimeMsg
+            edited.time.clear()
+            modify.text = defaultTimeMsg
         }
 
         return window

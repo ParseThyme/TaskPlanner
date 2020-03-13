@@ -2,6 +2,7 @@ package com.example.myapplication.popup_windows
 
 import android.content.Context
 import android.view.View
+import android.widget.TextView
 import com.example.myapplication.data_classes.*
 
 object PopupManager {
@@ -19,7 +20,7 @@ object PopupManager {
     }
 
     // Create relevant popups
-    fun timePopup(attachTo: View, modify: View, context: Context, edited: Task) {
+    fun timePopup(attachTo: View, modify: TextView, context: Context, edited: Task) {
         time.create(attachTo, modify, context, edited)
     }
     fun tagPopup(attachTo: View, modify: View, context: Context, edited: Task) {
