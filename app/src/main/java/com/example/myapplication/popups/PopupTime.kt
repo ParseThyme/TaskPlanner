@@ -15,7 +15,7 @@ class PopupTime : Popup() {
     private var timeDelta: Int = 5
 
     fun create(attachTo: View, modify: TextView, context: Context, edited: Task, anchor: Anchor = Anchor.Above) : PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_time, attachTo, anchor)
+        val window:PopupWindow = create(context, R.layout.popup_time)
         val view:View = window.contentView
 
         // Copy over most recent time
@@ -68,6 +68,7 @@ class PopupTime : Popup() {
             window.dismiss()
         }
 
+        window.show(attachTo)
         return window
     }
 
@@ -188,8 +189,8 @@ class PopupTime : Popup() {
 
     private fun deltaAsString(): String {
         var result:String = timeDelta.toString()
-        if (timeDelta == 60) result = "1h"
-        else result += "m"
+        if (timeDelta == 60) result = "1H"
+        else result += "M"
         return result
     }
 }

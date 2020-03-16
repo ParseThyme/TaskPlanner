@@ -89,20 +89,22 @@
 
             <ImageButton
                 android:id="@+id/btnDecDate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/txtDate"
                 app:layout_constraintStart_toEndOf="@+id/iconDate"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_arrow_filled_up" />
 
             <ImageButton
                 android:id="@+id/btnIncDate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                app:layout_constraintStart_toStartOf="@+id/btnDecDate"
-                app:layout_constraintTop_toBottomOf="@+id/btnDecDate"
+                app:layout_constraintEnd_toEndOf="@+id/txtDate"
+                app:layout_constraintStart_toEndOf="@+id/iconDate"
+                app:layout_constraintTop_toBottomOf="@+id/txtDate"
                 app:srcCompat="@drawable/ic_arrow_filled_down" />
 
             <TextView
@@ -112,10 +114,9 @@
                 android:background="@android:color/white"
                 android:ems="5"
                 android:gravity="center"
-                android:text="We-Feb-18"
-                app:layout_constraintBottom_toBottomOf="@+id/btnIncDate"
-                app:layout_constraintStart_toEndOf="@+id/btnDecDate"
-                app:layout_constraintTop_toTopOf="@+id/btnDecDate" />
+                android:text="We | 18 Feb"
+                app:layout_constraintStart_toEndOf="@+id/iconDate"
+                app:layout_constraintTop_toBottomOf="@+id/btnDecDate" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

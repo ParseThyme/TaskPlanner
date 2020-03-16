@@ -75,18 +75,29 @@ fun TaskTime.createDisplayedTime(): String {
 }
 
 fun TaskTime.durationAsString(): String {
-    // [1]. Duration as Int from 0 to 59 minutes. Return number with "m" appended to the end
-    if (duration in 0..59) { return "${duration}m" }
+    // [1]. Duration as Int from 0 to 59 minutes. Return number as : followed by duration. E.g. :30
+    if (duration in 0..59) {
+        // Extra: If duration from 1 - 9. Add extra 0 in front
+        if (duration in 1..9)
+            return ":0$duration"
+        return ":$duration"
+    }
 
     // [2]. Duration 60m+. Return with hour and minutes format
     val hours = duration/60
     val minutes = duration % 60
 
     // Create duration string with hour value
-    var durationString = "${hours}h"
+    var durationString = "$hours:00"
 
     // Append on minutes if > 0
-    if (minutes > 0) durationString = "$durationString${minutes}m"
+    if (minutes > 0) {
+        durationString =
+            if (minutes in 1..9)
+                "$hours:0$minutes"      // Append extra 0 for 0-9 values
+            else
+                "$hours:$minutes"       // Otherwise show minutes normally
+    }
 
     return durationString
 }

@@ -59,7 +59,7 @@ fun TaskDate.createShortLabel(): String {
     val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
 
     // Mo-1-Feb
-    return "$dayNameShort-$day-$monthShort"    // E.g. Fr-21-Feb
+    return "$dayNameShort | $day $monthShort"    // E.g. Fr 21 Feb
 }
 fun TaskDate.createLabel(): String {
     // Get task's date
