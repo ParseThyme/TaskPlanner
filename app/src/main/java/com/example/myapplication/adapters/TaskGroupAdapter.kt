@@ -10,6 +10,7 @@ import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.utility.applyBackgroundColor
+import com.example.myapplication.utility.printDebugMsg
 import com.example.myapplication.utility.inflate
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
@@ -241,7 +242,6 @@ class TaskGroupAdapter(private val data: TaskListData,
             if (group.numSelected != 0) {
                 group.selectedClear(data, paramType)
                 notifyItemChanged(groupNum)
-
                 if (data.numSelected == 0) break
             }
         }
@@ -259,18 +259,72 @@ class TaskGroupAdapter(private val data: TaskListData,
     }
 
     fun changeDateForSelected(newDate: TaskDate) {
-        /*
-        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
-            if (group.numSelected != 0) {
+        // Store list of tasks to be changed
+        val movedTasks: ArrayList<Task> = arrayListOf()
 
-                taskGroupList
+        // Case 1: All selected, move everything
+        if (data.allSelected()) {
+            // Copy over every task
+            for (group in taskGroupList) { movedTasks.addAll(group.taskList) }
 
-                notifyItemChanged(groupNum)
-                if (data.numSelected == 0) break
+            // Clear data, set new date as minimum date (as it will be the only one)
+            data.numSelected = 0
+            taskGroupList.clear()
+            minDate = newDate.id
+            notifyDataSetChanged()
+
+            // Create the new group and add all tasks to it
+            movedTasks[0].selected = false                       // Clear selection from first task
+            addNewTaskGroup(0, newDate, movedTasks[0])
+            for (taskNum in 1 until movedTasks.size) {
+                movedTasks[taskNum].selected = false
+                addToTaskGroup(0, movedTasks[taskNum])      // Clear selections from tasks
+                notifyItemInserted(0)
             }
         }
-         */
+        // Case 2: Not everything selected
+        else {
+            // 1. Go through each group
+            for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+                val group: TaskGroup = taskGroupList[groupNum]
+
+                // 2. Check if group has any tasks selected
+                // A. All group's tasks selected, copy over taskList then delete group
+                if (group.allSelected()) {
+                    // If group was min date (first entry), set min date to next group
+                    if (group.date.id == minDate)
+                        minDate = taskGroupList[groupNum + 1].date.id
+
+                    movedTasks.addAll(group.taskList)
+                    taskGroupList.remove(group)
+                    data.taskCount -= data.numSelected
+                    data.numSelected -= group.taskList.count()
+                    notifyItemChanged(groupNum)
+
+                    if (data.numSelected == 0) break
+                }
+                // B. Between 1 - group size selected, copy only selected tasks and delete them
+                else if (group.numSelected >= 0) {
+                    for (taskNum: Int in group.taskList.size - 1 downTo 0) {
+                        if (group.taskList[taskNum].selected) {
+                            movedTasks.add(group.taskList[taskNum])
+                            group.taskList.removeAt(taskNum)
+                            group.numSelected--
+                            data.numSelected--
+                            data.taskCount--
+                        }
+                    }
+                    notifyItemChanged(groupNum)
+                    if (data.numSelected == 0) break
+                }
+            }
+
+            // 2. For all moved tasks, add them to their new group
+            for (task in movedTasks) {
+                task.selected = false   // Deselect any selected tasks
+                addTask(newDate, task)  // Add them to their new group
+            }
+        }
     }
 
     // ########## Toggling ##########
@@ -334,20 +388,6 @@ class TaskGroupAdapter(private val data: TaskListData,
                 }
                 else { notifyItemChanged(index) }
                 break
-            }
-        }
-    }
-
-    private fun changeGroup(task: Task, newGroup: TaskDate, oldGroup: TaskGroup) {
-        /*
-        // "Move" to new position (add new task). -- to balance out addition made in addTask()
-        addTask(newGroup, task)
-        data.taskCount--
-        */
-
-        for (currTask in oldGroup.taskList) {
-            if (task == currTask) {
-                Log.d("Test", "Task found: ${task.desc} at ${oldGroup.date.createLabel()}")
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
@@ -54,14 +55,11 @@ class MainActivity : AppCompatActivity() {
         // Assign layout manager and adapter to recycler view
         dateGroupRV.apply {
             layoutManager = LinearLayoutManager(this.context)
-            addItemDecoration(TaskListDecoration(1, Settings.groupSpacing, true, 0))
+            addItemDecoration(TaskListDecoration(1, Settings.linearSpacing, true, 0))
             // layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
-            // addItemDecoration(TaskListDecoration(2, Settings.groupSpacing, true, 0))
+            // addItemDecoration(TaskListDecoration(2, Settings.gridSpacing, true, 0))
             adapter = taskGroupAdapter
         }
-
-        // Divider between date categories
-        // dateGroupRV.addDivider()
 
         runSetup()
         setMode(Mode.ADD)
@@ -184,6 +182,7 @@ class MainActivity : AppCompatActivity() {
             val newDate = TaskDate(-1)
             val window: PopupWindow = PopupManager.dateEdit(selectModeBar, null, this, newDate)
             window.setOnDismissListener {
+                Log.d("Test", "NewDate: ${newDate.id}")
                 if (newDate.id != -1) {
                     taskGroupAdapter.changeDateForSelected(newDate)
                     setMode(Mode.ADD)

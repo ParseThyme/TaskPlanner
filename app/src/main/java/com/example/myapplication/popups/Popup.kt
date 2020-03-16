@@ -57,13 +57,15 @@ abstract class Popup {
             this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
             val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
-            val padding = 10
-            val xOffset: Int =
-                (parent.width - viewSize.x) / 2      // X positioning. Ensure at center of parent
+            val yPadding = 10       // Add y spacing between parent and popup
+            val xPadding = 5        // By default, positioned a bit right of parent, this should offset it
+
+            // X positioning. Ensure at center of parent
+            val xOffset: Int = (parent.width - viewSize.x) / 2 - xPadding
 
             // Determining Y Positioning depending on anchor. Place above or below
             val yOffset = when (anchor) {
-                Anchor.Above -> -viewSize.y - padding - parent.height
+                Anchor.Above -> -viewSize.y - yPadding - parent.height
                 Anchor.Below -> 0
             }
 

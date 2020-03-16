@@ -56,16 +56,16 @@ class PopupTime : Popup() {
 
         // Save updated time when window closed
         view.btnApplyTime.setOnClickListener {
-            window.dismiss()
             edited.time = time.copy()
             modify.text = time.createDisplayedTime()
+            window.dismiss()
         }
 
         // Clear selected time
         view.btnClearTime.setOnClickListener {
-            window.dismiss()
             edited.time.clear()
             modify.text = defaultTimeMsg
+            window.dismiss()
         }
 
         return window

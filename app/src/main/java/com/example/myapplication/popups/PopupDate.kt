@@ -1,6 +1,7 @@
 package com.example.myapplication.popups
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -54,9 +55,9 @@ class PopupDate : Popup() {
             view.txtDeltaDays.text = "D"
         }
         view.btnApplyDate.setOnClickListener {
-            window.dismiss()
             edited.reassign(date)
             modify?.text = date.createShortLabel()
+            window.dismiss()
         }
 
         return window

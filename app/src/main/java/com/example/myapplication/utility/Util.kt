@@ -3,6 +3,7 @@ package com.example.myapplication.utility
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,10 @@ fun View.getDisplaySize() : Point {
 
 fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
 fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }
+
+fun printDebugMsg(message: String) {
+   Log.d("Test", message)
+}
 
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/

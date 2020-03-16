@@ -12,7 +12,8 @@ object Settings {
 
     // Tasks
     // Groups
-    var groupSpacing = 5        // In dp
+    var gridSpacing = 5          // In dp
+    var linearSpacing = 5
     // Time
     var durationMax:Int = 480   // 8 hours, 480 minutes
     // Coloration

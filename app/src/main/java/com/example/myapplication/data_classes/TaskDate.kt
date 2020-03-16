@@ -68,7 +68,6 @@ fun TaskDate.createLabel(): String {
 
     // Calculate timeInMills, create label
     val timeInMills = cal.timeInMillis
-    var label: String
 
     val ordinal = getOrdinal(cal.get(Calendar.DAY_OF_MONTH))
     val month: String = SimpleDateFormat("MMMM").format(timeInMills)
