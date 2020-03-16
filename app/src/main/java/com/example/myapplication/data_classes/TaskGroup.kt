@@ -14,13 +14,14 @@ data class TaskGroup (
     var state: Fold = Fold.OUT
 )
 
+fun TaskGroup.allSelected() : Boolean { return numSelected == taskList.count() }
 fun TaskGroup.isEmpty() : Boolean { return taskList.isEmpty() }
 
 // #######################################################
 // Modifying selected group
 // #######################################################
 fun TaskGroup.selectedDelete(data: TaskListData) {
-    // Clearing entire group
+    // Deleting entire group
     if (numSelected == taskList.size) {
         taskList.clear()
         data.numSelected -= numSelected
@@ -57,6 +58,19 @@ fun TaskGroup.selectedClear(data: TaskListData, paramType: TaskParam) {
         if (numSelected == 0) return
     }
 }
+fun TaskGroup.selectedSetTag(data: TaskListData, newTag: Int) {
+    // See above for logic
+    for (index: Int in taskList.size - 1 downTo 0) {
+        val task: Task = taskList[index]
+        if (task.selected) {
+            numSelected--
+            data.numSelected--
+            task.selected = false
+            task.tag = newTag
+        }
+        if (numSelected == 0) return
+    }
+}
 
 // #######################################################
 // Selecting/Deselecting entire group
@@ -65,7 +79,7 @@ fun TaskGroup.toggleSelected() {
     // Select all if not all selected, otherwise deselect all
 
     // [A]. Deselect all (All have been selected)
-    if (numSelected == taskList.count()) { setSelected(false) }
+    if (allSelected()) { setSelected(false) }
     // [B]. Select all (not all have been selected)
     else { setSelected(true) }
 }

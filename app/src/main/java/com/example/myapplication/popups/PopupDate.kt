@@ -18,7 +18,7 @@ class PopupDate : Popup() {
     private var date: TaskDate = TaskDate()
     private var dateDelta: DateDelta = DateDelta.D
 
-    fun create(attachTo: View, modify: View, context: Context, edited: TaskDate, anchor: Anchor = Anchor.Above) : PopupWindow {
+    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskDate, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo, anchor)
         val view:View = window.contentView
 
@@ -56,7 +56,7 @@ class PopupDate : Popup() {
         view.btnApplyDate.setOnClickListener {
             window.dismiss()
             edited.reassign(date)
-            (modify as TextView).text = date.createShortLabel()
+            modify?.text = date.createShortLabel()
         }
 
         return window
@@ -108,13 +108,13 @@ class PopupDate : Popup() {
         dateDelta = dateDelta.next()
         this.text = dateDelta.toString()
     }
-}
 
-enum class DateDelta { D, W, M }
-fun DateDelta.next(): DateDelta {
-    return when (this) {
-        DateDelta.D -> DateDelta.W
-        DateDelta.W -> DateDelta.M
-        else -> DateDelta.D
+    enum class DateDelta { D, W, M }
+    private fun DateDelta.next(): DateDelta {
+        return when (this) {
+            DateDelta.D -> DateDelta.W
+            DateDelta.W -> DateDelta.M
+            else -> DateDelta.D
+        }
     }
 }

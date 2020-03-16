@@ -44,11 +44,13 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 
+/*
 // https://stackoverflow.com/questions/35780980/getting-the-actual-screen-height-android/45158798
 fun View.getDisplaySize() : Point {
     val root: View = this.rootView.layout
     return Point(root.width, root.height)
 }
+*/
 
 fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
 fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }

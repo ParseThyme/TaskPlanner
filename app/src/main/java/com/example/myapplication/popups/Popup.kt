@@ -8,7 +8,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
 import com.example.myapplication.utility.Keyboard
-import com.example.myapplication.utility.getDisplaySize
 
 abstract class Popup {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
@@ -57,11 +56,10 @@ abstract class Popup {
             // Get created window measurements to determine shifts
             this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
-            val displaySize: Point = parent.getDisplaySize()
             val viewSize = Point(this.contentView.measuredWidth, this.contentView.measuredHeight)
-            val padding = 5
+            val padding = 10
             val xOffset: Int =
-                (displaySize.x - viewSize.x) / 2      // X positioning. Ensure at center of parent
+                (parent.width - viewSize.x) / 2      // X positioning. Ensure at center of parent
 
             // Determining Y Positioning depending on anchor. Place above or below
             val yOffset = when (anchor) {

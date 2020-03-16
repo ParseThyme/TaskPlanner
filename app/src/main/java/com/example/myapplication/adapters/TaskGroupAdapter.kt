@@ -1,6 +1,7 @@
 package com.example.myapplication.adapters
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -246,6 +247,32 @@ class TaskGroupAdapter(private val data: TaskListData,
         }
     }
 
+    fun setTagForSelected(newTag: Int) {
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val group: TaskGroup = taskGroupList[groupNum]
+            if (group.numSelected != 0) {
+                group.selectedSetTag(data, newTag)
+                notifyItemChanged(groupNum)
+                if (data.numSelected == 0) break
+            }
+        }
+    }
+
+    fun changeDateForSelected(newDate: TaskDate) {
+        /*
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val group: TaskGroup = taskGroupList[groupNum]
+            if (group.numSelected != 0) {
+
+                taskGroupList
+
+                notifyItemChanged(groupNum)
+                if (data.numSelected == 0) break
+            }
+        }
+         */
+    }
+
     // ########## Toggling ##########
     fun toggleGroupSelected(groupNum : Int) : Int {
         val group: TaskGroup = taskGroupList[groupNum]
@@ -307,6 +334,20 @@ class TaskGroupAdapter(private val data: TaskListData,
                 }
                 else { notifyItemChanged(index) }
                 break
+            }
+        }
+    }
+
+    private fun changeGroup(task: Task, newGroup: TaskDate, oldGroup: TaskGroup) {
+        /*
+        // "Move" to new position (add new task). -- to balance out addition made in addTask()
+        addTask(newGroup, task)
+        data.taskCount--
+        */
+
+        for (currTask in oldGroup.taskList) {
+            if (task == currTask) {
+                Log.d("Test", "Task found: ${task.desc} at ${oldGroup.date.createLabel()}")
             }
         }
     }

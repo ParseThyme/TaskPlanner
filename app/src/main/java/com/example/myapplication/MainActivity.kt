@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.view.View
+import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
@@ -178,9 +179,31 @@ class MainActivity : AppCompatActivity() {
 
         // Select mode
         // When modifying entries, clear selections and then return to add mode
-        btnToDate.setOnClickListener {  }
+        btnToDate.setOnClickListener {
+            // See below for logic explanation
+            val newDate = TaskDate(-1)
+            val window: PopupWindow = PopupManager.dateEdit(selectModeBar, null, this, newDate)
+            window.setOnDismissListener {
+                if (newDate.id != -1) {
+                    taskGroupAdapter.changeDateForSelected(newDate)
+                    setMode(Mode.ADD)
+                }
+            }
+        }
         btnToTag.setOnClickListener {
-            val newTag: Int = R.drawable.tag_base
+            // 1. Create temporary Task to hold new tag
+            // 2. Create window, user selects new tag
+            // 3. Override tag for selected tasks in adapter
+
+            val newTag = Task("", -1)
+            val window: PopupWindow = PopupManager.tagEdit(selectModeBar, null, this, newTag)
+            window.setOnDismissListener {
+                // Apply changes to selected tag when window closed. If -1 then no tag was selected
+                if (newTag.tag != -1) {
+                    taskGroupAdapter.setTagForSelected(newTag.tag)
+                    setMode(Mode.ADD)
+                }
+            }
         }
 
         btnClearTag.setOnClickListener {

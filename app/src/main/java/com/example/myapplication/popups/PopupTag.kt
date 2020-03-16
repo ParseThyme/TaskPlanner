@@ -12,7 +12,7 @@ import com.example.myapplication.utility.Settings
 import kotlinx.android.synthetic.main.popup_tag_grid_rv.view.*
 
 class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
-    fun create(attachTo: View, modify: ImageView, context: Context, edited: Task): PopupWindow {
+    fun create(attachTo: View, modify: ImageView?, context: Context, edited: Task): PopupWindow {
         // Calculate number of icons per row. Ideally max is 10 per row.
         var spanCount: Int = Settings.tagRowSize
         if (tagsList.size < spanCount)
@@ -25,7 +25,7 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
             adapter = TaskTagAdapter(tagsList)
             // Select and close function passed into TaskTagAdapter
             { taskTag: Int ->           // Input Param
-                modify.setImageResource(taskTag)
+                modify?.setImageResource(taskTag)
                 edited.tag = taskTag
                 window.dismiss()
             }
