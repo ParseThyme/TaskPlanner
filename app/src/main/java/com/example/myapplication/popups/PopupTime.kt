@@ -6,11 +6,11 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.utility.Settings
 import com.example.myapplication.utility.defaultTimeMsg
-import com.example.myapplication.utility.durationMax
 import kotlinx.android.synthetic.main.popup_time.view.*
 
-class PopupTime : PopupParent() {
+class PopupTime : Popup() {
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)
     private var timeDelta: Int = 5
 
@@ -39,8 +39,8 @@ class PopupTime : PopupParent() {
         // Duration
         // Check duration. Hide appropriate button
         when (time.duration ) {
-            0 -> view.btnLengthDec.visibility = View.INVISIBLE             // Prevent decrement
-            durationMax -> view.btnLengthInc.visibility = View.INVISIBLE   // Prevent increment
+            0 -> view.btnLengthDec.visibility = View.INVISIBLE                      // Prevent decrement
+            Settings.durationMax -> view.btnLengthInc.visibility = View.INVISIBLE   // Prevent increment
         }
 
         view.btnLengthInc.setOnClickListener {
@@ -148,15 +148,15 @@ class PopupTime : PopupParent() {
             time.duration += timeDelta
 
             // Ensure duration < cap, hide up button
-            if (time.duration >= durationMax) {
-                time.duration = durationMax
+            if (time.duration >= Settings.durationMax) {
+                time.duration = Settings.durationMax
                 btnUp.visibility = View.INVISIBLE
             }
         }
         // Decrement
         else {
             // Revert hiding on up button, as now possible to increment
-            if (time.duration == durationMax) { btnUp.visibility = View.VISIBLE }
+            if (time.duration == Settings.durationMax) { btnUp.visibility = View.VISIBLE }
 
             time.duration -= timeDelta
             // Ensure duration >= 0, hide down button

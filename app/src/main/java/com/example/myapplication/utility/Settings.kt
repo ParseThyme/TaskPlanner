@@ -3,28 +3,19 @@ package com.example.myapplication.utility
 import android.graphics.Color
 import android.view.View
 
-// ########## Hardcoded values (unmodified by app) ##########
-// SharedPreferences (Saving/Loading data)
-const val spName: String = "SavedData"
-const val spTaskGroupList = "TaskGroupList"
-
-// Activity.main
-const val mainTitle = "Task Planner"
-const val defaultTimeMsg = "Set Time"
-
-// Time and Duration of tasks
-var durationMax:Int = 180   // 3 hours, 180 minutes
-
-/* Settings set as a singleton class, we only need one instance of it and we want to make it
- * globally accessible
- * https://blog.mindorks.com/how-to-create-a-singleton-class-in-kotlin
- */
-
 // ########## App settings ##########
 object Settings {
-    // init { }
+    var deleteOldDates: Boolean = false
+
+    // Popup Windows
+    var tagRowSize = 8
 
     // Tasks
+    // Groups
+    var groupSpacing = 5        // In dp
+    // Time
+    var durationMax:Int = 480   // 8 hours, 480 minutes
+    // Coloration
     private const val defHighlightColor: String = "#FFFFE600"   // Yellow
     var highlightColor: String = "#FFFFE600"
     var taskBaseColor: String = "#00000000"
@@ -45,6 +36,3 @@ object Settings {
             defHighlightColor
     }
 }
-
-fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
-fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }

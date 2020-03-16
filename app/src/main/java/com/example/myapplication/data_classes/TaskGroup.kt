@@ -20,6 +20,14 @@ fun TaskGroup.isEmpty() : Boolean { return taskList.isEmpty() }
 // Modifying selected group
 // #######################################################
 fun TaskGroup.selectedDelete(data: TaskListData) {
+    // Clearing entire group
+    if (numSelected == taskList.size) {
+        taskList.clear()
+        data.numSelected -= numSelected
+        numSelected = 0
+        return
+    }
+
     for (index in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
         // Remove selected task and update counters
@@ -48,28 +56,6 @@ fun TaskGroup.selectedClear(data: TaskListData, paramType: TaskParam) {
         // Exit early once all modifications have been applied
         if (numSelected == 0) return
     }
-}
-
-// #######################################################
-// Fold type (IN/OUT). Whether group is expanded/collapsed
-// #######################################################
-fun Fold.isNew(view: View): Boolean {
-    if (view.visibility == View.VISIBLE && this == Fold.OUT)
-        return false
-    if (view.visibility == View.GONE && this == Fold.IN)
-        return false
-
-    return true
-}
-fun TaskGroup.isFoldedOut() : Boolean { return state == Fold.OUT }
-fun TaskGroup.toggleFold(): Fold {
-    state =
-        if (state == Fold.OUT)
-            Fold.IN
-        else
-            Fold.OUT
-
-    return state
 }
 
 // #######################################################
@@ -110,6 +96,28 @@ fun TaskGroup.setSelected(selected: Boolean) {
             }
         }
     }
+}
+
+// #######################################################
+// Fold type (IN/OUT). Whether group is expanded/collapsed
+// #######################################################
+fun Fold.isNew(view: View): Boolean {
+    if (view.visibility == View.VISIBLE && this == Fold.OUT)
+        return false
+    if (view.visibility == View.GONE && this == Fold.IN)
+        return false
+
+    return true
+}
+fun TaskGroup.isFoldedOut() : Boolean { return state == Fold.OUT }
+fun TaskGroup.toggleFold(): Fold {
+    state =
+        if (state == Fold.OUT)
+            Fold.IN
+        else
+            Fold.OUT
+
+    return state
 }
 
 enum class Fold { OUT, IN }

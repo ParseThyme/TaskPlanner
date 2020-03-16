@@ -34,10 +34,13 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     // Initialization
     init {
-        // Previous save exists, update values based on previously saved list
-        if (taskGroupList.size > 0) {
+        // Remove older entries, assuming previous save exists
+        if (Settings.deleteOldDates) { deleteOldTasks() }
+
+        // Given save exists, update values based on previously saved list
+        if (taskGroupList.isNotEmpty()) {
             // Go through each group for taskCount and numCollapsed. Clear existing selections
-            for (group in taskGroupList) {
+            for (group: TaskGroup in taskGroupList) {
                 data.taskCount += group.taskList.size
 
                 // Clear previous selections and update collapse count if group is collapsed
@@ -313,6 +316,18 @@ class TaskGroupAdapter(private val data: TaskListData,
         when (data.numFoldedIn) {
             taskGroupList.size - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
             taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)     // All collapsed
+        }
+    }
+
+    // ########## Other ##########
+    private fun deleteOldTasks() {
+        val iterator: MutableListIterator<TaskGroup> = taskGroupList.listIterator()
+        while (iterator.hasNext()) {
+            val group: TaskGroup = iterator.next()
+            if (group.date.isPastDate())
+                iterator.remove()
+            else
+                break   // Stop when date is today's date or later
         }
     }
 }

@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
@@ -51,15 +50,12 @@ class MainActivity : AppCompatActivity() {
         // Check for existing saved data, attempt to load it then create the adapter
         loadSave()
 
-        // Spacing for taskList
-        val spacing: Int = resources.getDimensionPixelSize(R.dimen.grid_layout_margin)
-
         // Assign layout manager and adapter to recycler view
         dateGroupRV.apply {
-            // layoutManager = LinearLayoutManager(this.context)
-            // addItemDecoration(TaskListDecoration(1, spacing, true, 0))
-            layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
-            addItemDecoration(TaskListDecoration(2, spacing, true, 0))
+            layoutManager = LinearLayoutManager(this.context)
+            addItemDecoration(TaskListDecoration(1, Settings.groupSpacing, true, 0))
+            // layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
+            // addItemDecoration(TaskListDecoration(2, Settings.groupSpacing, true, 0))
             adapter = taskGroupAdapter
         }
 
@@ -176,14 +172,16 @@ class MainActivity : AppCompatActivity() {
             txtSetDate.text = newDate.createShortLabel()
         }
 
-        txtSetDate.setOnClickListener { PopupManager.datePopup(bottomBar, txtSetDate, this, newDate) }
-        txtSetTime.setOnClickListener { PopupManager.timePopup(bottomBar, txtSetTime, this, newTask) }
-        btnSetTag.setOnClickListener  { PopupManager.tagPopup(bottomBar, btnSetTag, this, newTask) }
+        txtSetDate.setOnClickListener { PopupManager.dateEdit(addModeBar, txtSetDate, this, newDate) }
+        txtSetTime.setOnClickListener { PopupManager.timeEdit(addModeBar, txtSetTime, this, newTask) }
+        btnSetTag.setOnClickListener  { PopupManager.tagEdit(addModeBar, btnSetTag, this, newTask) }
 
         // Select mode
         // When modifying entries, clear selections and then return to add mode
         btnToDate.setOnClickListener {  }
-        btnToTag.setOnClickListener {  }
+        btnToTag.setOnClickListener {
+            val newTag: Int = R.drawable.tag_base
+        }
 
         btnClearTag.setOnClickListener {
             taskGroupAdapter.clearSelected(TaskParam.Tag)

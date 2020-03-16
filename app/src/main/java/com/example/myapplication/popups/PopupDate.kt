@@ -10,7 +10,7 @@ import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.popup_date.view.*
 import kotlinx.android.synthetic.main.popup_time.view.txtDate
 
-class PopupDate : PopupParent() {
+class PopupDate : Popup() {
     // Today's date and cap date
     private lateinit var today: TaskDate
     lateinit var endDate: TaskDate

@@ -10,7 +10,7 @@ import android.widget.PopupWindow
 import com.example.myapplication.utility.Keyboard
 import com.example.myapplication.utility.getDisplaySize
 
-abstract class PopupParent {
+abstract class Popup {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
     fun create(context: Context, layout: Int): PopupWindow {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

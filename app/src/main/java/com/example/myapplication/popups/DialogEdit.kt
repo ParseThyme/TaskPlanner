@@ -57,19 +57,19 @@ class DialogEdit(
         // Tag
         view.iconEditTag.setImageResource(task.tag)
         view.iconEditTag.setOnClickListener {
-            PopupManager.tagPopup(view.windowLayout, view.iconEditTag, context, taskData)
+            PopupManager.tagEdit(view.windowLayout, view.iconEditTag, context, taskData)
         }
 
         // Date
         view.txtEditDate.text = date.createShortLabel()
         view.txtEditDate.setOnClickListener {
-            PopupManager.datePopup(view.windowLayout, view.txtEditDate, context, dateData)
+            PopupManager.dateEdit(view.windowLayout, view.txtEditDate, context, dateData)
         }
 
         // Time
         view.txtEditTime.text = task.time.createDisplayedTime()
         view.txtEditTime.setOnClickListener {
-            PopupManager.timePopup(view.windowLayout, view.txtEditTime, context, taskData)
+            PopupManager.timeEdit(view.windowLayout, view.txtEditTime, context, taskData)
         }
 
         // Reset settings, place cursor at bottom

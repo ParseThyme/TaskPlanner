@@ -8,15 +8,15 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.adapters.TaskTagAdapter
 import com.example.myapplication.data_classes.Task
+import com.example.myapplication.utility.Settings
 import kotlinx.android.synthetic.main.popup_tag_grid_rv.view.*
 
-class PopupTag(private val tagsList: ArrayList<Int>) : PopupParent() {
-    fun create(attachTo: View, modify: View, context: Context, edited: Task, anchor: Anchor = Anchor.Above): PopupWindow {
+class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
+    fun create(attachTo: View, modify: ImageView, context: Context, edited: Task): PopupWindow {
         // Calculate number of icons per row. Ideally max is 10 per row.
-        var spanCount = tagsList.size
-        spanCount =
-            if (tagsList.size < 8) tagsList.size
-            else 8
+        var spanCount: Int = Settings.tagRowSize
+        if (tagsList.size < spanCount)
+            spanCount = tagsList.size
 
         val window = create(context, R.layout.popup_tag_grid_rv)
         val view: View = window.contentView
@@ -25,7 +25,7 @@ class PopupTag(private val tagsList: ArrayList<Int>) : PopupParent() {
             adapter = TaskTagAdapter(tagsList)
             // Select and close function passed into TaskTagAdapter
             { taskTag: Int ->           // Input Param
-                (modify as ImageView).setImageResource(taskTag)
+                modify.setImageResource(taskTag)
                 edited.tag = taskTag
                 window.dismiss()
             }

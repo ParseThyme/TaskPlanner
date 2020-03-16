@@ -1,6 +1,7 @@
 package com.example.myapplication.utility
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Point
 import android.view.LayoutInflater
 import android.view.View
@@ -14,15 +15,20 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.main_activity_view.view.*
 
-// ########## Creation ##########
-fun RecyclerView.addDivider(vertical : Boolean = true) {
-    // Divider between date categories
-    var orientation = DividerItemDecoration.VERTICAL
-    if (!vertical) { orientation = DividerItemDecoration.HORIZONTAL }
+// ########## Hardcoded values (unmodified by app) ##########
+// SharedPreferences (Saving/Loading data)
+const val spName: String = "SavedData"
+const val spTaskGroupList = "TaskGroupList"
 
-    val divider = DividerItemDecoration(this.context, orientation)
-    this.addItemDecoration(divider)
-}
+// Activity.main
+const val mainTitle = "Task Planner"
+const val defaultTimeMsg = "Set Time"
+
+/* Settings set as a singleton class, we only need one instance of it and we want to make it
+ * globally accessible
+ * https://blog.mindorks.com/how-to-create-a-singleton-class-in-kotlin
+ */
+
 
 // ########## Shortcuts ##########
 // https://stackoverflow.com/questions/2461824/how-to-programmatically-set-maxlength-in-android-textview
@@ -39,19 +45,13 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 
 // https://stackoverflow.com/questions/35780980/getting-the-actual-screen-height-android/45158798
-
 fun View.getDisplaySize() : Point {
     val root: View = this.rootView.layout
     return Point(root.width, root.height)
 }
 
-/*
-fun View.getScreenLocation() : Point {
-    val location = IntArray(2)
-    this.getLocationOnScreen(location)
-    return Point(location[0], location[1])
-}
- */
+fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
+fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }
 
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/
