@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +9,10 @@ import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.PopupManager
 import com.example.myapplication.utility.*
-// import com.example.myapplication.popup_windows.createDatePopup
 import kotlinx.android.synthetic.main.main_activity_view.*
-import kotlinx.android.synthetic.main.main_activity_view.btnReset
 import kotlinx.android.synthetic.main.main_activity_view.topBarTitle
+import kotlinx.android.synthetic.main.main_mode_add_view.view.*
+import kotlinx.android.synthetic.main.main_mode_select_view.view.*
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
@@ -68,8 +67,8 @@ class MainActivity : AppCompatActivity() {
     // ########## Setup related ##########
     private fun runSetup() {
         // Setup singletons
-        Keyboard.setup(this, txtTaskDesc)
-        Keyboard.addInputValidation(btnNewTask)
+        Keyboard.setup(this, addMode.txtTaskDesc)
+        Keyboard.addInputValidation(addMode.btnNewTask)
 
         // ToDo: Implement tags list to be saved and loaded
         tagsList = arrayListOf(
@@ -86,9 +85,9 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
-        txtSetDate.text = today.createShortLabel()
+        addMode.txtSetDate.text = today.createShortLabel()
         // Set time to be blank
-        newTask.time.clear(txtSetTime)
+        newTask.time.clear(addMode.txtSetTime)
 
         // Buttons (topBar and bottomBar)
         setupButtons()
@@ -138,11 +137,10 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         // BottomBar
         // ##############################
-
-        // Add mode
-        btnNewTask.setOnClickListener {
+        // 1. Add Mode
+        addMode.btnNewTask.setOnClickListener {
             // Get relevant values
-            val desc: String = txtTaskDesc.text.toString().trim()
+            val desc: String = addMode.txtTaskDesc.text.toString().trim()
             val time: TaskTime = newTask.time.copy()
             val date: TaskDate = newDate.copy()
             val tag: Int = newTask.tag
@@ -152,70 +150,71 @@ class MainActivity : AppCompatActivity() {
             taskGroupAdapter.addTask(date, addedTask)
 
             // Reset text entry and time
-            txtTaskDesc.setText("")
-            txtTaskDesc.clearFocus()
-            newTask.time.clear(txtSetTime)
+            addMode.txtTaskDesc.setText("")
+            addMode.txtTaskDesc.clearFocus()
+            newTask.time.clear(addMode.txtSetTime)
 
             // Save changes
             updateSave()
         }
-        btnReset.setOnClickListener {
+
+        addMode.txtSetDate.setOnClickListener { PopupManager.dateEdit(addMode, addMode.txtSetDate, this, newDate) }
+        addMode.txtSetTime.setOnClickListener { PopupManager.timeEdit(addMode, addMode.txtSetTime, this, newTask.time) }
+        addMode.btnSetTag.setOnClickListener  { PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
+
+        addMode.btnReset.setOnClickListener {
             // Reset all values (exclude text entry)
             newTask.tag = R.drawable.tag_base
             newDate = today()
             newTask.time.clear()
 
             // Update views
-            btnSetTag.setImageResource(newTask.tag)
-            txtSetTime.text = defaultTimeMsg
-            txtSetDate.text = newDate.createShortLabel()
+            addMode.btnSetTag.setImageResource(newTask.tag)
+            addMode.txtSetTime.text = defaultTimeMsg
+            addMode.txtSetDate.text = newDate.createShortLabel()
         }
 
-        txtSetDate.setOnClickListener { PopupManager.dateEdit(addModeBar, txtSetDate, this, newDate) }
-        txtSetTime.setOnClickListener { PopupManager.timeEdit(addModeBar, txtSetTime, this, newTask) }
-        btnSetTag.setOnClickListener  { PopupManager.tagEdit(addModeBar, btnSetTag, this, newTask) }
+        // 2. Select Mode
+        selectMode.btnToDate.setOnClickListener {
+            // 1. Create temporary Task to hold new date
+            // 2. Create window, user selects new date
+            // 3. Override date for selected tasks in adapter
 
-        // Select mode
-        // When modifying entries, clear selections and then return to add mode
-        btnToDate.setOnClickListener {
-            // See below for logic explanation
             val newDate = TaskDate(-1)
-            val window: PopupWindow = PopupManager.dateEdit(selectModeBar, null, this, newDate)
+            val window: PopupWindow = PopupManager.dateEdit(selectMode, null, this, newDate)
             window.setOnDismissListener {
-                Log.d("Test", "NewDate: ${newDate.id}")
+                // Apply changes to selected date when window closed. If -1 then no date was selected
                 if (newDate.id != -1) {
-                    taskGroupAdapter.changeDateForSelected(newDate)
+                    taskGroupAdapter.setDateForSelected(newDate)
                     setMode(Mode.ADD)
+                    updateSave()
                 }
             }
         }
-        btnToTag.setOnClickListener {
-            // 1. Create temporary Task to hold new tag
-            // 2. Create window, user selects new tag
-            // 3. Override tag for selected tasks in adapter
-
-            val newTag = Task("", -1)
-            val window: PopupWindow = PopupManager.tagEdit(selectModeBar, null, this, newTag)
+        selectMode.btnToTime.setOnClickListener {
+            val newTime = TaskTime(0)
+            val window: PopupWindow = PopupManager.timeEdit(selectMode, null, this, newTime)
             window.setOnDismissListener {
-                // Apply changes to selected tag when window closed. If -1 then no tag was selected
+                if (newTime.hour != 0 || newTime.duration != 0) {
+                    taskGroupAdapter.setTimeForSelected(newTime)
+                    setMode(Mode.ADD)
+                    updateSave()
+                }
+            }
+        }
+        selectMode.btnToTag.setOnClickListener {
+            val newTag = Task("", -1)
+            val window: PopupWindow = PopupManager.tagEdit(selectMode, null, this, newTag)
+            window.setOnDismissListener {
                 if (newTag.tag != -1) {
                     taskGroupAdapter.setTagForSelected(newTag.tag)
                     setMode(Mode.ADD)
+                    updateSave()
                 }
             }
         }
 
-        btnClearTag.setOnClickListener {
-            taskGroupAdapter.clearSelected(TaskParam.Tag)
-            setMode(Mode.ADD)
-            updateSave()
-        }
-        btnClearTime.setOnClickListener {
-            taskGroupAdapter.clearSelected(TaskParam.Time)
-            setMode(Mode.ADD)
-            updateSave()
-        }
-        btnDelete.setOnClickListener {
+        selectMode.btnDelete.setOnClickListener {
             taskGroupAdapter.delete()
             setMode(Mode.ADD)
             updateSave()
@@ -284,8 +283,8 @@ class MainActivity : AppCompatActivity() {
                 updateTopBar(mainTitle)
 
                 // Switch display of bottomBar
-                addModeBar.visibility = View.VISIBLE
-                selectModeBar.visibility = View.GONE
+                addMode.visibility = View.VISIBLE
+                selectMode.visibility = View.GONE
 
                 // Reset icon: Select all
                 btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
@@ -294,8 +293,8 @@ class MainActivity : AppCompatActivity() {
                 updateSelectedCountDisplay()
 
                 // Switch display of bottomBar
-                addModeBar.visibility = View.GONE
-                selectModeBar.visibility = View.VISIBLE
+                addMode.visibility = View.GONE
+                selectMode.visibility = View.VISIBLE
             }
             else -> return
         }

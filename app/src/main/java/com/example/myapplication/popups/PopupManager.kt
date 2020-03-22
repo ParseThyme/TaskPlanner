@@ -19,7 +19,7 @@ object PopupManager {
     }
 
     // Create relevant popups
-    fun timeEdit(attachTo: View, modify: TextView, context: Context, edited: Task) : PopupWindow {
+    fun timeEdit(attachTo: View, modify: TextView?, context: Context, edited: TaskTime) : PopupWindow {
         return time.create(attachTo, modify, context, edited)
     }
 

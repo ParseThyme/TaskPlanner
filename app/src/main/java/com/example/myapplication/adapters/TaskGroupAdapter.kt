@@ -257,8 +257,18 @@ class TaskGroupAdapter(private val data: TaskListData,
             }
         }
     }
+    fun setTimeForSelected(newTime: TaskTime) {
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val group: TaskGroup = taskGroupList[groupNum]
+            if (group.numSelected != 0) {
+                group.selectedSetTime(data, newTime)
+                notifyItemChanged(groupNum)
+                if (data.numSelected == 0) break
+            }
+        }
+    }
 
-    fun changeDateForSelected(newDate: TaskDate) {
+    fun setDateForSelected(newDate: TaskDate) {
         // Store list of tasks to be changed
         val movedTasks: ArrayList<Task> = arrayListOf()
 

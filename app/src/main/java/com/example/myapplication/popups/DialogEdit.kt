@@ -7,6 +7,7 @@ import android.view.View
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.Keyboard
+import com.example.myapplication.utility.printDebugMsg
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 
 
@@ -16,13 +17,10 @@ class DialogEdit(
 ) {
     var updated: Boolean = false
         private set
-    private var keyBoardOpen = false
 
     fun create(
-        date: TaskDate,
         task: Task,
-        notifyItemChanged: () -> Unit,
-        changeGroup: (Task, TaskDate, Int) -> Unit
+        notifyItemChanged: () -> Unit
     ): Dialog {
         updated = false
 
@@ -38,15 +36,6 @@ class DialogEdit(
             show()
         }
 
-        // Create copy of task and date to store changes. Only apply when applyChanges button clicked
-        val taskData: Task = task.copy()
-        val dateData: TaskDate = date.copy()
-
-        // 1. Store copy of setTime
-        // 2. Modify setTime to be copy of task's time
-        // 3. Create window and change value to new
-        // 4. Reassign setTime back to copy
-
         // ########## Fill values: ##########
         // Description
         // Create keyboard reference
@@ -54,31 +43,13 @@ class DialogEdit(
         // Set text and hint text to description
         view.txtEditDesc.setText(task.desc)
 
-        // Tag
-        view.iconEditTag.setImageResource(task.tag)
-        view.iconEditTag.setOnClickListener {
-            PopupManager.tagEdit(view.windowLayout, view.iconEditTag, context, taskData)
-        }
-
-        // Date
-        view.txtEditDate.text = date.createShortLabel()
-        view.txtEditDate.setOnClickListener {
-            PopupManager.dateEdit(view.windowLayout, view.txtEditDate, context, dateData)
-        }
-
-        // Time
-        view.txtEditTime.text = task.time.createDisplayedTime()
-        view.txtEditTime.setOnClickListener {
-            PopupManager.timeEdit(view.windowLayout, view.txtEditTime, context, taskData)
-        }
-
         // Reset settings, place cursor at bottom
         view.btnReset.setOnClickListener {
             view.txtEditDesc.setText(task.desc)
             view.txtEditDesc.setSelection(view.txtEditDesc.text.length)
         }
 
-        // Secret - Place cursor at bottom
+        // Place cursor at bottom
         view.btnDescription.setOnClickListener {
             view.txtEditDesc.setSelection(view.txtEditDesc.text.length)
         }
@@ -96,30 +67,9 @@ class DialogEdit(
             // Description
             val description: String = view.txtEditDesc.text.trim().toString()
             if (description != "" && description != task.desc) {
-                updated = true
                 task.desc = description
-            }
 
-            // Time
-            if (task.time != taskData.time) {
-                updated = true
-                task.time = taskData.time
-            }
-
-            // Tag
-            if (task.tag != taskData.tag) {
-                updated = true
-                task.tag = taskData.tag
-            }
-
-            // Date
-            if (date != dateData) {
-                updated = true
-                changeGroup(task, dateData, date.id)
-            }
-
-            // Save changes made and update recyclerview display
-            if (updated) {
+                // Save changes made and update recyclerview display
                 notifyItemChanged()
                 updateSave()
             }

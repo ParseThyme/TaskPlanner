@@ -12,23 +12,22 @@ import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime : Popup() {
     private var time: TaskTime = TaskTime(12, 0, "PM", 0)
-    private var timeDelta: Int = 5
 
-    fun create(attachTo: View, modify: TextView, context: Context, edited: Task, anchor: Anchor = Anchor.Above) : PopupWindow {
+    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = create(context, R.layout.popup_time)
         val view:View = window.contentView
 
         // Copy over most recent time
-        time = edited.time.copy()
+        time = edited.copy()
 
         // For unset times, reset value to default
         if (!time.isValid()) { view.resetValues() }
 
         // Apply values based on set time
-        view.txtDate.text = time.asString(false)
+        view.txtDate.text = time.createStartTime(false)
         view.txtTimeOfDay.text = time.timeOfDay
-        view.txtDuration.text = time.durationAsString()
-        view.txtDeltaTime.text = deltaAsString()
+        view.txtDuration.text = time.durationToString()
+        view.txtDeltaTime.text = Settings.timeDeltaAsString()
 
         // Allocate onClick behaviours:
         // Time and time of day
@@ -56,15 +55,20 @@ class PopupTime : Popup() {
 
         // Save updated time when window closed
         view.btnApplyTime.setOnClickListener {
-            edited.time = time.copy()
-            modify.text = time.createDisplayedTime()
+            edited.apply {
+                hour = time.hour
+                min = time.min
+                duration = time.duration
+                timeOfDay = time.timeOfDay
+            }
+            modify?.text = time.createTimeWithDuration()
             window.dismiss()
         }
 
         // Clear selected time
         view.btnClearTime.setOnClickListener {
-            edited.time.clear()
-            modify.text = defaultTimeMsg
+            edited.clear()
+            modify?.text = defaultTimeMsg
             window.dismiss()
         }
 
@@ -74,13 +78,18 @@ class PopupTime : Popup() {
 
     private fun View.resetValues() {
         time.resetValues()
-        txtDate.text = "12:00"
-        txtTimeOfDay.text = "AM"
-        txtDuration.text = "0m"
+        txtDate.text = time.createStartTime(false)
+        txtTimeOfDay.text = time.timeOfDay
+        txtDuration.text = time.durationToString()
         txtDeltaTime.text = "5m"
     }
 
     private fun TextView.updateTime(timeOfDayView: TextView, increment: Boolean = true) {
+        time.update(increment)
+        this.text = time.createStartTime(false)
+        timeOfDayView.text = time.timeOfDay
+
+        /*
         var newMinutes: Int = time.min
         var hourDelta = 0
         var flipToD = false
@@ -138,7 +147,8 @@ class PopupTime : Popup() {
         time.min = newMinutes
 
         // Show new displayed time
-        this.text = time.asString(false)
+        this.text = time.createStartTime(false)
+         */
     }
     private fun TextView.updateLength(btnUp: View, btnDown: View, increment: Boolean = true) {
         // Increment
@@ -146,7 +156,7 @@ class PopupTime : Popup() {
             // Revert hiding down button, as now possible to decrement
             if (time.duration == 0) { btnDown.visibility = View.VISIBLE }
 
-            time.duration += timeDelta
+            time.duration += Settings.timeDelta
 
             // Ensure duration < cap, hide up button
             if (time.duration >= Settings.durationMax) {
@@ -159,7 +169,7 @@ class PopupTime : Popup() {
             // Revert hiding on up button, as now possible to increment
             if (time.duration == Settings.durationMax) { btnUp.visibility = View.VISIBLE }
 
-            time.duration -= timeDelta
+            time.duration -= Settings.timeDelta
             // Ensure duration >= 0, hide down button
             if (time.duration <= 0) {
                 time.duration = 0
@@ -168,29 +178,12 @@ class PopupTime : Popup() {
         }
 
         // Convert duration value to String format, assign to display
-        this.text = time.durationAsString()
+        this.text = time.durationToString()
     }
-    private fun TextView.updateDelta() {
-        when (timeDelta) {
-            5 -> timeDelta = 10
-            10 -> timeDelta = 15
-            15 -> timeDelta = 30
-            30 -> timeDelta = 60
-            60 -> timeDelta = 5
-        }
-        // Replace string with 1h if 60 minutes, otherwise append on m for minute values
-        this.text = deltaAsString()
-    }
+    private fun TextView.updateDelta() { this.text = Settings.updateTimeDelta() }
     private fun TextView.updateTimeOfDay() {
         // Flip time of day
         time.timeOfDay = time.getOppositeTimeOfDay()
         text = time.timeOfDay
-    }
-
-    private fun deltaAsString(): String {
-        var result:String = timeDelta.toString()
-        if (timeDelta == 60) result = "1H"
-        else result += "M"
-        return result
     }
 }

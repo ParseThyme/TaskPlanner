@@ -71,6 +71,19 @@ fun TaskGroup.selectedSetTag(data: TaskListData, newTag: Int) {
         if (numSelected == 0) return
     }
 }
+fun TaskGroup.selectedSetTime(data: TaskListData, newTime: TaskTime) {
+    // See above for logic
+    for (index: Int in taskList.size - 1 downTo 0) {
+        val task: Task = taskList[index]
+        if (task.selected) {
+            numSelected--
+            data.numSelected--
+            task.selected = false
+            task.time = newTime
+        }
+        if (numSelected == 0) return
+    }
+}
 
 // #######################################################
 // Selecting/Deselecting entire group

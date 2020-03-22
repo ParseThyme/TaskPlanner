@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
 import android.widget.TextView
+import com.example.myapplication.utility.Settings
 import com.example.myapplication.utility.defaultTimeMsg
 
 data class TaskTime (
@@ -10,44 +11,111 @@ data class TaskTime (
     var duration: Int = 0
 )
 
-fun TaskTime.asString(withTimeOfDay: Boolean = true): String {
-    // If time is 0:00, return base string message
-    if (this.hour == 0) return defaultTimeMsg
-
-    // Create start time
-    var timeAsString = "$hour:${minutesAsString(min)}"
-
-    // If time of day included, add " AM" OR " PM" to end of string
-    if (withTimeOfDay) timeAsString += " $timeOfDay"
-
-    return timeAsString
-}
-fun TaskTime.isValid(): Boolean { return hour != 0 }
+fun TaskTime.isValid(): Boolean { return hour > 0 }
 fun TaskTime.getOppositeTimeOfDay(): String {
     if (timeOfDay == "AM") { return "PM" }
     return "AM"
 }
 
+// ####################
+// Set values
+// ####################
 fun TaskTime.resetValues() {
     hour = 12
     min = 0
     timeOfDay = "AM"
     duration = 0
 }
-
 fun TaskTime.clear(applyToView: TextView? = null) {
     // Optional, update textView with default time message
-    if (applyToView != null) applyToView.text =
-        defaultTimeMsg
+    if (applyToView != null) applyToView.text = defaultTimeMsg
 
-    hour = 0
+    hour = -1
     min = 0
     timeOfDay = "AM"
     duration = 0
 }
 
-fun TaskTime.createDisplayedTime(): String {
-    var displayedTime = this.asString()
+fun TaskTime.update(increment: Boolean = true) {
+    var newMinutes: Int = min
+    var hourDelta = 0
+    var flipToD = false
+
+    // Ensure starting hour is a valid time
+    if (hour < 0) hour = 12
+
+    if (increment) {
+        newMinutes += Settings.timeDelta
+
+        // Result is a number over 60
+        if (newMinutes > 59) {
+            // Calculate how many hours we need to add to time and add it
+            hourDelta = newMinutes / 60
+            // Ensure time between 0-60
+            newMinutes %= 60
+        }
+    }
+    else {
+        newMinutes -= Settings.timeDelta
+
+        // Result is number under 0 minutes
+        if (newMinutes < 0) {
+            // Ensure time in appropriate range
+            newMinutes += 60
+            // Calculate hours required to subtract
+            hourDelta = -((newMinutes + 60) / 60)
+        }
+    }
+
+    // Assuming hour has been updated, make sure result is in range
+    if (hourDelta != 0) {
+        val hourResult = hour + hourDelta
+
+        when {
+            // Values > 12, reset back to 1
+            hourResult > 12 -> {
+                hour = 1
+                flipToD = true
+            }
+            // Values < 1, reset to 12
+            hourResult < 1 -> {
+                hour = 12
+                flipToD = true
+            }
+            // Standard hour increment/decrement. Value between 1-12
+            else -> hour = hourResult
+        }
+
+        if (flipToD) {
+            // Flip time of day
+            timeOfDay = getOppositeTimeOfDay()
+        }
+    }
+
+    // Update minute value
+    min = newMinutes
+}
+
+// ####################
+// Creating string labels
+// ####################
+fun TaskTime.createStartTime(withTimeOfDay: Boolean = true): String {
+    // If time is 0, return base string message
+    if (hour == 0) return defaultTimeMsg
+
+    // Create start time
+    var timeAsString: String =
+        if (hour < 0) "12:00"
+        else "$hour:${minutesAsString(min)}"
+
+    // If time of day included, add " AM" OR " PM" to end of string
+    if (withTimeOfDay) timeAsString += " $timeOfDay"
+
+    return timeAsString
+}
+
+fun TaskTime.createTimeWithDuration(): String {
+    var displayedTime = this.createStartTime()
 
     // Check if duration allocated. If so append end time based on duration.
     if (this.duration > 0) {
@@ -73,8 +141,7 @@ fun TaskTime.createDisplayedTime(): String {
 
     return displayedTime
 }
-
-fun TaskTime.durationAsString(): String {
+fun TaskTime.durationToString(): String {
     // [1]. Duration as Int from 0 to 59 minutes. Return number as : followed by duration. E.g. :30
     if (duration in 0..59) {
         // Extra: If duration from 1 - 9. Add extra 0 in front

@@ -71,13 +71,10 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun editTask(task: Task) {
             val previousEditText: EditText = Keyboard.editText      // Previous editText attached to Keyboard
-            val taskGroup: TaskDate = group.date.copy()             // Copy of current group task belongs to
 
             // Create new dialog
-            val dialog: Dialog =
-                editWindow.create(taskGroup, task,
-                    { notifyItemChanged(adapterPosition) },     // Update display when task updated
-                    changeGroup)                                // Switch group when changed
+            val dialog: Dialog = editWindow.create(task)
+                                 { notifyItemChanged(adapterPosition) }     // Update display when task updated
 
             // Reattach old editText when done editing task
             dialog.setOnDismissListener { Keyboard.attachTo(previousEditText) }
@@ -99,9 +96,6 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun toggleTime(time: TaskTime) {
-            // Generate time to display
-            val timeDisplay = time.createDisplayedTime()
-
             // Time unallocated, hide display
             if (!time.isValid()) {
                 itemView.taskTime.visibility = View.GONE
@@ -109,7 +103,7 @@ class TasksAdapter(private val group: TaskGroup,
             }
 
             // Otherwise set time and show
-            itemView.taskTime.text = timeDisplay
+            itemView.taskTime.text = time.createTimeWithDuration()
             itemView.taskTime.visibility = View.VISIBLE
         }
     }
