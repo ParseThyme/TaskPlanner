@@ -35,11 +35,9 @@ object Keyboard {
 
         // https://proandroiddev.com/how-to-detect-if-the-android-keyboard-is-open-269b255a90f5
         root.viewTreeObserver.addOnGlobalLayoutListener {
-            // How much space is being occupied currently. Same as maxHeight if keyboard is not open
-            val occupiedSpace = root.getOccupiedSpace()
-
+            // Occupied space = How much space is being taken up. Same as maxHeight if keyboard is not open
             // Size of keyboard equal to max height - occupied space. If 0 we know keyboard is not open.
-            height = maxHeight - occupiedSpace.y
+            height = maxHeight - root.getOccupiedSpace().y
 
             // Keyboard size is generally over 200. If value is less then keyboard isn't open
             visible = height > 200
@@ -52,9 +50,7 @@ object Keyboard {
 
         // Focus changed listener. When focus lost on textView, close keyboard
         editText.setOnFocusChangeListener { _, focused ->
-            if (!focused) {
-                close()
-            }
+            if (!focused) { close() }
         }
     }
 
@@ -79,17 +75,16 @@ object Keyboard {
     }
 
     // Manually force close keyboard, assuming it is open. Called when a dialog window itself is closed
-    fun close() { if (visible) hide()
+    fun close() { if (visible) hide() }
+    fun open() {
+        visible = true
+        editText.requestFocus()
+        imm.toggleSoftInputFromWindow(editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
     }
 
     // https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
-    private fun hide() { imm.hideSoftInputFromWindow(
-        editText.windowToken, 0) }
-    private fun show() {
-        visible = true
-        imm.toggleSoftInputFromWindow(
-            editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
-    }
+    private fun hide() {
+        imm.hideSoftInputFromWindow(editText.windowToken, 0) }
 
     private fun ImageButton.toggle(enabled: Boolean) {
         if (enabled) updateBtnColor(R.color.btnEnabled, this.context)

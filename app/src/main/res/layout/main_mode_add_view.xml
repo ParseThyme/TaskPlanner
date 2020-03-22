@@ -56,6 +56,7 @@
         android:layout_marginLeft="5dp"
         android:background="@android:color/white"
         android:padding="5dp"
+        android:tint="#555656"
         app:layout_constraintBottom_toBottomOf="@+id/txtSetTime"
         app:layout_constraintStart_toEndOf="@+id/txtSetTime"
         app:layout_constraintTop_toTopOf="@+id/txtSetTime"

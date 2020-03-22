@@ -20,6 +20,8 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
 
         val window = create(context, R.layout.popup_tag_grid_rv)
         val view: View = window.contentView
+
+        // Change tag
         view.tagsRv.apply {
             layoutManager = GridLayoutManager(context, spanCount)
             adapter = TaskTagAdapter(tagsList)
@@ -29,6 +31,13 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
                 edited.tag = taskTag
                 window.dismiss()
             }
+        }
+
+        // Remove tag
+        view.btnClearTag.setOnClickListener {
+            modify?.setImageResource(R.drawable.tag_base)
+            edited.tag = R.drawable.tag_base
+            window.dismiss()
         }
 
         window.show(attachTo)

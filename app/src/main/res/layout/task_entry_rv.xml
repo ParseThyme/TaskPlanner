@@ -39,6 +39,7 @@
                     android:id="@+id/taskTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:tint="#555656"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="@+id/taskTime"
                     app:layout_constraintStart_toStartOf="@+id/taskTime"

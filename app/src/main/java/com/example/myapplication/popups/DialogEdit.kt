@@ -4,10 +4,10 @@ import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import com.example.myapplication.R
-import com.example.myapplication.data_classes.*
+import com.example.myapplication.data_classes.Task
 import com.example.myapplication.utility.Keyboard
-import com.example.myapplication.utility.printDebugMsg
 import kotlinx.android.synthetic.main.task_edit_view.view.*
 
 
@@ -18,17 +18,12 @@ class DialogEdit(
     var updated: Boolean = false
         private set
 
-    fun create(
-        task: Task,
-        notifyItemChanged: () -> Unit
-    ): Dialog {
+    fun create(task: Task, notifyItemChanged: () -> Unit): Dialog {
         updated = false
 
         // ########## Create dialog ##########
         // https://demonuts.com/android-custom-dialog-with-transparent-background/
-        val dialog = Dialog(context,
-            R.style.EditDialog
-        )
+        val dialog = Dialog(context, R.style.EditDialog)
         val view: View = LayoutInflater.from(context).inflate(R.layout.task_edit_view, null)
         dialog.apply {
             setCancelable(false)
@@ -42,6 +37,8 @@ class DialogEdit(
         Keyboard.attachTo(view.txtEditDesc)
         // Set text and hint text to description
         view.txtEditDesc.setText(task.desc)
+        // Open keyboard
+        Keyboard.open()
 
         // Reset settings, place cursor at bottom
         view.btnReset.setOnClickListener {
