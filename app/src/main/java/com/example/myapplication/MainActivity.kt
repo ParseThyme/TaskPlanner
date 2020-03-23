@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.PopupManager
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.main_activity_view.*
-import kotlinx.android.synthetic.main.main_activity_view.topBarTitle
+import kotlinx.android.synthetic.main.main_layout_top_view.view.*
 import kotlinx.android.synthetic.main.main_mode_add_view.view.*
 import kotlinx.android.synthetic.main.main_mode_select_view.view.*
 import kotlin.collections.ArrayList
@@ -20,13 +21,13 @@ class MainActivity : AppCompatActivity() {
     // private val settings: Settings = Settings()
 
     // TaskList (Center Area)
-    private val taskClickedFn = { task : Task -> taskClicked(task) }
-    private val dateClickedFn = { group: Int -> groupClicked(group) }
+    private val clickTaskFn = { task : Task -> taskClicked(task) }
+    private val clickDateFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
-    private val updateCollapseExpandIconFn = { state: Fold -> updateCollapseExpandIcon(state)}
+    private val updateFoldIconFn = { state: Fold -> setFoldIcon(state)}
     private val updateSaveFn = { updateSave() }
 
-    // Selecting tasks
+    // Toggled
     private var mode: Mode = Mode.START
 
     // Created task
@@ -50,13 +51,12 @@ class MainActivity : AppCompatActivity() {
 
         // Check for existing saved data, attempt to load it then create the adapter
         loadSave()
+        taskGroupAdapter = TaskGroupAdapter(data, taskGroupList, clickTaskFn, clickDateFn, toTopFn,
+                                            updateFoldIconFn, updateSaveFn)
 
         // Assign layout manager and adapter to recycler view
         dateGroupRV.apply {
-            layoutManager = LinearLayoutManager(this.context)
-            addItemDecoration(TaskListDecoration(1, Settings.linearSpacing, true, 0))
-            // layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
-            // addItemDecoration(TaskListDecoration(2, Settings.gridSpacing, true, 0))
+            setLayout()
             adapter = taskGroupAdapter
         }
 
@@ -110,11 +110,11 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         // TopBar
         // ##############################
-        btnSelectAll.setOnClickListener {
+        titleBar.btnSelectAll.setOnClickListener {
             // If not all selected, select all
             if (!data.allSelected()) {
                 // Change icon to opposite icon (deselect all)
-                btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+                titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
                 // Toggle all to selected state
                 taskGroupAdapter.toggleSelectAll()
@@ -131,20 +131,25 @@ class MainActivity : AppCompatActivity() {
                 setMode(Mode.ADD)
             }
         }
-        btnCollapseExpand.setOnClickListener {
+        titleBar.btnCollapseExpand.setOnClickListener {
             // Expand all when all are collapsed, switch icon to collapse all icon
             if (taskGroupAdapter.allCollapsed()) {
                 taskGroupAdapter.toggleFoldAll()
-                updateCollapseExpandIcon(Fold.OUT)
+                setFoldIcon(Fold.OUT)
             }
             // Otherwise collapse all and switch icon to expand all icon
             else {
                 taskGroupAdapter.toggleFoldAll(Fold.IN)
-                updateCollapseExpandIcon(Fold.IN)
+                setFoldIcon(Fold.IN)
             }
             updateSave()
         }
-        btnSettings.setOnClickListener { }
+        titleBar.btnToggleLayout.setOnClickListener {
+            Settings.switchLayout()
+            saveLoad.saveLayout()
+            setLayout()
+        }
+        // btnSettings.setOnClickListener { }
 
         // ##############################
         // BottomBar
@@ -252,7 +257,6 @@ class MainActivity : AppCompatActivity() {
             else -> { updateSelectedCountDisplay() }
         }
     }
-
     private fun taskClicked (task: Task) {
         // Update counts based on whether task selected/deselected
         if (task.selected) {
@@ -264,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                 updateSelectedCountDisplay()
                 // If all selected, change topBar icon (selectAll to off)
                 if (data.allSelected())
-                    btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+                    titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
             }
         }
         else {
@@ -276,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                 updateSelectedCountDisplay()
                 // If went from max to max - 1, change topBar icon (selectAll to on)
                 if (data.numSelected == data.taskCount - 1)
-                    btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
+                    titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
         }
     }
@@ -299,7 +303,7 @@ class MainActivity : AppCompatActivity() {
                 selectMode.visibility = View.GONE
 
                 // Reset icon: Select all
-                btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
+                titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
@@ -312,28 +316,51 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateTopBar(newTitle: String) { topBarTitle.text = newTitle }
+    private fun updateTopBar(newTitle: String) { titleBar.title.text = newTitle }
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
 
-    private fun updateCollapseExpandIcon(state: Fold) {
+    // ########## Toggle ##########
+    private fun setFoldIcon(state: Fold) {
         when(state) {
-            Fold.OUT -> btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
-            Fold.IN -> btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
+            Fold.OUT -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
+            Fold.IN -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
+        }
+    }
+    private fun setLayout() {
+        when (Settings.mainLayout) {
+            ViewLayout.LINEAR -> {
+                titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_linear)
+                dateGroupRV.apply {
+                    layoutManager = LinearLayoutManager(this.context)
+                    // Remove previous decoration and replace it
+                    if (itemDecorationCount > 0) removeItemDecorationAt(0)
+                    addItemDecoration(TaskListDecoration(1, Settings.linearSpacing, true, 0))
+                }
+            }
+            ViewLayout.GRID -> {
+                titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_grid)
+                dateGroupRV.apply {
+                    layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
+                    if (itemDecorationCount > 0) removeItemDecorationAt(0)
+                    addItemDecoration(TaskListDecoration(2, Settings.gridSpacing, true, 0))
+                }
+            }
         }
     }
 
     // ########## Save/Load ##########
     private fun loadSave() {
         saveLoad = SaveLoad(this)
-        // saveLoad.clearAllData()
-        taskGroupList = saveLoad.loadTaskGroupList()
-        // settings = saveLoad.loadSettings()
-        taskGroupAdapter =
-            TaskGroupAdapter(data, taskGroupList,
-                taskClickedFn, dateClickedFn, toTopFn,
-                updateCollapseExpandIconFn, updateSaveFn)
-    }
 
+        // Uncomment for broken data
+        // saveLoad.clearAllData()
+
+        // Load data
+        taskGroupList = saveLoad.loadTaskGroupList()
+
+        // Load settings
+        Settings.mainLayout = saveLoad.loadLayout()
+    }
     private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }
 
     /*
@@ -356,5 +383,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-enum class Mode { START, ADD, SELECTION }

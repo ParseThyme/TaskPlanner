@@ -8,10 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.applyBackgroundColor
-import com.example.myapplication.utility.printDebugMsg
-import com.example.myapplication.utility.inflate
+import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class TaskGroupAdapter(private val data: TaskListData,
@@ -22,13 +19,6 @@ class TaskGroupAdapter(private val data: TaskListData,
                        private val changeCollapseExpandIcon: (Fold) -> Unit,
                        private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
-    // Listener function: Date changed for task
-    private val changeDate = {
-        // Params:
-            task: Task, newDate: TaskDate, oldID: Int
-        // Function to call:
-        -> changeGroup(task, newDate, oldID)
-    }
 
     // Used for sorting, default value ensures new min value is always replaced with first entry
     private val baseMinDate: Int = 90000000
@@ -97,8 +87,7 @@ class TaskGroupAdapter(private val data: TaskListData,
                         scrollTo(adapterPosition)
                         data.numFoldedIn--
                     }
-                    Fold.IN ->
-                        data.numFoldedIn++
+                    Fold.IN -> data.numFoldedIn++
                 }
                 updateExpandCollapseIcon()
 
@@ -109,7 +98,7 @@ class TaskGroupAdapter(private val data: TaskListData,
             // Assign layout manager + adapter
             tasksRV.apply {
                 layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
-                adapter = TasksAdapter(group, taskClicked, changeDate, updateSave)
+                adapter = TasksAdapter(group, taskClicked, updateSave)
             }
         }
 
@@ -187,7 +176,6 @@ class TaskGroupAdapter(private val data: TaskListData,
         // Update collapse/expand icon to enable collapsing as new entry will always be expanded
         changeCollapseExpandIcon(Fold.OUT)
     }
-
     private fun addToTaskGroup(pos: Int, newTask: Task) {
         taskGroupList[pos].taskList.add(newTask)
         notifyItemChanged(pos)
@@ -235,19 +223,8 @@ class TaskGroupAdapter(private val data: TaskListData,
         notifyDataSetChanged()
     }
 
-    fun clearSelected(paramType: TaskParam) {
-        // Uses same logic as delete(). We don't track group size in this case.
-        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
-            if (group.numSelected != 0) {
-                group.selectedClear(data, paramType)
-                notifyItemChanged(groupNum)
-                if (data.numSelected == 0) break
-            }
-        }
-    }
-
     fun setTagForSelected(newTag: Int) {
+        // Uses same logic as delete(). We don't track group size in this case.
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val group: TaskGroup = taskGroupList[groupNum]
             if (group.numSelected != 0) {
@@ -267,7 +244,6 @@ class TaskGroupAdapter(private val data: TaskListData,
             }
         }
     }
-
     fun setDateForSelected(newDate: TaskDate) {
         // Store list of tasks to be changed
         val movedTasks: ArrayList<Task> = arrayListOf()
@@ -340,10 +316,10 @@ class TaskGroupAdapter(private val data: TaskListData,
     // ########## Toggling ##########
     fun toggleGroupSelected(groupNum : Int) : Int {
         val group: TaskGroup = taskGroupList[groupNum]
-        val numSelectedPreToggle = group.numSelected
+        val numSelectedPreToggle:Int = group.numSelected
 
         group.toggleSelected()
-        val difference = group.numSelected - numSelectedPreToggle
+        val difference: Int = group.numSelected - numSelectedPreToggle
 
         notifyItemChanged(groupNum)
         return difference
@@ -356,7 +332,6 @@ class TaskGroupAdapter(private val data: TaskListData,
 
         notifyDataSetChanged()
     }
-
     fun toggleFoldAll(newState: Fold = Fold.OUT) {
         val end: Int = taskGroupList.size - 1
         for (groupNum in end downTo 0)
@@ -370,44 +345,14 @@ class TaskGroupAdapter(private val data: TaskListData,
         }
     }
 
-    /**
-     * Change group task belongs to
-     * @param task: Task being updated
-     * @param newDate: New group task is switching to
-     * @param oldID: Old group task belonged to
-     */
-    private fun changeGroup(task: Task, newDate: TaskDate, oldID: Int) {
-        // "Move" to new position (add new task). -- to balance out addition made in addTask()
-        addTask(newDate, task)
-        data.taskCount--
-
-        // Find old group and remove it at the old position
-        for (index in 0 until taskGroupList.size) {
-            val group = taskGroupList[index]
-            if (group.date.id == oldID) {
-                group.taskList.remove(task)
-
-                // Remove group if its list is exhausted
-                if (group.taskList.size == 0) {
-                    // Update minDate if removed date was the minimum one
-                    if (group.date.id == minDate)
-                        minDate = taskGroupList[index + 1].date.id
-
-                    taskGroupList.removeAt(index)
-                    notifyItemRemoved(index)
-                }
-                else { notifyItemChanged(index) }
-                break
-            }
-        }
-    }
-
     private fun updateExpandCollapseIcon() {
         // Update icon accordingly based on number collapsed
         when (data.numFoldedIn) {
             taskGroupList.size - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
             taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)     // All collapsed
         }
+        // Ensure area occupied by grid is resized when row closed
+        if (Settings.mainLayout == ViewLayout.GRID) notifyDataSetChanged()
     }
 
     // ########## Other ##########

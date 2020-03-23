@@ -8,10 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.DialogEdit
-import com.example.myapplication.utility.Keyboard
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.applyBackgroundColor
-import com.example.myapplication.utility.inflate
+import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 // val itemClickedListener: (Task) -> Unit
@@ -20,7 +17,6 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 class TasksAdapter(private val group: TaskGroup,
                    private val taskClicked: (Task) -> Unit,
-                   private val changeGroup: (Task, TaskDate, Int) -> Unit,
                    private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {

@@ -1,8 +1,5 @@
 package com.example.myapplication.utility
 
-import android.graphics.Color
-import android.view.View
-
 // ########## App settings ##########
 object Settings {
     var deleteOldDates: Boolean = false
@@ -10,9 +7,11 @@ object Settings {
     // Popup Windows
     var tagRowSize = 6
 
+    var mainLayout = ViewLayout.LINEAR
+
     // Tasks
     // Groups
-    var gridSpacing = 5          // In dp
+    var gridSpacing = 10          // In dp
     var linearSpacing = 15
     // Time
     var durationMax: Int = 480   // 8 hours, 480 minutes
@@ -38,9 +37,19 @@ object Settings {
     }
 
     // ####################
-    // Task related
+    // Layout
     // ####################
+    fun switchLayout() {
+        mainLayout = when(mainLayout) {
+            // Switch to opposite layout
+            ViewLayout.LINEAR -> ViewLayout.GRID
+            ViewLayout.GRID   -> ViewLayout.LINEAR
+        }
+    }
 
+    // ####################
+    // Tasks
+    // ####################
     fun updateTimeDelta() : String {
         when (timeDelta) {
             5 -> timeDelta = 10
@@ -51,7 +60,6 @@ object Settings {
         }
         return timeDeltaAsString()
     }
-
     fun timeDeltaAsString() : String {
         // Replace string with 1h if 60 minutes, otherwise append on m for minute values
         var result:String = timeDelta.toString()
@@ -60,3 +68,6 @@ object Settings {
         return result
     }
 }
+
+enum class Mode { START, ADD, SELECTION }
+enum class ViewLayout { LINEAR, GRID }
