@@ -1,5 +1,10 @@
 package com.example.myapplication.utility
 
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.adapters.TaskGroupAdapter
+
 // ########## App settings ##########
 object Settings {
     var deleteOldDates: Boolean = false
@@ -7,12 +12,7 @@ object Settings {
     // Popup Windows
     var tagRowSize = 6
 
-    var mainLayout = ViewLayout.LINEAR
-
     // Tasks
-    // Groups
-    var gridSpacing = 10          // In dp
-    var linearSpacing = 15
     // Time
     var durationMax: Int = 480   // 8 hours, 480 minutes
     private const val defTimeDelta: Int = 5
@@ -22,9 +22,23 @@ object Settings {
     var highlightColor: String = "#FFFFE600"
     var taskBaseColor: String = "#00000000"
 
-    // Calendar values
-    private const val defMaxDays: Int = 28
+    // Date / Calendar values
+    private const val defMaxDays: Int = 56
     var maxDays: Int = defMaxDays
+
+    // Layout
+    private lateinit var parentRV: RecyclerView
+    private lateinit var linearLayout: LinearLayoutManager
+    private lateinit var gridLayout: GridLayoutManager
+
+    private const val gridSpacing = 10          // In dp
+    private const val linearSpacing = 15
+    private const val gridSpanCount = 2
+
+    private val linearLayoutDecoration = TaskListDecoration(1, linearSpacing, true, 0)
+    private val gridLayoutDecoration = TaskListDecoration(gridSpanCount, gridSpacing, true, 0)
+
+    var mainLayout = ViewLayout.LINEAR
 
     fun load() {
 
@@ -39,11 +53,42 @@ object Settings {
     // ####################
     // Layout
     // ####################
-    fun switchLayout() {
-        mainLayout = when(mainLayout) {
-            // Switch to opposite layout
-            ViewLayout.LINEAR -> ViewLayout.GRID
-            ViewLayout.GRID   -> ViewLayout.LINEAR
+    fun setLayout(toggle: Boolean = true) {
+        if (toggle) {
+            mainLayout = when (mainLayout) {
+                ViewLayout.LINEAR -> ViewLayout.GRID
+                ViewLayout.GRID -> ViewLayout.LINEAR
+            }
+        }
+
+        // Apply specified layout
+        when (mainLayout) {
+            ViewLayout.LINEAR -> {
+                parentRV.apply {
+                    layoutManager = linearLayout
+                    // Remove previous decoration and replace it
+                    if (itemDecorationCount > 0) removeItemDecorationAt(0)
+                    addItemDecoration(linearLayoutDecoration)
+                }
+            }
+            ViewLayout.GRID -> {
+                parentRV.apply {
+                    layoutManager = gridLayout
+                    if (itemDecorationCount > 0) removeItemDecorationAt(0)
+                    addItemDecoration(gridLayoutDecoration)
+                }
+            }
+        }
+    }
+    fun initMainLayout(recyclerView: RecyclerView, taskGroupAdapter: TaskGroupAdapter) {
+        parentRV = recyclerView
+        linearLayout = LinearLayoutManager(parentRV.context)
+        gridLayout = GridLayoutManager(parentRV.context, gridSpanCount, GridLayoutManager.VERTICAL, false)
+
+        // Initialize grid/linear layout here (so then its not remade every time it's toggled
+        parentRV.apply {
+            setLayout(false)
+            adapter = taskGroupAdapter
         }
     }
 

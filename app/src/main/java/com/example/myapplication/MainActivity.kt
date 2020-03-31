@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private val clickTaskFn = { task : Task -> taskClicked(task) }
     private val clickDateFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
-    private val updateFoldIconFn = { state: Fold -> setFoldIcon(state)}
+    private val updateFoldIconFn = { state: Fold -> toggleFoldIcon(state)}
     private val updateSaveFn = { updateSave() }
 
     // Toggled
@@ -54,11 +53,8 @@ class MainActivity : AppCompatActivity() {
         taskGroupAdapter = TaskGroupAdapter(data, taskGroupList, clickTaskFn, clickDateFn, toTopFn,
                                             updateFoldIconFn, updateSaveFn)
 
-        // Assign layout manager and adapter to recycler view
-        dateGroupRV.apply {
-            setLayout()
-            adapter = taskGroupAdapter
-        }
+        Settings.initMainLayout(dateGroupRV, taskGroupAdapter)     // Assign layout manager and adapter to recycler view
+        toggleLayoutButton()                                        // Set initial button resource to show for layout
 
         runSetup()
         setMode(Mode.ADD)
@@ -135,19 +131,19 @@ class MainActivity : AppCompatActivity() {
             // Expand all when all are collapsed, switch icon to collapse all icon
             if (taskGroupAdapter.allCollapsed()) {
                 taskGroupAdapter.toggleFoldAll()
-                setFoldIcon(Fold.OUT)
+                toggleFoldIcon(Fold.OUT)
             }
             // Otherwise collapse all and switch icon to expand all icon
             else {
                 taskGroupAdapter.toggleFoldAll(Fold.IN)
-                setFoldIcon(Fold.IN)
+                toggleFoldIcon(Fold.IN)
             }
             updateSave()
         }
         titleBar.btnToggleLayout.setOnClickListener {
-            Settings.switchLayout()
+            Settings.setLayout()
             saveLoad.saveLayout()
-            setLayout()
+            toggleLayoutButton()
         }
         // btnSettings.setOnClickListener { }
 
@@ -320,31 +316,16 @@ class MainActivity : AppCompatActivity() {
     private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
 
     // ########## Toggle ##########
-    private fun setFoldIcon(state: Fold) {
+    private fun toggleFoldIcon(state: Fold) {
         when(state) {
             Fold.OUT -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
             Fold.IN -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
         }
     }
-    private fun setLayout() {
+    private fun toggleLayoutButton() {
         when (Settings.mainLayout) {
-            ViewLayout.LINEAR -> {
-                titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_linear)
-                dateGroupRV.apply {
-                    layoutManager = LinearLayoutManager(this.context)
-                    // Remove previous decoration and replace it
-                    if (itemDecorationCount > 0) removeItemDecorationAt(0)
-                    addItemDecoration(TaskListDecoration(1, Settings.linearSpacing, true, 0))
-                }
-            }
-            ViewLayout.GRID -> {
-                titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_grid)
-                dateGroupRV.apply {
-                    layoutManager = GridLayoutManager(this.context, 2, GridLayoutManager.VERTICAL, false)
-                    if (itemDecorationCount > 0) removeItemDecorationAt(0)
-                    addItemDecoration(TaskListDecoration(2, Settings.gridSpacing, true, 0))
-                }
-            }
+            ViewLayout.LINEAR -> { titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_linear) }
+            ViewLayout.GRID -> { titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_grid) }
         }
     }
 
