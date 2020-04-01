@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 // Code above takes in a lambda function as a parameter
 // Unit == no return type (same as void)
 
-class TasksAdapter(private val group: TaskGroup,
+class TasksAdapter(private val group: TaskGroupRow,
                    private val taskClicked: (Task) -> Unit,
                    private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()

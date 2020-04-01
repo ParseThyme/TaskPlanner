@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     // Data
     private var data: TaskListData = TaskListData()
-    private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
+    private var taskGroupList: ArrayList<TaskGroupRow> = ArrayList()
     private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                                             updateFoldIconFn, updateSaveFn)
 
         Settings.initMainLayout(dateGroupRV, taskGroupAdapter)     // Assign layout manager and adapter to recycler view
-        toggleLayoutButton()                                        // Set initial button resource to show for layout
+        toggleLayoutButton()                                       // Set initial button resource to show for layout
 
         runSetup()
         setMode(Mode.ADD)

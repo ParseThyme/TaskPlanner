@@ -1,7 +1,6 @@
 package com.example.myapplication.adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,10 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.*
+import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 
 class TaskGroupAdapter(private val data: TaskListData,
-                       private val taskGroupList: ArrayList<TaskGroup>,
+                       private val taskGroupList: ArrayList<TaskGroupRow>,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
@@ -32,7 +32,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         // Given save exists, update values based on previously saved list
         if (taskGroupList.isNotEmpty()) {
             // Go through each group for taskCount and numCollapsed. Clear existing selections
-            for (group: TaskGroup in taskGroupList) {
+            for (group: TaskGroupRow in taskGroupList) {
                 data.taskCount += group.taskList.size
 
                 // Clear previous selections and update collapse count if group is collapsed
@@ -53,31 +53,51 @@ class TaskGroupAdapter(private val data: TaskListData,
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
     // Creating cell (date group entry)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Use inflate function found in Util then return containing cell layout and clickListener
-        val inflatedView = parent.inflate(R.layout.task_group_rv, false)
+        // Determine view to inflate: header or standard row
+        val inflatedView = when(viewType) {
+            RowType.ROW.ordinal -> parent.inflate(R.layout.task_group_rv)       // Row
+            else -> parent.inflate(R.layout.task_group_header)                  // Header
+        }
         return ViewHolder(inflatedView)
+    }
+    override fun getItemViewType(position: Int): Int {
+        if (taskGroupList[position].isHeader()) return RowType.HEADER.ordinal
+
+        return RowType.ROW.ordinal
     }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        // Defining reference to task description text in layout
-        private val tasksRV = itemView.rvTaskGroup
-        private val dateLabel = itemView.labelDate
-        private val dayLabel = itemView.labelDay
-        private val foldBtn = itemView.btnFold
-
+        // Bind content based on view passed in
         fun bind(group: TaskGroup) {
-            // Assign date label
-            dateLabel.text = group.date.createLabel()
-            dayLabel.text = group.date.getDayNameShort()
+            if (group.isHeader())
+                bindHeader(group as TaskGroupHeader)
+            else
+                bindGroup(group as TaskGroupRow)
+        }
 
+        // ####################
+        // Header
+        // ####################
+        private fun bindHeader(header: TaskGroupHeader) {
+            itemView.txtHeader.text = header.label
+        }
+
+        // ####################
+        // Group entry
+        // ####################
+        private fun bindGroup(group: TaskGroupRow) {
+            // Assign date label
+            itemView.labelDate.text = group.date.createLabel()      // Day number + Month: 1st May
+            itemView.labelDay.apply {                               // Day of week: Mo...Su
+                text = group.date.getDayNameShort()
+                // When day label clicked, call ActivityMain click listener function (De/Select entire group)
+                setOnClickListener { if (group.isFoldedOut()) dateClicked(adapterPosition) }
+            }
             // Update view if collapsed/expanded
             setFold(group)
 
-            // When day label clicked, call ActivityMain click listener function (De/Select entire group)
-            dayLabel.setOnClickListener { if (group.isFoldedOut()) dateClicked(adapterPosition) }
-
             // Update view if collapsed/expanded (Clicked)
-            foldBtn.setOnClickListener {
+            itemView.btnFold.setOnClickListener {
                 val newState: Fold = group.toggleFold()
                 setFold(group)
 
@@ -96,13 +116,12 @@ class TaskGroupAdapter(private val data: TaskListData,
             }
 
             // Assign layout manager + adapter
-            tasksRV.apply {
-                layoutManager = LinearLayoutManager(tasksRV.context, RecyclerView.VERTICAL, false)
+            itemView.rvTaskGroup.apply {
+                layoutManager = LinearLayoutManager(itemView.rvTaskGroup.context, RecyclerView.VERTICAL, false)
                 adapter = TasksAdapter(group, taskClicked, updateSave)
             }
         }
-
-        private fun setFold(group: TaskGroup) {
+        private fun setFold(group: TaskGroupRow) {
             // Only apply if change is being made (e.g. Expand on already expanded date should do nothing)
             if (group.state.isNew(itemView.rvTaskGroup)) {
                 when (group.state) {
@@ -170,7 +189,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     }
 
     private fun addNewTaskGroup(pos: Int, date: TaskDate, newTask: Task) {
-        taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask)))
+        taskGroupList.add(pos, TaskGroupRow(date, arrayListOf(newTask)))
         notifyItemInserted(pos)
 
         // Update collapse/expand icon to enable collapsing as new entry will always be expanded
@@ -196,7 +215,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         // Otherwise go through groups
         var groupDeleted = false
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
+            val group: TaskGroupRow = taskGroupList[groupNum]
             // If group has children selected, perform deletion
             if (group.numSelected != 0) {
                 group.selectedDelete(data)
@@ -226,7 +245,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     fun setTagForSelected(newTag: Int) {
         // Uses same logic as delete(). We don't track group size in this case.
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
+            val group: TaskGroupRow = taskGroupList[groupNum]
             if (group.numSelected != 0) {
                 group.selectedSetTag(data, newTag)
                 notifyItemChanged(groupNum)
@@ -236,7 +255,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     }
     fun setTimeForSelected(newTime: TaskTime) {
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
+            val group: TaskGroupRow = taskGroupList[groupNum]
             if (group.numSelected != 0) {
                 group.selectedSetTime(data, newTime)
                 notifyItemChanged(groupNum)
@@ -272,7 +291,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         else {
             // 1. Go through each group
             for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-                val group: TaskGroup = taskGroupList[groupNum]
+                val group: TaskGroupRow = taskGroupList[groupNum]
 
                 // 2. Check if group has any tasks selected
                 // A. All group's tasks selected, copy over taskList then delete group
@@ -315,7 +334,7 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     // ########## Toggling ##########
     fun toggleGroupSelected(groupNum : Int) : Int {
-        val group: TaskGroup = taskGroupList[groupNum]
+        val group: TaskGroupRow = taskGroupList[groupNum]
         val numSelectedPreToggle:Int = group.numSelected
 
         group.toggleSelected()
@@ -357,9 +376,9 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     // ########## Other ##########
     private fun deleteOldTasks() {
-        val iterator: MutableListIterator<TaskGroup> = taskGroupList.listIterator()
+        val iterator: MutableListIterator<TaskGroupRow> = taskGroupList.listIterator()
         while (iterator.hasNext()) {
-            val group: TaskGroup = iterator.next()
+            val group: TaskGroupRow = iterator.next()
             if (group.date.isPastDate())
                 iterator.remove()
             else

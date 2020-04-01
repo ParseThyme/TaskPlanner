@@ -81,11 +81,11 @@ object Settings {
         }
     }
     fun initMainLayout(recyclerView: RecyclerView, taskGroupAdapter: TaskGroupAdapter) {
+        // Initialize grid/linear layout here (so then its not remade every time it's toggled)
         parentRV = recyclerView
         linearLayout = LinearLayoutManager(parentRV.context)
         gridLayout = GridLayoutManager(parentRV.context, gridSpanCount, GridLayoutManager.VERTICAL, false)
 
-        // Initialize grid/linear layout here (so then its not remade every time it's toggled
         parentRV.apply {
             setLayout(false)
             adapter = taskGroupAdapter
