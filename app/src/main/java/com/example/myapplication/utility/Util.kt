@@ -45,7 +45,7 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
 fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }
 
-fun printDebugMsg(message: String) {
+fun debugMessagePrint(message: String) {
    Log.d("Test", message)
 }
 

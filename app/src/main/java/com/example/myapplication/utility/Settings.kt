@@ -4,6 +4,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.adapters.TaskGroupAdapter
+import com.example.myapplication.data_classes.TaskDate
+import com.example.myapplication.data_classes.today
 
 // ########## App settings ##########
 object Settings {
@@ -25,6 +27,7 @@ object Settings {
     // Date / Calendar values
     private const val defMaxDays: Int = 56
     var maxDays: Int = defMaxDays
+    lateinit var today: TaskDate
 
     // Layout
     private lateinit var parentRV: RecyclerView
@@ -42,6 +45,10 @@ object Settings {
 
     fun load() {
 
+    }
+
+    fun init() {
+        this.today = today()
     }
 
     fun setDefault() {

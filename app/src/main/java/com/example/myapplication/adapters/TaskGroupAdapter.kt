@@ -26,24 +26,30 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     // Initialization
     init {
-        // Remove older entries, assuming previous save exists
-        if (Settings.deleteOldDates) { deleteOldTasks() }
-
-        // Given save exists, update values based on previously saved list
+        // Do nothing if its a new blank grouplist, otherwise override default values based on loaded list
         if (taskGroupList.isNotEmpty()) {
-            // Go through each group for taskCount and numCollapsed. Clear existing selections
-            for (group: TaskGroupRow in taskGroupList) {
-                data.taskCount += group.taskList.size
 
-                // Clear previous selections and update collapse count if group is collapsed
-                group.setSelected(false)
-                if (!group.isFoldedOut())
-                    data.numFoldedIn++
+            // Remove older entries, requires setting toggled on
+            if (Settings.deleteOldDates) { deleteOldTasks() }
+
+            // Given save exists, update values based on previously saved list
+            if (taskGroupList.isNotEmpty()) {
+                // Go through each group for taskCount and numCollapsed. Clear existing selections
+                for (group: TaskGroupRow in taskGroupList) {
+                    data.taskCount += group.taskList.size
+
+                    group.date.diffFromToday()
+
+                    // Clear previous selections and update collapse count if group is collapsed
+                    group.setSelected(false)
+                    if (!group.isFoldedOut())
+                        data.numFoldedIn++
+                }
+
+                // Set minimum date to first entry and check if expand collapse icon needs updating
+                minDate = taskGroupList[0].date.id
+                updateExpandCollapseIcon()
             }
-
-            // Set minimum date to first entry and check if expand collapse icon needs updating
-            minDate = taskGroupList[0].date.id
-            updateExpandCollapseIcon()
         }
     }
 

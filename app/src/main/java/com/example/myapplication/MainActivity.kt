@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     // Created task
     private var newTask: Task = Task()
     private var newDate: TaskDate = today()
-    private val today: TaskDate = today()
 
     // Data
     private var data: TaskListData = TaskListData()
@@ -48,13 +47,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_view)
 
-        // Check for existing saved data, attempt to load it then create the adapter
+        Settings.init()
+
+        // Create adapter from loaded groupList (or create new one)
         loadSave()
         taskGroupAdapter = TaskGroupAdapter(data, taskGroupList, clickTaskFn, clickDateFn, toTopFn,
                                             updateFoldIconFn, updateSaveFn)
 
-        Settings.initMainLayout(dateGroupRV, taskGroupAdapter)     // Assign layout manager and adapter to recycler view
-        toggleLayoutButton()                                       // Set initial button resource to show for layout
+        // Assign layout manager and adapter to recycler view and set initial button resource to show
+        Settings.initMainLayout(dateGroupRV, taskGroupAdapter)
+        toggleLayoutButton()
 
         runSetup()
         setMode(Mode.ADD)
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
-        addMode.txtSetDate.text = today.createShortLabel()
+        addMode.txtSetDate.text = Settings.today.createShortLabel()
         // Set time to be blank
         newTask.time.clear(addMode.txtSetTime)
 

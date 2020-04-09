@@ -1,7 +1,9 @@
 package com.example.myapplication.data_classes
 
-import android.util.Log
+import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.debugMessagePrint
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 // Add new task formats + variables
@@ -29,6 +31,19 @@ fun today(): TaskDate {
     val year: Int = cal.get(Calendar.YEAR)
 
     return TaskDate(id, day, month, year)
+}
+
+fun TaskDate.diffFromToday() : Int {
+    val cal: Calendar = Calendar.getInstance()
+
+    cal.set(Settings.today.year, Settings.today.month, Settings.today.day)
+    val today = cal.timeInMillis
+
+    cal.set(this.year, this.month, this.day)
+    val date = cal.timeInMillis
+
+    // Convert from ms to seconds, to minutes to hours to days
+    return ((date - today) / 1000 / 60 / 60 / 24).toInt()
 }
 
 fun TaskDate.isPastDate(): Boolean {
@@ -87,6 +102,7 @@ fun TaskDate.getDayNameShort(): String {
 fun TaskDate.addMonths(addedMonths: Int): TaskDate { return this.addPeriod(false, addedMonths) }
 fun TaskDate.addDays(addedDays: Int): TaskDate { return this.addPeriod(true, addedDays) }
 
+private fun TaskDate.toLocalDate(): LocalDate { return LocalDate.of(this.year, this.month, this.day) }
 private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
     val cal = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
