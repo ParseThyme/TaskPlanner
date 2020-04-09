@@ -1,9 +1,7 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.debugMessagePrint
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
 // Add new task formats + variables
@@ -12,10 +10,7 @@ val idFormat = SimpleDateFormat("yyyyMMdd")
 
 data class TaskDate(
     var id: Int = 0,
-
-    var day: Int = 0,
-    var month: Int = 0,
-    var year: Int = 0
+    var day: Int = 0, var month: Int = 0, var year: Int = 0
 )
 
 fun today(): TaskDate {
@@ -33,7 +28,39 @@ fun today(): TaskDate {
     return TaskDate(id, day, month, year)
 }
 
-fun TaskDate.diffFromToday() : Int {
+fun TaskDate.reassign(newDate: TaskDate) {
+    id = newDate.id
+    day = newDate.day
+    month = newDate.month
+    year = newDate.year
+}
+
+// ####################
+// Date Range checking
+// ####################
+fun TaskDate.isPastDate(): Boolean {
+    val cal = Calendar.getInstance()
+    val today = idFormat.format(cal.timeInMillis).toInt()
+
+    // Compare values, if id is < today's id. Then we know that its an earlier date. E.g:
+    // Today: 20200316 = 2020, March, 16
+    // Date:  20200314 = 2020, March, 14
+    return when {
+        (id < today) -> true
+        else -> false
+    }
+}
+fun TaskDate.dateDiff() : Period {
+    val diff: Int = this.diffFromToday()
+    return when {
+        diff < 0 -> Period.PAST
+        diff in 0..6 -> Period.THIS_WEEK
+        diff in 7..13 -> Period.NEXT_WEEK
+        diff in 14..20 -> Period.FORTNIGHT
+        else -> Period.FUTURE
+    }
+}
+private fun TaskDate.diffFromToday() : Int {
     val cal: Calendar = Calendar.getInstance()
 
     cal.set(Settings.today.year, Settings.today.month, Settings.today.day)
@@ -46,27 +73,21 @@ fun TaskDate.diffFromToday() : Int {
     return ((date - today) / 1000 / 60 / 60 / 24).toInt()
 }
 
-fun TaskDate.isPastDate(): Boolean {
-    val cal = Calendar.getInstance()
-    val today = idFormat.format(cal.timeInMillis).toInt()
-
-    // Compare values, if id is < today's id. Then we know that its an earlier date. E.g:
-    // Today: 20200316 = 2020, March, 16
-    // Date:  20200314 = 2020, March, 14
-    if (id < today)
-        return true
-
-    return false
+fun Period.asString() : String {
+    return when (this) {
+        Period.THIS_WEEK -> "This Week"
+        Period.NEXT_WEEK -> "Next Week"
+        Period.FORTNIGHT -> "Fortnight"
+        Period.FUTURE -> "3+ Weeks"
+        else -> ""
+    }
 }
+enum class Period { PAST, THIS_WEEK, NEXT_WEEK, FORTNIGHT, FUTURE }
 
-fun TaskDate.reassign(newDate: TaskDate) {
-    id = newDate.id
-    day = newDate.day
-    month = newDate.month
-    year = newDate.year
-}
-
-fun TaskDate.createShortLabel(): String {
+// ####################
+// Labels / ToString()
+// ####################
+fun TaskDate.asStringShort(): String {
     val cal:Calendar = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
     val timeInMills = cal.timeInMillis
@@ -76,7 +97,7 @@ fun TaskDate.createShortLabel(): String {
     // Mo-1-Feb
     return "$dayNameShort | $day $monthShort"    // E.g. Fr 21 Feb
 }
-fun TaskDate.createLabel(): String {
+fun TaskDate.asString(): String {
     // Get task's date
     val cal:Calendar = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
@@ -90,7 +111,7 @@ fun TaskDate.createLabel(): String {
     // 21st February
     return "$day$ordinal $month"
 }
-fun TaskDate.getDayNameShort(): String {
+fun TaskDate.dayNameShort(): String {
     val cal:Calendar = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
     val timeInMills = cal.timeInMillis
@@ -99,10 +120,12 @@ fun TaskDate.getDayNameShort(): String {
     return SimpleDateFormat("EE").format(timeInMills).dropLast(1)
 }
 
+// ####################
+// Date addition
+// ####################
 fun TaskDate.addMonths(addedMonths: Int): TaskDate { return this.addPeriod(false, addedMonths) }
 fun TaskDate.addDays(addedDays: Int): TaskDate { return this.addPeriod(true, addedDays) }
 
-private fun TaskDate.toLocalDate(): LocalDate { return LocalDate.of(this.year, this.month, this.day) }
 private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
     val cal = Calendar.getInstance()
     cal.set(this.year, this.month, this.day)
@@ -122,15 +145,18 @@ private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
     return TaskDate(id, day, month, year)
 }
 private fun getOrdinal(dayNum: Int) : String {
-    // Set ordinal for 11th, 12th, 13th unique cases
-    return if (dayNum in 11..13) { "th" }
-    // Otherwise if ending with 1 == st, 2 == nd, 3 == rd, 4-9 == th
-    else {
-        when (dayNum % 10) {
-            1 -> "st"
-            2 -> "nd"
-            3 -> "rd"
-            else -> "th"
+    return when {
+        // [CASE 1] Set ordinal for 11th, 12th, 13th unique cases
+        (dayNum in 11..13) -> { "th" }
+
+        // [CASE 2] Otherwise if ending with 1 == st, 2 == nd, 3 == rd, 4-9 == th
+        else -> {
+            when (dayNum % 10) {
+                1 -> "st"
+                2 -> "nd"
+                3 -> "rd"
+                else -> "th"
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.example.myapplication.popups
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -37,7 +36,7 @@ class PopupDate : Popup() {
         else if (date.id == endDate.id) { view.btnIncDate.visibility = View.INVISIBLE }
 
         // Apply values based on set date
-        view.txtDate.text = date.createShortLabel()
+        view.txtDate.text = date.asStringShort()
         view.txtDeltaDays.text = dateDelta.toString()
 
         // onClick behaviours:
@@ -51,12 +50,12 @@ class PopupDate : Popup() {
             date = today
 
             view.btnDecDate.visibility = View.INVISIBLE
-            view.txtDate.text = date.createShortLabel()
+            view.txtDate.text = date.asStringShort()
             view.txtDeltaDays.text = "D"
         }
         view.btnApplyDate.setOnClickListener {
             edited.reassign(date)
-            modify?.text = date.createShortLabel()
+            modify?.text = date.asStringShort()
             window.dismiss()
         }
 
@@ -103,7 +102,7 @@ class PopupDate : Popup() {
         }
 
         // Assign new value
-        this.text = date.createShortLabel()
+        this.text = date.asStringShort()
     }
     private fun TextView.updateDelta() {
         dateDelta = dateDelta.next()

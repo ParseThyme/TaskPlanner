@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
-        addMode.txtSetDate.text = Settings.today.createShortLabel()
+        addMode.txtSetDate.text = Settings.today.asStringShort()
         // Set time to be blank
         newTask.time.clear(addMode.txtSetTime)
 
@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity() {
             // Update views
             addMode.btnSetTag.setImageResource(newTask.tag)
             addMode.txtSetTime.text = defaultTimeMsg
-            addMode.txtSetDate.text = newDate.createShortLabel()
+            addMode.txtSetDate.text = newDate.asStringShort()
         }
 
         // 2. Select Mode
