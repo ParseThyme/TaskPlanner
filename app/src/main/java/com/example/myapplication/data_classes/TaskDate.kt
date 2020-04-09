@@ -50,7 +50,7 @@ fun TaskDate.isPastDate(): Boolean {
         else -> false
     }
 }
-fun TaskDate.dateDiff() : Period {
+fun TaskDate.getPeriod() : Period {
     val diff: Int = this.diffFromToday()
     return when {
         diff < 0 -> Period.PAST
@@ -82,7 +82,7 @@ fun Period.asString() : String {
         else -> ""
     }
 }
-enum class Period { PAST, THIS_WEEK, NEXT_WEEK, FORTNIGHT, FUTURE }
+enum class Period { NA, PAST, THIS_WEEK, NEXT_WEEK, FORTNIGHT, FUTURE }
 
 // ####################
 // Labels / ToString()

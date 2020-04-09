@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     // Data
     private var data: TaskListData = TaskListData()
-    private var taskGroupList: ArrayList<TaskGroupRow> = ArrayList()
+    private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
     private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables

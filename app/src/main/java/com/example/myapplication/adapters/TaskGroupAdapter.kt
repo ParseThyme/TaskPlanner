@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.task_group_rv.view.*
 import kotlin.collections.ArrayList
 
 class TaskGroupAdapter(private val data: TaskListData,
-                       private val taskGroupList: ArrayList<TaskGroupRow>,
+                       private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
@@ -25,80 +25,53 @@ class TaskGroupAdapter(private val data: TaskListData,
     private val baseMinDate: Int = 90000000
     private var minDate: Int = baseMinDate
 
-    // List including headers, not saved and generated when app loaded
-    private lateinit var listWithHeaders: ArrayList<TaskGroup>
-
     // Assigned headers
     private val headers = hashMapOf (
         // Key: [Period], Value = [Boolean]
-        Period.PAST to false,
+        Period.PAST      to false,
         Period.THIS_WEEK to false,
         Period.NEXT_WEEK to false,
         Period.FORTNIGHT to false,
-        Period.FUTURE to false
+        Period.FUTURE    to false
     )
     private var headersAssigned = 0
 
     // Initialization
     init {
-        // Do nothing if its a new blank list, otherwise override default values based on loaded list
+        // Remove older entries, requires setting toggled on
+        if (Settings.deleteOldDates) { deleteOldTasks() }
+
+        // Do nothing if its a blank list, otherwise override default values based on loaded list
         if (taskGroupList.isNotEmpty()) {
-            // Remove older entries, requires setting toggled on
-            if (Settings.deleteOldDates) { deleteOldTasks() }
-
             // 1. Given save exists, update values based on previously saved list
-            if (taskGroupList.isNotEmpty()) {
-                for (group: TaskGroupRow in taskGroupList) {
-                    // Go through each group to get taskCount and numCollapsed.
-                    data.taskCount += group.taskList.size
-                    if (!group.isFoldedOut()) data.numFoldedIn++
+            for (group: TaskGroup in taskGroupList) {
+                // Go through each group to get taskCount and numCollapsed.
+                data.taskCount += group.taskList.size
+                if (!group.isFoldedOut()) data.numFoldedIn++
 
-                    // Clear previous selections
-                    group.setSelected(false)
-                }
-
-                // Set minimum date to first entry and check if expand collapse icon needs updating
-                minDate = taskGroupList[0].date.id
-                updateExpandCollapseIcon()
+                // Clear previous selections
+                group.setSelected(false)
             }
 
-            // ToDo: Revise
-            // 2. Copy current list and generate headers
-            listWithHeaders.addAll(taskGroupList)
-
-            // https://stackoverflow.com/questions/51787348/kotlin-iterate-through-list-and-add-items-at-index
-            val iterator: ListIterator<TaskGroup> = taskGroupList.listIterator()
-            for (group: TaskGroup in listWithHeaders) {
-                // Cast to TaskGroupRow. As we are adding headers, we'll never encounter Headers
-                (group as TaskGroupRow).apply {
-                    // Check if header is required. Once all assigned, skip
-                    if (group.assignHeader()) {
-                        val newHeader = TaskGroupHeader(group.date.dateDiff())
-                        // Go to previous position and add new header
-                        iterator.previous()
-                        listWithHeaders.add(newHeader)
-                        // Return iterator to current position
-                        iterator.next()
-                    }
-                }
-            }
+            // Set minimum date to first entry and check if expand collapse icon needs updating
+            minDate = taskGroupList[0].date.id
+            updateExpandCollapseIcon()
         }
     }
 
-    // ####################
+    // ##############################
     // Headers
-    // ####################
-    private fun TaskGroupRow.assignHeader() : Boolean {
+    // ##############################
+    private fun TaskGroup.assignHeader() : Boolean {
         // If all headers have been assigned, exit
         if (headersAssigned == headers.size) return false
 
         // 1. Get period group belongs to
-        val period: Period = date.dateDiff()
+        val period: Period = date.getPeriod()
         // 2. Check if period assigned yet, if not mark to assign, update counter
         if (headers[period] == false) {
             headers[period] = true
             headersAssigned++
-            // debugMessagePrint("Assigned ${this.date.asStringShort()}: ${period.asString()}")
             return true
         }
 
@@ -108,45 +81,48 @@ class TaskGroupAdapter(private val data: TaskListData,
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
     // When group made, apply updates to UI based on internal values
-    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+        holder.bind(taskGroupList[pos])
+    }
     // Creating cell (date group entry)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Determine view to inflate: header or standard row
-        val inflatedView = when(viewType) {
-            RowType.ROW.ordinal -> parent.inflate(R.layout.task_group_rv)       // Row
+        val inflatedView = when (viewType) {
+            GroupType.GROUP.ordinal -> parent.inflate(R.layout.task_group_rv)   // Group
             else -> parent.inflate(R.layout.task_group_header)                  // Header
         }
         return ViewHolder(inflatedView)
     }
     override fun getItemViewType(position: Int): Int {
-        return when {
-            taskGroupList[position].isHeader() -> RowType.HEADER.ordinal
-            else -> RowType.ROW.ordinal
-        }
+        // 0 = Header, 1 = Standard Group
+        return taskGroupList[position].groupType.ordinal
     }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Bind content based on view passed in
         fun bind(group: TaskGroup) {
-            if (group.isHeader())
-                bindHeader(group as TaskGroupHeader)
-            else
-                bindGroup(group as TaskGroupRow)
+            when (group.groupType) {
+                GroupType.HEADER -> { bindHeader(group) }
+                GroupType.GROUP -> { bindGroup(group) }
+            }
         }
 
         // ####################
         // Header
         // ####################
-        private fun bindHeader(header: TaskGroupHeader) {
+        private fun bindHeader(header: TaskGroup) {
+            // debugMessagePrint("Binded header")
             itemView.txtHeader.text = header.label
         }
 
         // ####################
         // Group entry
         // ####################
-        private fun bindGroup(group: TaskGroupRow) {
+        private fun bindGroup(group: TaskGroup) {
+            // debugMessagePrint("Binded group")
+
             // Assign date label
-            itemView.labelDate.text = group.date.asString()      // Day number + Month: 1st May
+            itemView.labelDate.text = group.date.asString()         // Day number + Month: 1st May
             itemView.labelDay.apply {                               // Day of week: Mo...Su
                 text = group.date.dayNameShort()
                 // When day label clicked, call ActivityMain click listener function (De/Select entire group)
@@ -180,7 +156,7 @@ class TaskGroupAdapter(private val data: TaskListData,
                 adapter = TasksAdapter(group, taskClicked, updateSave)
             }
         }
-        private fun setFold(group: TaskGroupRow) {
+        private fun setFold(group: TaskGroup) {
             // Only apply if change is being made (e.g. Expand on already expanded date should do nothing)
             if (group.state.isNew(itemView.rvTaskGroup)) {
                 when (group.state) {
@@ -248,7 +224,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     }
 
     private fun addNewTaskGroup(pos: Int, date: TaskDate, newTask: Task) {
-        taskGroupList.add(pos, TaskGroupRow(date, arrayListOf(newTask)))
+        taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask)))
         notifyItemInserted(pos)
 
         // Update collapse/expand icon to enable collapsing as new entry will always be expanded
@@ -274,7 +250,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         // Otherwise go through groups
         var groupDeleted = false
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroupRow = taskGroupList[groupNum]
+            val group: TaskGroup = taskGroupList[groupNum]
             // If group has children selected, perform deletion
             if (group.numSelected != 0) {
                 group.selectedDelete(data)
@@ -304,7 +280,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     fun setTagForSelected(newTag: Int) {
         // Uses same logic as delete(). We don't track group size in this case.
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroupRow = taskGroupList[groupNum]
+            val group: TaskGroup = taskGroupList[groupNum]
             if (group.numSelected != 0) {
                 group.selectedSetTag(data, newTag)
                 notifyItemChanged(groupNum)
@@ -314,7 +290,7 @@ class TaskGroupAdapter(private val data: TaskListData,
     }
     fun setTimeForSelected(newTime: TaskTime) {
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroupRow = taskGroupList[groupNum]
+            val group: TaskGroup = taskGroupList[groupNum]
             if (group.numSelected != 0) {
                 group.selectedSetTime(data, newTime)
                 notifyItemChanged(groupNum)
@@ -350,7 +326,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         else {
             // 1. Go through each group
             for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-                val group: TaskGroupRow = taskGroupList[groupNum]
+                val group: TaskGroup = taskGroupList[groupNum]
 
                 // 2. Check if group has any tasks selected
                 // A. All group's tasks selected, copy over taskList then delete group
@@ -393,7 +369,7 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     // ########## Toggling ##########
     fun toggleGroupSelected(groupNum : Int) : Int {
-        val group: TaskGroupRow = taskGroupList[groupNum]
+        val group: TaskGroup = taskGroupList[groupNum]
         val numSelectedPreToggle:Int = group.numSelected
 
         group.toggleSelected()
@@ -435,9 +411,9 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     // ########## Other ##########
     private fun deleteOldTasks() {
-        val iterator: MutableListIterator<TaskGroupRow> = taskGroupList.listIterator()
+        val iterator: MutableListIterator<TaskGroup> = taskGroupList.listIterator()
         while (iterator.hasNext()) {
-            val group: TaskGroupRow = iterator.next()
+            val group: TaskGroup = iterator.next()
             if (group.date.isPastDate())
                 iterator.remove()
             else
