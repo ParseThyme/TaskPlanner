@@ -1,8 +1,11 @@
-package com.example.myapplication.utility
+package com.example.myapplication.save_data
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.myapplication.data_classes.TaskGroup
+import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.ViewLayout
+import com.example.myapplication.utility.spName
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

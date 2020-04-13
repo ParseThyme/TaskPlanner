@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.PopupManager
+import com.example.myapplication.save_data.SaveLoad
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlinx.android.synthetic.main.main_layout_top_view.view.*
@@ -20,7 +21,8 @@ class MainActivity : AppCompatActivity() {
     // private val settings: Settings = Settings()
 
     // TaskList (Center Area)
-    private val clickTaskFn = { task : Task -> taskClicked(task) }
+    // private val clickTaskFn = { task : Task -> taskClicked(task) }
+    private val clickTaskFn = { task : SelectedTask -> taskClicked(task) }
     private val clickDateFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
     private val updateFoldIconFn = { state: Fold -> toggleFoldIcon(state)}
@@ -34,7 +36,6 @@ class MainActivity : AppCompatActivity() {
     private var newDate: TaskDate = today()
 
     // Data
-    private var data: TaskListData = TaskListData()
     private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
     private var tagsList: ArrayList<Int> = ArrayList()
 
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         // Create adapter from loaded groupList (or create new one)
         loadSave()
-        taskGroupAdapter = TaskGroupAdapter(data, taskGroupList, clickTaskFn, clickDateFn, toTopFn,
+        taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, toTopFn,
                                             updateFoldIconFn, updateSaveFn)
 
         // Assign layout manager and adapter to recycler view and set initial button resource to show
@@ -110,13 +111,12 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         titleBar.btnSelectAll.setOnClickListener {
             // If not all selected, select all
-            if (!data.allSelected()) {
+            if (!Tracker.allSelected()) {
                 // Change icon to opposite icon (deselect all)
                 titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
                 // Toggle all to selected state
                 taskGroupAdapter.toggleSelectAll()
-                data.selectAll()
                 updateSelectedCountDisplay()
 
                 // Switch to select mode if in add mode
@@ -237,10 +237,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ########## OnClick ##########
+    // ToDo
     private fun groupClicked(groupNum: Int) {
+        /*
         val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
-        val selectedPreClick = data.numSelected
-        data.numSelected += difference
+        val selectedPreClick = Tracker.numSelected
+        Tracker.numSelected += difference
 
         when {
             // [1]. From 0 -> x selected. Enter select mode
@@ -248,41 +250,41 @@ class MainActivity : AppCompatActivity() {
                 setMode(Mode.SELECTION)
             }
             // [2]. From x -> 0 selected. Return to add mode
-            data.numSelected == 0 -> {
+            Tracker.numSelected == 0 -> {
                 setMode(Mode.ADD)
             }
             // [3]. From x -> x + y OR x -> x - y. Update value display
             else -> { updateSelectedCountDisplay() }
         }
+        */
     }
-    private fun taskClicked (task: Task) {
-        // Update counts based on whether task selected/deselected
-        if (task.selected) {
-            data.numSelected++
-            // Selected 0 -> 1, change to selection mode. Otherwise update as usual
-            if (data.numSelected == 1)
+    private fun taskClicked (task: SelectedTask) {
+        val taskSelected:Boolean = Tracker.isSelected(task)
+        if (taskSelected) {
+            // Selected 0 -> 1, change to selection mode
+            if (Tracker.numSelected == 1)
                 setMode(Mode.SELECTION)
+            // Otherwise update as usual
             else {
                 updateSelectedCountDisplay()
                 // If all selected, change topBar icon (selectAll to off)
-                if (data.allSelected())
+                if (Tracker.allSelected())
                     titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
             }
         }
         else {
-            data.numSelected--
-            // Selected tasks 1 -> 0, return to add mode. Otherwise update as usual
-            if (data.numSelected == 0)
+            // Selected tasks 1 -> 0, return to add mode
+            if (Tracker.numSelected == 0)
                 setMode(Mode.ADD)
+            // Otherwise update as usual
             else {
                 updateSelectedCountDisplay()
                 // If went from max to max - 1, change topBar icon (selectAll to on)
-                if (data.numSelected == data.taskCount - 1)
+                if (Tracker.numSelected == Tracker.taskCount - 1)
                     titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
         }
     }
-
     // ########## Change values/display ##########
     private fun setMode(newMode: Mode) {
         // Do nothing if called on same mode
@@ -293,7 +295,7 @@ class MainActivity : AppCompatActivity() {
         when (newMode) {
             Mode.ADD -> {
                 // Set none selected and show main title
-                data.numSelected = 0
+                Tracker.numSelected = 0
                 updateTopBar(mainTitle)
 
                 // Switch display of bottomBar
@@ -315,7 +317,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTopBar(newTitle: String) { titleBar.title.text = newTitle }
-    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
+    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${Tracker.numSelected}") }
 
     // ########## Toggle ##########
     private fun toggleFoldIcon(state: Fold) {
