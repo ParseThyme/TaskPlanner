@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     // private val settings: Settings = Settings()
 
     // TaskList (Center Area)
-    // private val clickTaskFn = { task : Task -> taskClicked(task) }
     private val clickTaskFn = { task : SelectedTask -> taskClicked(task) }
     private val clickDateFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
@@ -110,35 +109,39 @@ class MainActivity : AppCompatActivity() {
         // TopBar
         // ##############################
         titleBar.btnSelectAll.setOnClickListener {
-            // If not all selected, select all
-            if (!Tracker.allSelected()) {
-                // Change icon to opposite icon (deselect all)
-                titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+            when (Tracker.allSelected()) {
+                // If not all selected, select all
+                false -> {
+                    // Change icon to opposite icon (deselect all)
+                    titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
-                // Toggle all to selected state
-                taskGroupAdapter.toggleSelectAll()
-                updateSelectedCountDisplay()
+                    // Toggle all to selected state
+                    taskGroupAdapter.toggleSelectAll()
+                    updateSelectedCountDisplay()
 
-                // Switch to select mode if in add mode
-                setMode(Mode.SELECTION)
-            }
-            // All selected, deselect all and return to add mode
-            else {
-                // Toggle all to off state and return to add mode
-                taskGroupAdapter.toggleSelectAll(false)
-                setMode(Mode.ADD)
+                    // Switch to select mode if in add mode
+                    setMode(Mode.SELECTION)
+                }
+                // All selected, deselect all and return to add mode
+                true -> {
+                    // Toggle all to off state and return to add mode
+                    taskGroupAdapter.toggleSelectAll(false)
+                    setMode(Mode.ADD)
+                }
             }
         }
         titleBar.btnCollapseExpand.setOnClickListener {
-            // Expand all when all are collapsed, switch icon to collapse all icon
-            if (taskGroupAdapter.allCollapsed()) {
-                taskGroupAdapter.toggleFoldAll()
-                toggleFoldIcon(Fold.OUT)
-            }
-            // Otherwise collapse all and switch icon to expand all icon
-            else {
-                taskGroupAdapter.toggleFoldAll(Fold.IN)
-                toggleFoldIcon(Fold.IN)
+            when (taskGroupAdapter.allCollapsed()) {
+                // Expand all when all are collapsed, switch icon to collapse all icon
+                true -> {
+                    taskGroupAdapter.toggleFoldAll()
+                    toggleFoldIcon(Fold.OUT)
+                }
+                // Otherwise collapse all and switch icon to expand all icon
+                false -> {
+                    taskGroupAdapter.toggleFoldAll(Fold.IN)
+                    toggleFoldIcon(Fold.IN)
+                }
             }
             updateSave()
         }
@@ -262,7 +265,7 @@ class MainActivity : AppCompatActivity() {
         val taskSelected:Boolean = Tracker.isSelected(task)
         if (taskSelected) {
             // Selected 0 -> 1, change to selection mode
-            if (Tracker.numSelected == 1)
+            if (Tracker.numSelected() == 1)
                 setMode(Mode.SELECTION)
             // Otherwise update as usual
             else {
@@ -274,13 +277,13 @@ class MainActivity : AppCompatActivity() {
         }
         else {
             // Selected tasks 1 -> 0, return to add mode
-            if (Tracker.numSelected == 0)
+            if (Tracker.numSelected() == 0)
                 setMode(Mode.ADD)
             // Otherwise update as usual
             else {
                 updateSelectedCountDisplay()
                 // If went from max to max - 1, change topBar icon (selectAll to on)
-                if (Tracker.numSelected == Tracker.taskCount - 1)
+                if (Tracker.numSelected() == Tracker.taskCount - 1)
                     titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
         }
@@ -295,7 +298,6 @@ class MainActivity : AppCompatActivity() {
         when (newMode) {
             Mode.ADD -> {
                 // Set none selected and show main title
-                Tracker.numSelected = 0
                 updateTopBar(mainTitle)
 
                 // Switch display of bottomBar
@@ -317,7 +319,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTopBar(newTitle: String) { titleBar.title.text = newTitle }
-    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${Tracker.numSelected}") }
+    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${Tracker.numSelected()}") }
 
     // ########## Toggle ##########
     private fun toggleFoldIcon(state: Fold) {

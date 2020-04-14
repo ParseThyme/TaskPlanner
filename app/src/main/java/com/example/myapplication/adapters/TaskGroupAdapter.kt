@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.task_group_rv.view.*
 import kotlin.collections.ArrayList
 
 class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
-                       // private val taskClicked: (Task) -> Unit,
                        private val taskClicked: (SelectedTask) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
@@ -26,7 +25,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     private var minDate: Int = baseMinDate
 
     // Assigned headers
-    private val headers = hashMapOf (
+    private val headers = mutableMapOf (
         // Key: [Period], Value = [Boolean]
         Period.PAST      to false,
         Period.THIS_WEEK to false,
@@ -111,8 +110,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // Group entry
         // ####################
         private fun bindGroup(group: TaskGroup) {
-            // debugMessagePrint("Binded group")
-
             // Assign date label
             itemView.labelDate.text = group.date.asString()         // Day number + Month: 1st May
             itemView.labelDay.apply {                               // Day of week: Mo...Su
@@ -216,8 +213,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     private fun addNewTaskGroup(pos: Int, date: TaskDate, newTask: Task) {
-        newTask.group = date.id
-
         taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask)))
         notifyItemInserted(pos)
 
@@ -226,7 +221,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     }
     private fun addToTaskGroup(pos: Int, newTask: Task) {
         val group:TaskGroup = taskGroupList[pos]
-        newTask.group = (group.date.id)
 
         group.taskList.add(newTask)
         notifyItemChanged(pos)
@@ -234,7 +228,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     // ########## Modifying selected entries ##########
     fun delete() {
-        // Delete all selected
+        // 1. Delete all selected
         if (Tracker.allSelected()) {
             // Empty everything and reset values
             taskGroupList.clear()
@@ -244,19 +238,18 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             return
         }
 
-        // Update tracker values
+        // 2. Deleting selected
         var groupDeleted = false
         Tracker.deleteSelected {
-            val selectedTasks: ArrayList<SelectedTask> = Tracker.getSelected()
+            val selected: ArrayList<SelectedTask> = Tracker.getSelected()
             // 1. Go through each group to check if they have tasks to delete
             for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-                val group = taskGroupList[groupNum]
+                val group: TaskGroup = taskGroupList[groupNum]
 
                 // Group has tasks to delete
                 if (group.numSelected != 0) {
                     // A. Filter selected tasks to obtain tasks to delete
-                    val currGroup = selectedTasks.filter { it.group == group.date.id }
-                    debugMessagePrint("To delete: $currGroup")
+                    val currGroup = selected.filter { it.group == group.date.id }
 
                     // B. Iterate through selected list (bottom to top)
                     for (taskNum: Int in currGroup.size - 1 downTo 0) {
@@ -266,7 +259,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
                     // B. Set group to have none selected and unmark selected tasks
                     group.numSelected = 0
-                    selectedTasks.removeAll(currGroup)
+                    selected.removeAll(currGroup)
 
                     // C. Check if entire group needs to be deleted
                     if (group.isEmpty()) {
@@ -277,7 +270,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 }
 
                 // Exit early once all selected tasks have been removed
-                if (selectedTasks.size == 0) break
+                if (selected.size == 0) break
             }
         }
 
@@ -291,32 +284,35 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
     }
 
-    // ToDo
     fun setTagForSelected(newTag: Int) {
-        /*
         // Uses same logic as delete(). We don't track group size in this case.
+        val selected: ArrayList<SelectedTask> = Tracker.getSelected()
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val group: TaskGroup = taskGroupList[groupNum]
-            if (group.numSelected != 0) {
-                group.selectedSetTag(data, newTag)
+            val currSelected: List<SelectedTask> = selected.filter { it.group == group.date.id }
+            for (task: SelectedTask in currSelected) {
+                group.taskList[task.pos].tag = newTag
                 notifyItemChanged(groupNum)
-                if (data.numSelected == 0) break
             }
+            group.numSelected = 0
+            selected.removeAll(currSelected)
+            if (selected.size == 0) break
         }
-        */
     }
-    // ToDo
     fun setTimeForSelected(newTime: TaskTime) {
-        /*
+        // Same logic as above.
+        val selected: ArrayList<SelectedTask> = Tracker.getSelected()
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val group: TaskGroup = taskGroupList[groupNum]
-            if (group.numSelected != 0) {
-                group.selectedSetTime(data, newTime)
+            val currSelected: List<SelectedTask> = selected.filter { it.group == group.date.id }
+            for (task: SelectedTask in currSelected) {
+                group.taskList[task.pos].time = newTime
                 notifyItemChanged(groupNum)
-                if (data.numSelected == 0) break
             }
+            group.numSelected = 0
+            selected.removeAll(currSelected)
+            if (selected.size == 0) break
         }
-        */
     }
     // ToDo
     fun setDateForSelected(newDate: TaskDate) {
