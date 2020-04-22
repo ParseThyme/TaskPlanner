@@ -12,8 +12,7 @@ import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 import kotlin.collections.ArrayList
 
-class TaskGroupAdapter(private val data: TaskListData,
-                       private val taskGroupList: ArrayList<TaskGroup>,
+class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClicked: (Task) -> Unit,
                        private val dateClicked: (Int) -> Unit,
                        private val scrollTo: (Int) -> Unit,
@@ -46,8 +45,8 @@ class TaskGroupAdapter(private val data: TaskListData,
             // 1. Given save exists, update values based on previously saved list
             for (group: TaskGroup in taskGroupList) {
                 // Go through each group to get taskCount and numCollapsed.
-                data.taskCount += group.taskList.size
-                if (!group.isFoldedOut()) data.numFoldedIn++
+                DataTracker.taskCount += group.taskList.size
+                if (!group.isFoldedOut()) DataTracker.numFoldedIn++
 
                 // Clear previous selections
                 group.setSelected(false)
@@ -64,7 +63,10 @@ class TaskGroupAdapter(private val data: TaskListData,
     // ##############################
     private fun TaskGroup.assignHeader() : Boolean {
         // If all headers have been assigned, exit
-        if (headersAssigned == headers.size) return false
+        if (headersAssigned == headers.size) {
+            debugMessagePrint("All headers assigned")
+            return false
+        }
 
         // 1. Get period group belongs to
         val period: Period = date.getPeriod()
@@ -81,13 +83,11 @@ class TaskGroupAdapter(private val data: TaskListData,
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
     // When group made, apply updates to UI based on internal values
-    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-        holder.bind(taskGroupList[pos])
-    }
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
     // Creating cell (date group entry)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Determine view to inflate: header or standard row
-        val inflatedView = when (viewType) {
+        val inflatedView: View = when (viewType) {
             GroupType.GROUP.ordinal -> parent.inflate(R.layout.task_group_rv)   // Group
             else -> parent.inflate(R.layout.task_group_header)                  // Header
         }
@@ -103,7 +103,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         fun bind(group: TaskGroup) {
             when (group.groupType) {
                 GroupType.HEADER -> { bindHeader(group) }
-                GroupType.GROUP -> { bindGroup(group) }
+                GroupType.GROUP  -> { bindGroup(group) }
             }
         }
 
@@ -111,7 +111,6 @@ class TaskGroupAdapter(private val data: TaskListData,
         // Header
         // ####################
         private fun bindHeader(header: TaskGroup) {
-            // debugMessagePrint("Binded header")
             itemView.txtHeader.text = header.label
         }
 
@@ -119,8 +118,6 @@ class TaskGroupAdapter(private val data: TaskListData,
         // Group entry
         // ####################
         private fun bindGroup(group: TaskGroup) {
-            // debugMessagePrint("Binded group")
-
             // Assign date label
             itemView.labelDate.text = group.date.asString()         // Day number + Month: 1st May
             itemView.labelDay.apply {                               // Day of week: Mo...Su
@@ -140,9 +137,9 @@ class TaskGroupAdapter(private val data: TaskListData,
                 when (newState) {
                     Fold.OUT -> {
                         scrollTo(adapterPosition)
-                        data.numFoldedIn--
+                        DataTracker.numFoldedIn--
                     }
-                    Fold.IN -> data.numFoldedIn++
+                    Fold.IN -> DataTracker.numFoldedIn++
                 }
                 updateExpandCollapseIcon()
 
@@ -193,11 +190,11 @@ class TaskGroupAdapter(private val data: TaskListData,
     // ##############################
 
     // ########## Getters/Setters ##########
-    fun allCollapsed() : Boolean { return data.numFoldedIn == taskGroupList.size }
+    fun allCollapsed() : Boolean { return DataTracker.numFoldedIn == taskGroupList.size }
 
     // ########## Group related functionality ##########
     fun addTask(date: TaskDate, task: Task) {
-        data.taskCount++
+        DataTracker.taskCount++
 
         // ---------- Auto Sorting Entries ----------
         // [A]. Check for earliest date
@@ -224,13 +221,24 @@ class TaskGroupAdapter(private val data: TaskListData,
     }
 
     private fun addNewTaskGroup(pos: Int, date: TaskDate, newTask: Task) {
-        taskGroupList.add(pos, TaskGroup(date, arrayListOf(newTask)))
+        val newGroup = TaskGroup(date, arrayListOf(newTask))
+
+        // 1. Add group
+        taskGroupList.add(pos, newGroup)
         notifyItemInserted(pos)
+
+        // 2. Check if header needs to be added
+        if (newGroup.assignHeader()) {
+            val newHeader: TaskGroup = newGroup.createHeader()
+            taskGroupList.add(pos, newHeader)
+            notifyItemInserted(pos)
+        }
 
         // Update collapse/expand icon to enable collapsing as new entry will always be expanded
         changeCollapseExpandIcon(Fold.OUT)
     }
     private fun addToTaskGroup(pos: Int, newTask: Task) {
+        // Make sure that we're not adding to a header
         taskGroupList[pos].taskList.add(newTask)
         notifyItemChanged(pos)
     }
@@ -238,10 +246,10 @@ class TaskGroupAdapter(private val data: TaskListData,
     // ########## Modifying selected entries ##########
     fun delete() {
         // Delete all selected
-        if (data.allSelected()) {
+        if (DataTracker.allSelected()) {
             // Empty everything and reset values
             taskGroupList.clear()
-            data.deleteSelected()
+            DataTracker.deleteSelected()
             minDate = baseMinDate
             notifyDataSetChanged()
             return
@@ -253,7 +261,7 @@ class TaskGroupAdapter(private val data: TaskListData,
             val group: TaskGroup = taskGroupList[groupNum]
             // If group has children selected, perform deletion
             if (group.numSelected != 0) {
-                group.selectedDelete(data)
+                group.selectedDelete()
                 notifyItemChanged(groupNum)
 
                 // Check if we need to delete group itself (when number of children == 0)
@@ -268,7 +276,7 @@ class TaskGroupAdapter(private val data: TaskListData,
                 }
 
                 // Once all selected tasks deleted, exit early
-                if (data.numSelected == 0) break
+                if (DataTracker.numSelected == 0) break
             }
         }
 
@@ -282,9 +290,9 @@ class TaskGroupAdapter(private val data: TaskListData,
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val group: TaskGroup = taskGroupList[groupNum]
             if (group.numSelected != 0) {
-                group.selectedSetTag(data, newTag)
+                group.selectedSetTag(newTag)
                 notifyItemChanged(groupNum)
-                if (data.numSelected == 0) break
+                if (DataTracker.numSelected == 0) break
             }
         }
     }
@@ -292,9 +300,9 @@ class TaskGroupAdapter(private val data: TaskListData,
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val group: TaskGroup = taskGroupList[groupNum]
             if (group.numSelected != 0) {
-                group.selectedSetTime(data, newTime)
+                group.selectedSetTime(newTime)
                 notifyItemChanged(groupNum)
-                if (data.numSelected == 0) break
+                if (DataTracker.numSelected == 0) break
             }
         }
     }
@@ -303,12 +311,12 @@ class TaskGroupAdapter(private val data: TaskListData,
         val movedTasks: ArrayList<Task> = arrayListOf()
 
         // Case 1: All selected, move everything
-        if (data.allSelected()) {
+        if (DataTracker.allSelected()) {
             // Copy over every task
             for (group in taskGroupList) { movedTasks.addAll(group.taskList) }
 
-            // Clear data, set new date as minimum date (as it will be the only one)
-            data.numSelected = 0
+            // Clear DataTracker, set new date as minimum date (as it will be the only one)
+            DataTracker.numSelected = 0
             taskGroupList.clear()
             minDate = newDate.id
             notifyDataSetChanged()
@@ -337,11 +345,11 @@ class TaskGroupAdapter(private val data: TaskListData,
 
                     movedTasks.addAll(group.taskList)
                     taskGroupList.remove(group)
-                    data.taskCount -= data.numSelected
-                    data.numSelected -= group.taskList.count()
+                    DataTracker.taskCount -= DataTracker.numSelected
+                    DataTracker.numSelected -= group.taskList.count()
                     notifyItemChanged(groupNum)
 
-                    if (data.numSelected == 0) break
+                    if (DataTracker.numSelected == 0) break
                 }
                 // B. Between 1 - group size selected, copy only selected tasks and delete them
                 else if (group.numSelected >= 0) {
@@ -350,12 +358,12 @@ class TaskGroupAdapter(private val data: TaskListData,
                             movedTasks.add(group.taskList[taskNum])
                             group.taskList.removeAt(taskNum)
                             group.numSelected--
-                            data.numSelected--
-                            data.taskCount--
+                            DataTracker.numSelected--
+                            DataTracker.taskCount--
                         }
                     }
                     notifyItemChanged(groupNum)
-                    if (data.numSelected == 0) break
+                    if (DataTracker.numSelected == 0) break
                 }
             }
 
@@ -393,7 +401,7 @@ class TaskGroupAdapter(private val data: TaskListData,
         notifyDataSetChanged()
 
         // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
-        data.numFoldedIn = when (newState) {
+        DataTracker.numFoldedIn = when (newState) {
             Fold.OUT -> 0
             Fold.IN -> taskGroupList.size
         }
@@ -401,7 +409,7 @@ class TaskGroupAdapter(private val data: TaskListData,
 
     private fun updateExpandCollapseIcon() {
         // Update icon accordingly based on number collapsed
-        when (data.numFoldedIn) {
+        when (DataTracker.numFoldedIn) {
             taskGroupList.size - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
             taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)     // All collapsed
         }

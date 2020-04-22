@@ -25,21 +25,22 @@ fun TaskGroup.isEmpty() : Boolean { return taskList.isEmpty() }
 // Headers
 // #######################################################
 fun TaskGroup.isHeader() : Boolean { return (groupType == GroupType.HEADER) }
-fun createHeader(period: Period) : TaskGroup {
+fun TaskGroup.createHeader() : TaskGroup {
+    val headerPeriod: Period = this.date.getPeriod()
     return TaskGroup(
         TaskDate(), arrayListOf(), 0, Fold.OUT,
-        GroupType.HEADER, period, period.asString())
+        GroupType.HEADER, headerPeriod, headerPeriod.asString())
 }
 enum class GroupType { HEADER, GROUP }
 
 // #######################################################
 // Modifying selected group
 // #######################################################
-fun TaskGroup.selectedDelete(data: TaskListData) {
+fun TaskGroup.selectedDelete() {
     // Deleting entire group
     if (numSelected == taskList.size) {
         taskList.clear()
-        data.numSelected -= numSelected
+        DataTracker.numSelected -= numSelected
         numSelected = 0
         return
     }
@@ -49,7 +50,7 @@ fun TaskGroup.selectedDelete(data: TaskListData) {
         // Remove selected task and update counters
         if (task.selected) {
             numSelected--
-            data.numSelected--
+            DataTracker.numSelected--
             task.selected = false
             taskList.removeAt(index)
         }
@@ -57,26 +58,26 @@ fun TaskGroup.selectedDelete(data: TaskListData) {
         if (numSelected == 0) return
     }
 }
-fun TaskGroup.selectedSetTag(data: TaskListData, newTag: Int) {
+fun TaskGroup.selectedSetTag(newTag: Int) {
     // See above for logic
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
         if (task.selected) {
             numSelected--
-            data.numSelected--
+            DataTracker.numSelected--
             task.selected = false
             task.tag = newTag
         }
         if (numSelected == 0) return
     }
 }
-fun TaskGroup.selectedSetTime(data: TaskListData, newTime: TaskTime) {
+fun TaskGroup.selectedSetTime(newTime: TaskTime) {
     // See above for logic
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
         if (task.selected) {
             numSelected--
-            data.numSelected--
+            DataTracker.numSelected--
             task.selected = false
             task.time = newTime
         }

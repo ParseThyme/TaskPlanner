@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     private var newDate: TaskDate = today()
 
     // Data
-    private var data: TaskListData = TaskListData()
     private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
     private var tagsList: ArrayList<Int> = ArrayList()
 
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         // Create adapter from loaded groupList (or create new one)
         loadSave()
-        taskGroupAdapter = TaskGroupAdapter(data, taskGroupList, clickTaskFn, clickDateFn, toTopFn,
+        taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, toTopFn,
                                             updateFoldIconFn, updateSaveFn)
 
         // Assign layout manager and adapter to recycler view and set initial button resource to show
@@ -110,13 +109,13 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         titleBar.btnSelectAll.setOnClickListener {
             // If not all selected, select all
-            if (!data.allSelected()) {
+            if (!DataTracker.allSelected()) {
                 // Change icon to opposite icon (deselect all)
                 titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
 
                 // Toggle all to selected state
                 taskGroupAdapter.toggleSelectAll()
-                data.selectAll()
+                DataTracker.selectAll()
                 updateSelectedCountDisplay()
 
                 // Switch to select mode if in add mode
@@ -239,8 +238,8 @@ class MainActivity : AppCompatActivity() {
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
         val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
-        val selectedPreClick = data.numSelected
-        data.numSelected += difference
+        val selectedPreClick = DataTracker.numSelected
+        DataTracker.numSelected += difference
 
         when {
             // [1]. From 0 -> x selected. Enter select mode
@@ -248,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 setMode(Mode.SELECTION)
             }
             // [2]. From x -> 0 selected. Return to add mode
-            data.numSelected == 0 -> {
+            DataTracker.numSelected == 0 -> {
                 setMode(Mode.ADD)
             }
             // [3]. From x -> x + y OR x -> x - y. Update value display
@@ -258,26 +257,26 @@ class MainActivity : AppCompatActivity() {
     private fun taskClicked (task: Task) {
         // Update counts based on whether task selected/deselected
         if (task.selected) {
-            data.numSelected++
+            DataTracker.numSelected++
             // Selected 0 -> 1, change to selection mode. Otherwise update as usual
-            if (data.numSelected == 1)
+            if (DataTracker.numSelected == 1)
                 setMode(Mode.SELECTION)
             else {
                 updateSelectedCountDisplay()
                 // If all selected, change topBar icon (selectAll to off)
-                if (data.allSelected())
+                if (DataTracker.allSelected())
                     titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
             }
         }
         else {
-            data.numSelected--
+            DataTracker.numSelected--
             // Selected tasks 1 -> 0, return to add mode. Otherwise update as usual
-            if (data.numSelected == 0)
+            if (DataTracker.numSelected == 0)
                 setMode(Mode.ADD)
             else {
                 updateSelectedCountDisplay()
                 // If went from max to max - 1, change topBar icon (selectAll to on)
-                if (data.numSelected == data.taskCount - 1)
+                if (DataTracker.numSelected == DataTracker.taskCount - 1)
                     titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
         }
@@ -293,7 +292,7 @@ class MainActivity : AppCompatActivity() {
         when (newMode) {
             Mode.ADD -> {
                 // Set none selected and show main title
-                data.numSelected = 0
+                DataTracker.numSelected = 0
                 updateTopBar(mainTitle)
 
                 // Switch display of bottomBar
@@ -315,7 +314,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTopBar(newTitle: String) { titleBar.title.text = newTitle }
-    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${data.numSelected}") }
+    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${DataTracker.numSelected}") }
 
     // ########## Toggle ##########
     private fun toggleFoldIcon(state: Fold) {

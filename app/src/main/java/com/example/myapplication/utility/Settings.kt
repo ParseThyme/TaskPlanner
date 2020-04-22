@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.adapters.TaskGroupAdapter
+import com.example.myapplication.data_classes.GroupType
 import com.example.myapplication.data_classes.TaskDate
 import com.example.myapplication.data_classes.today
 
@@ -90,9 +91,23 @@ object Settings {
     fun initMainLayout(recyclerView: RecyclerView, taskGroupAdapter: TaskGroupAdapter) {
         // Initialize grid/linear layout here (so then its not remade every time it's toggled)
         parentRV = recyclerView
-        linearLayout = LinearLayoutManager(parentRV.context)
-        gridLayout = GridLayoutManager(parentRV.context, gridSpanCount, GridLayoutManager.VERTICAL, false)
 
+        // A. Linear layout
+        linearLayout = LinearLayoutManager(parentRV.context)
+
+        // B. Grid layout
+        gridLayout = GridLayoutManager(parentRV.context, gridSpanCount, GridLayoutManager.VERTICAL, false)
+        gridLayout.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return when (taskGroupAdapter.getItemViewType(position)) {
+                    GroupType.HEADER.ordinal -> gridSpanCount
+                    GroupType.GROUP.ordinal -> 1
+                    else -> -1
+                }
+            }
+        }
+
+        // Apply starting layout
         parentRV.apply {
             setLayout(false)
             adapter = taskGroupAdapter
