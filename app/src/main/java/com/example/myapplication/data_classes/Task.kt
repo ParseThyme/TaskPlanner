@@ -8,8 +8,7 @@ data class Task (
     var tag: Int = R.drawable.tag_base,
     var time: TaskTime = TaskTime(0,0,"AM", 0),
 
-    // For selection tracking
-    var group: Int = 0
+    var selected : Boolean = false
 )
 
 fun Task.clear(paramType: TaskParam) {

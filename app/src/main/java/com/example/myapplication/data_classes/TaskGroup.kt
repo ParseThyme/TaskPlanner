@@ -1,7 +1,6 @@
 package com.example.myapplication.data_classes
 
 import android.view.View
-import com.example.myapplication.Tracker
 import kotlin.collections.ArrayList
 
 // ########## Data Type ##########
@@ -36,8 +35,29 @@ enum class GroupType { HEADER, GROUP }
 // #######################################################
 // Modifying selected group
 // #######################################################
-fun TaskGroup.selectedSetTag(newTag: Int) {
-    /*
+fun TaskGroup.selectedDelete(data: TaskListData) {
+    // Deleting entire group
+    if (numSelected == taskList.size) {
+        taskList.clear()
+        data.numSelected -= numSelected
+        numSelected = 0
+        return
+    }
+
+    for (index in taskList.size - 1 downTo 0) {
+        val task: Task = taskList[index]
+        // Remove selected task and update counters
+        if (task.selected) {
+            numSelected--
+            data.numSelected--
+            task.selected = false
+            taskList.removeAt(index)
+        }
+        // Exit early when all selected have been deleted (No point continuing onwards)
+        if (numSelected == 0) return
+    }
+}
+fun TaskGroup.selectedSetTag(data: TaskListData, newTag: Int) {
     // See above for logic
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
@@ -49,10 +69,8 @@ fun TaskGroup.selectedSetTag(newTag: Int) {
         }
         if (numSelected == 0) return
     }
-     */
 }
-fun TaskGroup.selectedSetTime(newTime: TaskTime) {
-    /*
+fun TaskGroup.selectedSetTime(data: TaskListData, newTime: TaskTime) {
     // See above for logic
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
@@ -64,7 +82,6 @@ fun TaskGroup.selectedSetTime(newTime: TaskTime) {
         }
         if (numSelected == 0) return
     }
-     */
 }
 
 // #######################################################
@@ -79,7 +96,6 @@ fun TaskGroup.toggleSelected() {
     else { setSelected(true) }
 }
 fun TaskGroup.setSelected(selected: Boolean) {
-    /*
     // Override highlighting with either selectAll on or off
 
     // [A]. Select all
@@ -106,7 +122,6 @@ fun TaskGroup.setSelected(selected: Boolean) {
             }
         }
     }
-     */
 }
 
 // #######################################################

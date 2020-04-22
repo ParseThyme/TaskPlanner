@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 // Unit == no return type (same as void)
 
 class TasksAdapter(private val group: TaskGroup,
-                   private val taskClicked: (SelectedTask) -> Unit,
+                   private val taskClicked: (Task) -> Unit,
                    private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
@@ -32,12 +32,6 @@ class TasksAdapter(private val group: TaskGroup,
         private val editWindow = DialogEdit(itemView.context, updateSave)
 
         fun bind(task: Task) {
-            val selectedTask =
-                SelectedTask(
-                    task.group,
-                    adapterPosition
-                )
-
             // Set description of task when bound
             taskField.text = task.desc
 
@@ -46,7 +40,7 @@ class TasksAdapter(private val group: TaskGroup,
             toggleTime(task.time)
 
             // Toggle selected icon based on state
-            toggleSelected(selectedTask)
+            toggleSelected(task.selected)
 
             // Edit button
             itemView.editBtn.setOnClickListener { editTask(task) }
@@ -54,16 +48,16 @@ class TasksAdapter(private val group: TaskGroup,
             // Task Clicked
             itemView.setOnClickListener {
                 // When clicked, swap its state and select/deselect it
-                Tracker.toggle(selectedTask)
-                toggleSelected(selectedTask)
+                task.selected = !task.selected
+                toggleSelected(task.selected)
                 notifyItemChanged(adapterPosition)
 
                 // If update count in group to notify number selected
-                if (Tracker.isSelected(selectedTask)) group.numSelected++
+                if (task.selected) group.numSelected++
                 else group.numSelected--
 
                 // Call main click listener function (implemented in main activity)
-                taskClicked(selectedTask)
+                taskClicked(task)
             }
         }
 
@@ -78,16 +72,7 @@ class TasksAdapter(private val group: TaskGroup,
             dialog.setOnDismissListener { Keyboard.attachTo(previousEditText) }
         }
 
-        /*
         private fun toggleSelected(isSelected: Boolean) {
-            if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }
-            else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
-        }
-        */
-
-        private fun toggleSelected(task: SelectedTask) {
-            val isSelected: Boolean = Tracker.isSelected(task)
-
             if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }
             else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
         }
