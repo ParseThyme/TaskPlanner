@@ -4,8 +4,9 @@ import com.example.myapplication.data_classes.*
 
 object Tracker {
     // Recreated every time app started. Selected state is temporary and won't be saved on app closed.
-    private var selected: ArrayList<SelectedTask> = arrayListOf()
+    private var selectedTasks: ArrayList<SelectedTask> = arrayListOf()
 
+    var numSelected: Int = 0
     var taskCount: Int = 0
     var numFoldedIn: Int = 0
 
@@ -20,59 +21,66 @@ object Tracker {
                 taskCount += group.taskList.size            // Setup task count
             }
         }
+
+        // By default, none selected
+        numSelected = 0
     }
     // Update values after deletion
     fun deleteSelected(deleteFunction: () -> Unit) {
-        taskCount -= selected.size
         deleteFunction()
+        taskCount -= numSelected
+        numSelected = 0
     }
     // Clear all tracker data
     fun clearAll() {
-        selected.clear()
+        selectedTasks.clear()
         taskCount = 0
         numFoldedIn = 0
+        numSelected = 0
     }
 
     // ####################
     // ToggleAll logic
     // ####################
     fun selectAll(taskGroupList: ArrayList<TaskGroup>) {
+        numSelected = taskCount
         // Mark every task to be selected
         for (group: TaskGroup in taskGroupList) {
-            val groupID: Int = group.date.id                 // Get Group's ID
+            val groupID = group.date.id             // Get Group's ID
+
             // If entire group hasn't been selected, select them all, otherwise skip (as already fully selected)
             if (!group.allSelected()) {
-                // Set num selected to group size
-                group.numSelected = group.taskList.size
                 // Create selected task using groupID and index
-                for (index:Int in 0 until group.taskList.size) {
-                    val selectedTask = SelectedTask(groupID, index)
-                    // Add task to selected list
-                    if (!selected.contains(selectedTask)) { selected.add(selectedTask) }
-                    // Move onto next group once all tasks have been selected in group
-                    if (allSelected()) break
+                for (index in 0 until group.taskList.size) {
+                    selectedTasks.add(SelectedTask(groupID, index))
                 }
+                group.numSelected = group.taskList.size      // Set num selected to group size
             }
         }
     }
-    fun deselectAll() { selected.clear() }
+    fun deselectAll() {
+        numSelected = 0
+        selectedTasks.clear()
+    }
 
     // ####################
     // Getters / Setters
     // ####################
-    fun allSelected(): Boolean { return selected.size == taskCount }
-    fun isSelected(task: SelectedTask) : Boolean { return selected.contains(task) }    // == True when found in array
-    fun numSelected() : Int { return selected.size }
+    fun allSelected(): Boolean { return numSelected == taskCount }
+    fun isSelected(task: SelectedTask) : Boolean { return selectedTasks.contains(task) }    // == True when found in array
 
     fun toggle(task: SelectedTask) {
         // List contains task, remove it. Otherwise add it
-        when (selected.contains(task)) {
-            true  -> { selected.remove(task) }
-            false -> { selected.add(task) }
+        if (selectedTasks.contains(task)) {
+            selectedTasks.remove(task)
+            numSelected--
+        } else {
+            selectedTasks.add(task)
+            numSelected++
         }
     }
     fun getSelected() : ArrayList<SelectedTask> {
-        selected.sortBy { it.pos }
-        return selected
+        selectedTasks.sortBy { it.pos }
+        return selectedTasks
     }
 }

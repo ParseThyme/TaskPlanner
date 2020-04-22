@@ -32,7 +32,11 @@ class TasksAdapter(private val group: TaskGroup,
         private val editWindow = DialogEdit(itemView.context, updateSave)
 
         fun bind(task: Task) {
-            val selectedTask = SelectedTask(group.date.id, adapterPosition)
+            val selectedTask =
+                SelectedTask(
+                    task.group,
+                    adapterPosition
+                )
 
             // Set description of task when bound
             taskField.text = task.desc
@@ -67,12 +71,19 @@ class TasksAdapter(private val group: TaskGroup,
             val previousEditText: EditText = Keyboard.editText      // Previous editText attached to Keyboard
 
             // Create new dialog
-            val dialog: Dialog =
-                editWindow.create(task) { notifyItemChanged(adapterPosition) }     // Update display when task updated
+            val dialog: Dialog = editWindow.create(task)
+                                 { notifyItemChanged(adapterPosition) }     // Update display when task updated
 
             // Reattach old editText when done editing task
             dialog.setOnDismissListener { Keyboard.attachTo(previousEditText) }
         }
+
+        /*
+        private fun toggleSelected(isSelected: Boolean) {
+            if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }
+            else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
+        }
+        */
 
         private fun toggleSelected(task: SelectedTask) {
             val isSelected: Boolean = Tracker.isSelected(task)
