@@ -79,6 +79,15 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
         return false
     }
+    private fun resetHeaders() {
+        for (period: Period in headers.keys)
+            headers[period] = false
+    }
+    private fun removeHeader(index: Int) {
+        headers[taskGroupList[index].period] = false
+        taskGroupList.removeAt(index)
+        notifyItemRemoved(index)
+    }
 
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
@@ -196,26 +205,50 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     fun addTask(date: TaskDate, task: Task) {
         DataTracker.taskCount++
 
-        // ---------- Auto Sorting Entries ----------
-        // [A]. Check for earliest date
-        if (date.id < minDate) {
-            // New date is earlier, make it the new min date and insert new group at the top
+        // First entry, always add to top
+        if (taskGroupList.isEmpty()) {
             minDate = date.id
             addNewTaskGroup(0, date, task)
             return
         }
 
-        // [B]. Otherwise start from latest entry and move upwards
-        for (pos in taskGroupList.lastIndex downTo 0 step 1) {
-            // [1]. Matching date, append to existing list of tasks
-            if (date.id == taskGroupList[pos].date.id) {
-                addToTaskGroup(pos, task)
-                return
+        // ---------- Auto Sorting Entries ----------
+        // [A]. Check for earliest date (First entry)
+        if (date.id < minDate) {
+
+            // Check if position is a header
+            val groupPeriod: Period = date.getPeriod()
+            val firstEntry:TaskGroup = taskGroupList[0]
+
+            // If firstPos is a header and matches same period of new task, add after header
+            if (firstEntry.isHeader() && (groupPeriod == firstEntry.period)) {
+                taskGroupList.add(1, TaskGroup(date, arrayListOf(task)))
+                notifyItemInserted(1)
+                changeCollapseExpandIcon(Fold.OUT)
             }
-            // [2]. Date reached is earlier, create new date category with new task
-            if (date.id > taskGroupList[pos].date.id) {
-                addNewTaskGroup(pos + 1, date, task)
-                return
+            // Otherwise insert at top position
+            else {
+                minDate = date.id
+                addNewTaskGroup(0, date, task)
+            }
+            return
+        }
+
+        // [B]. Otherwise start from latest entry and move upwards
+        for (pos: Int in taskGroupList.lastIndex downTo 0) {
+            val group: TaskGroup = taskGroupList[pos]
+            // Skip headers
+            if (group.groupType == GroupType.GROUP) {
+                // [1]. Matching date, append to existing list of tasks
+                if (date.id == group.date.id) {
+                    addToTaskGroup(pos, task)
+                    return
+                }
+                // [2]. Date reached is earlier, create new date category with new task
+                if (date.id > group.date.id) {
+                    addNewTaskGroup(pos + 1, date, task)
+                    return
+                }
             }
         }
     }
@@ -251,6 +284,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             taskGroupList.clear()
             DataTracker.deleteSelected()
             minDate = baseMinDate
+            resetHeaders()
             notifyDataSetChanged()
             return
         }
@@ -264,16 +298,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 group.selectedDelete()
                 notifyItemChanged(groupNum)
 
-                // Check if we need to delete group itself (when number of children == 0)
-                if (group.isEmpty()) {
-                    // Update minDate if removed date was the minimum one
-                    if (group.date.id == minDate)
-                        minDate = taskGroupList[groupNum + 1].date.id
-
-                    taskGroupList.removeAt(groupNum)
-                    notifyItemRemoved(groupNum)
-                    groupDeleted = true
-                }
+                // Check if group needs to be deleted. In turn whether header needs to be deleted
+                groupDeleted = checkGroupDelete(groupNum)
 
                 // Once all selected tasks deleted, exit early
                 if (DataTracker.numSelected == 0) break
@@ -283,6 +309,53 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // Check to see if collapse/expand all icon needs to be updated (from group deletion)
         if(groupDeleted) { updateExpandCollapseIcon() }
         notifyDataSetChanged()
+    }
+    private fun checkGroupDelete(groupNum: Int) : Boolean {
+        val group: TaskGroup = taskGroupList[groupNum]
+
+        // When number of children == 0, group needs to be deleted
+        if (group.isEmpty()) {
+            val lastIndex: Int = taskGroupList.lastIndex
+
+            // 1. Update minDate if group's date is minimum one
+            if (group.date.id == minDate) {
+                val nextGroup:Int = groupNum + 1
+                // Set minDate to next group, if its a header, set minDate to group after it
+                minDate =
+                    if (taskGroupList[nextGroup].isHeader())
+                        taskGroupList[nextGroup + 1].date.id
+                    else
+                        taskGroupList[nextGroup].date.id
+            }
+
+            // 2. Remove Group
+            taskGroupList.removeAt(groupNum)
+            notifyItemRemoved(groupNum)
+
+            // Determine groups above/below after deletion
+            val above: Int = groupNum - 1
+            val groupAbove: TaskGroup = taskGroupList[above]
+
+            // 3. Check if we need to remove header provided task above is a header
+            if (groupAbove.isHeader()) {
+                when (groupNum) {
+                    // Group = last index. After deletion, header will be empty
+                    lastIndex -> removeHeader(above)
+                    // Any other index
+                    else -> {
+                        // Not groupNum + 1. Due to deletion, below index shifted up to be same as groupNum
+                        val below: Int = groupNum
+                        // Both Above and Below is a header, remove Above header of deleted group
+                        if (taskGroupList[below].isHeader()) { removeHeader(above) }
+                    }
+                }
+            }
+
+            // Group was deleted
+            return true
+        }
+
+        return false
     }
 
     fun setTagForSelected(newTag: Int) {
@@ -411,7 +484,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // Update icon accordingly based on number collapsed
         when (DataTracker.numFoldedIn) {
             taskGroupList.size - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
-            taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)     // All collapsed
+            taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)       // All collapsed
         }
         // Ensure area occupied by grid is resized when row closed
         if (Settings.mainLayout == ViewLayout.GRID) notifyDataSetChanged()
