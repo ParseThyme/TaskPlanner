@@ -84,6 +84,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             headers[period] = false
     }
     private fun removeHeader(index: Int) {
+        debugMessagePrint("Removing header: ${taskGroupList[index].period}")
+        headersAssigned--
         headers[taskGroupList[index].period] = false
         taskGroupList.removeAt(index)
         notifyItemRemoved(index)
