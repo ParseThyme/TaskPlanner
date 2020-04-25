@@ -49,6 +49,15 @@ fun debugMessagePrint(message: String) {
    Log.d("Test", message)
 }
 
+fun millisecondsToDays(milliseconds: Long) : Int {
+ /* 1. /1000 == ms to s
+  * 2. /60   == s to m
+  * 3. /60   == m to h
+  * 4. /24   == h to d
+  */
+ return (milliseconds / 1000 / 60 / 60 / 24).toInt()
+}
+
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/
  - OnClick: https://stackoverflow.com/questions/54219825/android-kotlin-how-to-add-click-listener-to-recyclerview-adapter

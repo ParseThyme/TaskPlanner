@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.millisecondsToDays
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,7 +61,19 @@ fun TaskDate.getPeriod() : Period {
         else -> Period.FUTURE
     }
 }
-private fun TaskDate.diffFromToday() : Int {
+fun dateDiff(from: TaskDate, to: TaskDate) : Int {
+    val cal: Calendar = Calendar.getInstance()
+
+    cal.set(from.year, from.month, from.day)
+    val d1 = cal.timeInMillis
+    cal.set(to.year, to.month, to.day)
+    val d2 = cal.timeInMillis
+
+    return millisecondsToDays(d2 - d1)
+}
+fun TaskDate.diffFromToday() : Int {
+    return dateDiff(Settings.today, this)
+    /*
     val cal: Calendar = Calendar.getInstance()
 
     cal.set(Settings.today.year, Settings.today.month, Settings.today.day)
@@ -71,6 +84,7 @@ private fun TaskDate.diffFromToday() : Int {
 
     // Convert from ms to seconds, to minutes to hours to days
     return ((date - today) / 1000 / 60 / 60 / 24).toInt()
+     */
 }
 
 fun Period.asString() : String {

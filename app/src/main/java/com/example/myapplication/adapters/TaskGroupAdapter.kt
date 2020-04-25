@@ -11,6 +11,8 @@ import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
+import kotlin.math.sign
 
 class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val taskClicked: (Task) -> Unit,
@@ -80,11 +82,12 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         return false
     }
     private fun resetHeaders() {
+        // Set all values to false
         for (period: Period in headers.keys)
             headers[period] = false
+        headersAssigned = 0
     }
     private fun removeHeader(index: Int) {
-        debugMessagePrint("Removing header: ${taskGroupList[index].period}")
         headersAssigned--
         headers[taskGroupList[index].period] = false
         taskGroupList.removeAt(index)
@@ -104,10 +107,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
         return ViewHolder(inflatedView)
     }
-    override fun getItemViewType(position: Int): Int {
-        // 0 = Header, 1 = Standard Group
-        return taskGroupList[position].groupType.ordinal
-    }
+    // 0 = Header, 1 = Standard Group
+    override fun getItemViewType(position: Int): Int { return taskGroupList[position].groupType.ordinal }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Bind content based on view passed in
@@ -207,49 +208,118 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     fun addTask(date: TaskDate, task: Task) {
         DataTracker.taskCount++
 
-        // First entry, always add to top
+        // 1. First entry, always add to top
         if (taskGroupList.isEmpty()) {
             minDate = date.id
             addNewTaskGroup(0, date, task)
             return
         }
-
-        // ---------- Auto Sorting Entries ----------
-        // [A]. Check for earliest date (First entry)
-        if (date.id < minDate) {
-
-            // Check if position is a header
-            val groupPeriod: Period = date.getPeriod()
-            val firstEntry:TaskGroup = taskGroupList[0]
-
-            // If firstPos is a header and matches same period of new task, add after header
-            if (firstEntry.isHeader() && (groupPeriod == firstEntry.period)) {
-                taskGroupList.add(1, TaskGroup(date, arrayListOf(task)))
-                notifyItemInserted(1)
-                changeCollapseExpandIcon(Fold.OUT)
+        // 2. Second entry. No need to sift through, as both min/max will be first entry (at [1])
+        if (DataTracker.taskCount == 2) {
+            // Comparing date with first entry
+            val first: TaskDate = taskGroupList[1].date
+            when {
+                // A. Same. Append to first task
+                date.id == first.id -> { addToTaskGroup(1, task) ; return }
+                // B. Future. Append new group to end
+                date.id > first.id -> { addNewTaskGroup(taskGroupList.size, date, task) ; return }
+                // C. Past. Add before current date
+                else -> {
+                    // Check if header matches up. Otherwise need to add 1 pos before it
+                    if (date.getPeriod() == taskGroupList[0].period) {
+                        taskGroupList.add(1, TaskGroup(date, arrayListOf(task)))
+                        notifyItemInserted(1)
+                        changeCollapseExpandIcon(Fold.OUT)
+                    }
+                    // Otherwise insert at top position (header will be generated)
+                    else { addNewTaskGroup(0, date, task) }
+                    minDate = date.id
+                }
             }
-            // Otherwise insert at top position
-            else {
-                minDate = date.id
-                addNewTaskGroup(0, date, task)
-            }
-            return
         }
 
-        // [B]. Otherwise start from latest entry and move upwards
-        for (pos: Int in taskGroupList.lastIndex downTo 0) {
-            val group: TaskGroup = taskGroupList[pos]
-            // Skip headers
-            if (group.groupType == GroupType.GROUP) {
-                // [1]. Matching date, append to existing list of tasks
-                if (date.id == group.date.id) {
-                    addToTaskGroup(pos, task)
-                    return
+        // ---------- Auto Sorting Entries ----------
+        /* 2. Determine whether we start from top or bottom of list
+         * - IF Top = Move downwards   - [0] will always be a header, so we start at [1]
+         * - IF Bot = Move upwards     - [LastIndex] will always be a task
+         */
+        val top: TaskDate = taskGroupList[1].date
+        val bot: TaskDate = taskGroupList[taskGroupList.lastIndex].date
+        // Difference in days when compared to top and bottom value. Lower distance = starting pos
+        val deltaTop: Int = dateDiff(top, date)
+        val deltaBot: Int = dateDiff(bot, date)
+
+        when (abs(deltaTop) < abs(deltaBot)) {
+            true  -> addFromTop(date, task, deltaTop.sign)
+            false -> addFromBottom(date, task, deltaBot.sign)
+        }
+    }
+    private fun addFromBottom(date: TaskDate, task:Task, direction: Int) {
+        when (direction) {
+            0 -> { addToTaskGroup(taskGroupList.lastIndex, task) }      // Matching date, append to bottom
+            1 -> { addNewTaskGroup(taskGroupList.size, date, task) }    // Future date, add new bottom
+
+            // Past date, iterate and move upwards
+            -1 -> {
+                for (pos: Int in taskGroupList.lastIndex downTo 0) {
+                    val group: TaskGroup = taskGroupList[pos]
+                    // Skip headers
+                    if (group.groupType == GroupType.GROUP) {
+                        // Matching date, append to existing list of tasks
+                        if (group.date.id == date.id) {
+                            addToTaskGroup(pos, task) ; return
+                        }
+                        // Date reached is earlier, create new date category with new task
+                        if (group.date.id < date.id) {
+                            addNewTaskGroup(pos + 1, date, task) ; return
+                        }
+                    }
                 }
-                // [2]. Date reached is earlier, create new date category with new task
-                if (date.id > group.date.id) {
-                    addNewTaskGroup(pos + 1, date, task)
-                    return
+            }
+        }
+    }
+    private fun addFromTop(date: TaskDate, task:Task, direction: Int) {
+        when (direction) {
+            // Matching date, append to first pos
+            0 -> { addToTaskGroup(1, task) }
+            // Earlier date, add new group at top
+            -1 -> {
+                // Given first pos == header, check if matches same period of new task
+                if (date.getPeriod() == taskGroupList[0].period) {
+                    taskGroupList.add(1, TaskGroup(date, arrayListOf(task)))
+                    notifyItemInserted(1)
+                    changeCollapseExpandIcon(Fold.OUT)
+                }
+                // Otherwise insert at top position (header will be generated)
+                else { addNewTaskGroup(0, date, task) }
+                minDate = date.id
+            }
+
+            // Future date, iterate and move downwards
+            1 -> {
+                for (pos: Int in 1 until taskGroupList.size) {
+                    val group: TaskGroup = taskGroupList[pos]
+                    // Check headers
+                    when (group.groupType) {
+                        // Check first task following header
+                        GroupType.HEADER -> {
+                            // Matching date, append to existing list of tasks
+                            if (taskGroupList[pos+1].date.id == date.id) {
+                                addToTaskGroup(pos, task)
+                                return
+                            }
+                            // Date reached is later, add new group before it
+                            if (taskGroupList[pos+1].date.id > date.id) {
+                                addNewTaskGroup(pos, date, task)
+                                return
+                            }
+                        }
+                        // Same logic as above, except checking exact group
+                        GroupType.GROUP -> {
+                            if (group.date.id == date.id) { addToTaskGroup(pos, task) ; return }
+                            if (group.date.id > date.id)  { addNewTaskGroup(pos, date, task) ; return }
+                        }
+                    }
                 }
             }
         }
@@ -273,7 +343,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         changeCollapseExpandIcon(Fold.OUT)
     }
     private fun addToTaskGroup(pos: Int, newTask: Task) {
-        // Make sure that we're not adding to a header
+        // Appending an existing group
         taskGroupList[pos].taskList.add(newTask)
         notifyItemChanged(pos)
     }
@@ -293,7 +363,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
         // Otherwise go through groups
         var groupDeleted = false
-        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+        for (groupNum: Int in taskGroupList.lastIndex downTo 0) {
             val group: TaskGroup = taskGroupList[groupNum]
             // If group has children selected, perform deletion
             if (group.numSelected != 0) {
