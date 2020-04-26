@@ -339,8 +339,11 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     // ########## Modifying selected entries ##########
     fun delete() {
-        // A. All selected, clear everything
-        if (DataTracker.allSelected()) { clearAll() }
+        // A. All selected, delete everything
+        if (DataTracker.allSelected()) {
+            clearAll()
+            DataTracker.taskCount = 0
+        }
         // B. Otherwise delete individual tasks
         else {
             var groupDeleted = false
@@ -432,17 +435,17 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                     if (!group.isHeader()) movedTasks.addAll(group.taskList)
                 }
 
-                // 2. Clear DataTracker, set new date as minimum date (as it will be the only one)
+                // 2. Clear DataTracker, Headers
                 clearAll()
 
                 // 3. Create the new group and add all tasks to it
                 addNewTaskGroup(0, newDate, movedTasks[0])      // Add new group at [0]. Header will be generated
                 movedTasks[0].selected = false                       // Clear selection from first task
                 for (taskNum: Int in 1 until movedTasks.size) {
-                    debugMessagePrint("Adding task: ${movedTasks[taskNum].desc}")
+                    debugMessagePrint("Adding task: ${movedTasks[taskNum].desc} to ${taskGroupList[1].date.asStringShort()}")
                     movedTasks[taskNum].selected = false
-                    addToTaskGroup(0, movedTasks[taskNum])      // Clear selections from tasks
-                    notifyItemInserted(0)
+                    addToTaskGroup(1, movedTasks[taskNum])      // Clear selections from tasks
+                    notifyItemInserted(1)
                 }
             }
 
@@ -526,7 +529,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     private fun clearAll() {
         // Empty everything and reset values
         taskGroupList.clear()                   // Clear entire group list
-        DataTracker.deleteSelected()            // Reset tracker values
+        DataTracker.numSelected = 0             // Reset selected count
 
         // Reset header parameters
         for (period: Period in headers.keys) headers[period] = false

@@ -8,8 +8,5 @@ object DataTracker {
     fun allSelected(): Boolean { return numSelected == taskCount }
     fun selectAll() { numSelected = taskCount }
 
-    fun deleteSelected() {
-        this.taskCount -= this.numSelected
-        this.numSelected = 0
-    }
+    fun clearSelected() { this.numSelected = 0 }
 }
