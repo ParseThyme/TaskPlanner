@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
 import android.view.View
+import com.example.myapplication.utility.debugMessagePrint
 import kotlin.collections.ArrayList
 
 // ########## Data Type ##########
@@ -40,19 +41,21 @@ fun TaskGroup.selectedDelete() {
     // Deleting entire group
     if (numSelected == taskList.size) {
         taskList.clear()
+        DataTracker.taskCount -= numSelected
         DataTracker.numSelected -= numSelected
         numSelected = 0
         return
     }
 
-    for (index in taskList.size - 1 downTo 0) {
+    for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
         // Remove selected task and update counters
         if (task.selected) {
-            numSelected--
-            DataTracker.numSelected--
             task.selected = false
+            numSelected--
             taskList.removeAt(index)
+            DataTracker.numSelected--
+            DataTracker.taskCount--
         }
         // Exit early when all selected have been deleted (No point continuing onwards)
         if (numSelected == 0) return
@@ -125,6 +128,17 @@ fun TaskGroup.setSelected(selected: Boolean) {
     }
 }
 
+fun TaskGroup.getSelected() : ArrayList<Task> {
+    // All selected, return entire taskList
+    if (allSelected()) { return taskList }
+
+    // Otherwise go through list and return selected
+    val selected: ArrayList<Task> = arrayListOf()
+    for (index: Int in taskList.size - 1 downTo 0) {
+        if (taskList[index].selected) { selected.add(taskList[index]) }
+    }
+    return selected
+}
 // #######################################################
 // Fold type (IN/OUT). Whether group is expanded/collapsed
 // #######################################################
