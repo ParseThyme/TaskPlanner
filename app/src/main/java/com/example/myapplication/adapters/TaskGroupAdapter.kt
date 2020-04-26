@@ -203,8 +203,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             addNewTaskGroup(0, date, task)
             return
         }
-        // 2. Second entry. No need to sift through, as both min/max will be first entry (at [1])
-        if (DataTracker.taskCount == 2) {
+        // 2. Second groupEntry. No need to sift through, as both min/max will be first entry (at [1])
+        if (taskGroupList.size == 2) {
             // Comparing date with first entry
             val first: TaskDate = taskGroupList[1].date
             when {
@@ -222,6 +222,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                     }
                     // Otherwise insert at top position (header will be generated)
                     else { addNewTaskGroup(0, date, task) }
+                    return
                 }
             }
         }
