@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
             window.setOnDismissListener {
                 // Apply changes to selected date when window closed. If -1 then no date was selected
                 if (newDate.id != -1) {
-                    taskGroupAdapter.setDateForSelected(newDate)
+                    taskGroupAdapter.selectedSetDate(newDate)
                     setMode(Mode.ADD)
                     updateSave()
                 }
@@ -210,7 +210,7 @@ class MainActivity : AppCompatActivity() {
             val window: PopupWindow = PopupManager.timeEdit(selectMode, null, this, newTime)
             window.setOnDismissListener {
                 if (newTime.hour != 0 || newTime.duration != 0) {
-                    taskGroupAdapter.setTimeForSelected(newTime)
+                    taskGroupAdapter.selectedSetTime(newTime)
                     setMode(Mode.ADD)
                     updateSave()
                 }
@@ -221,7 +221,7 @@ class MainActivity : AppCompatActivity() {
             val window: PopupWindow = PopupManager.tagEdit(selectMode, null, this, newTag)
             window.setOnDismissListener {
                 if (newTag.tag != -1) {
-                    taskGroupAdapter.setTagForSelected(newTag.tag)
+                    taskGroupAdapter.selectedSetTag(newTag.tag)
                     setMode(Mode.ADD)
                     updateSave()
                 }
