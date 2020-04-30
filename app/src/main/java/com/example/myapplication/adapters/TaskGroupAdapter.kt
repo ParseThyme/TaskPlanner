@@ -50,8 +50,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 group.setSelected(false)
             }
 
-            // Set minimum date to first entry and check if expand collapse icon needs updating
-            // minDate = taskGroupList[0].date.id
+            // Check if expand collapse icon needs updating
             updateExpandCollapseIcon()
         }
     }
@@ -141,6 +140,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                     }
                     Fold.IN -> DataTracker.numFoldedIn++
                 }
+                notifyItemChanged(adapterPosition)
                 updateExpandCollapseIcon()
 
                 // Save change to view state
@@ -188,9 +188,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     // ##############################
     // Additional Functions
     // ##############################
-
-    // ########## Getters/Setters ##########
-    fun allCollapsed() : Boolean { return DataTracker.numFoldedIn == taskGroupList.size }
 
     // ########## Group related functionality ##########
     fun addTask(date: TaskDate, task: Task) { addTask(date, arrayListOf(task)) }    // Singular Task
@@ -494,23 +491,25 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         notifyDataSetChanged()
     }
     fun toggleFoldAll(newState: Fold = Fold.OUT) {
-        val end: Int = taskGroupList.size - 1
-        for (groupNum in end downTo 0)
-            taskGroupList[groupNum].state = newState
-        notifyDataSetChanged()
-
+        for (index: Int in taskGroupList.lastIndex downTo 0) {
+            val group: TaskGroup = taskGroupList[index]
+            if (!group.isHeader()) {    // Toggle fold state, ignoring headers
+                group.state = newState
+                notifyItemChanged(index)
+            }
+        }
         // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
         DataTracker.numFoldedIn = when (newState) {
             Fold.OUT -> 0
-            Fold.IN -> taskGroupList.size
+            Fold.IN -> DataTracker.taskCount
         }
     }
 
     private fun updateExpandCollapseIcon() {
         // Update icon accordingly based on number collapsed
         when (DataTracker.numFoldedIn) {
-            taskGroupList.size - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
-            taskGroupList.size -> changeCollapseExpandIcon(Fold.IN)       // All collapsed
+            DataTracker.taskCount - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
+            DataTracker.taskCount     -> changeCollapseExpandIcon(Fold.IN)   // All collapsed
         }
         // Ensure area occupied by grid is resized when row closed
         if (Settings.mainLayout == ViewLayout.GRID) notifyDataSetChanged()

@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         }
         titleBar.btnCollapseExpand.setOnClickListener {
             // Expand all when all are collapsed, switch icon to collapse all icon
-            if (taskGroupAdapter.allCollapsed()) {
+            if (DataTracker.allCollapsed()) {
                 taskGroupAdapter.toggleFoldAll()
                 toggleFoldIcon(Fold.OUT)
             }
