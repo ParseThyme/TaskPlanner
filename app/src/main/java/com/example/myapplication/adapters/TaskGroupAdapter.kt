@@ -77,11 +77,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
         return false
     }
-    private fun removeHeader(index: Int) {
+    private fun removeHeader(period: Period) {
         headersAssigned--
-        headers[taskGroupList[index].period] = false
-        taskGroupList.removeAt(index)
-        notifyItemRemoved(index)
+        headers[period] = false
     }
 
     // Number of items in table view
@@ -349,60 +347,64 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
         // B. Otherwise delete individual tasks
         else {
-            // ToDo: Bug Fix
-            var groupDeleted = false
-            for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            // I. Delete tasks
+            val deletedGroups: ArrayList<TaskGroup> = arrayListOf()
+            for (groupNum: Int in taskGroupList.lastIndex downTo 0) {
                 val group: TaskGroup = taskGroupList[groupNum]
                 // If group has children selected, perform deletion
                 if (group.numSelected != 0) {
                     group.selectedDelete()
                     notifyItemChanged(groupNum)
 
-                    // Check if group needs to be deleted. In turn whether header needs to be deleted
-                    groupDeleted = checkGroupDelete(groupNum)
+                    // Check if group (and header) needs to be deleted. If so add to list
+                    deletedGroups.addAll(deleteGroup(groupNum))
 
                     // Once all selected tasks deleted, exit early
                     if (DataTracker.numSelected == 0) break
                 }
             }
-            // Check to see if collapse/expand all icon needs to be updated (from group deletion)
-            if (groupDeleted) { updateExpandCollapseIcon() }
-            notifyDataSetChanged()
+            // II. Delete marked groups/headers
+            if (deletedGroups.isNotEmpty()) {
+                taskGroupList.removeAll(deletedGroups)
+                notifyDataSetChanged()
+                updateExpandCollapseIcon()
+            }
         }
     }
-    private fun checkGroupDelete(groupNum: Int) : Boolean {
+    private fun deleteGroup(groupNum: Int) : ArrayList<TaskGroup> {
         val group: TaskGroup = taskGroupList[groupNum]
+        val deleted: ArrayList<TaskGroup> = arrayListOf()
 
         // When number of children == 0, group needs to be deleted
         if (group.isEmpty()) {
             val lastIndex: Int = taskGroupList.lastIndex
 
-            // 1. Remove Group
-            taskGroupList.removeAt(groupNum)
-            notifyItemRemoved(groupNum)
+            // 1. Store group to be deleted
+            deleted.add(group)
 
-            // Determine groups above/below after deletion
-            val above: Int = groupNum - 1
-            val groupAbove: TaskGroup = taskGroupList[above]
+            // Determine groups above/below deleted group
+            val groupAbove: TaskGroup = taskGroupList[groupNum - 1]
 
             // 2. Check if we need to remove header provided task above is a header
             if (groupAbove.isHeader()) {
                 when (groupNum) {
                     // Group = last index. After deletion, header will be empty
-                    lastIndex -> removeHeader(above)
+                    lastIndex -> {
+                        deleted.add(groupAbove)
+                        removeHeader(groupAbove.period)
+                    }
                     // Any other index
                     else -> {
-                        // Not groupNum + 1. Due to deletion, below index shifted up to be same as groupNum
-                        val below: Int = groupNum
                         // Both Above and Below is a header, remove Above header of deleted group
-                        if (taskGroupList[below].isHeader()) { removeHeader(above) }
+                        if (taskGroupList[groupNum + 1].isHeader()) {
+                            deleted.add(groupAbove)
+                            removeHeader(groupAbove.period)
+                        }
                     }
                 }
             }
-            // Group was deleted
-            return true
         }
-        return false
+        return deleted
     }
 
     fun selectedSetTag(newTag: Int) {
@@ -448,7 +450,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
             // 2. Specific tasks selected
             false -> {
-                // ToDo: Fix Bug:
                 // 1. Copy over selected tasks
                 for (group: TaskGroup in taskGroupList) {
                     for (task: Task in group.taskList) {
