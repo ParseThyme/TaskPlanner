@@ -379,17 +379,21 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         if (group.isEmpty()) {
             // 1. Store group to be deleted
             deleted.add(group)
-            // 2. Check if we need to remove header provided task above is a header
+            // 2. Check if we need to store header provided task above group is a header
             val groupAbove: TaskGroup = taskGroupList[groupNum - 1]
-            var removeHeader = false
             if (groupAbove.isHeader()) {
-                when (groupNum) {
+                // Check whether header above deleted group needs to be deleted
+                val removeHeader: Boolean = when (groupNum) {
                     // Group = last index. Above it is header so header itself needs to be removed
-                    taskGroupList.lastIndex -> removeHeader = true
+                    taskGroupList.lastIndex -> true
                     // Any other index
                     else -> {
-                        // Both Above and Below is a header, remove Above header of deleted group
-                        if (taskGroupList[groupNum + 1].isHeader()) { removeHeader = true }
+                        // Below == header, mark for removal (Both above and below is header)
+                        if (taskGroupList[groupNum + 1].isHeader()) {
+                            true
+                        }
+                        // Otherwise below == group, don't mark
+                        else { return deleted }
                     }
                 }
                 if (removeHeader) {
