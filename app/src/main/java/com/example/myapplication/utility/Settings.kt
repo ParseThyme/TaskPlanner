@@ -7,6 +7,8 @@ import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.GroupType
 import com.example.myapplication.data_classes.TaskDate
 import com.example.myapplication.data_classes.today
+import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
+import com.example.myapplication.recyclerviewdecoration.TaskListDecoration
 
 // ########## App settings ##########
 object Settings {
@@ -35,12 +37,12 @@ object Settings {
     private lateinit var linearLayout: LinearLayoutManager
     private lateinit var gridLayout: GridLayoutManager
 
-    private const val gridSpacing = 10          // In dp
+    private const val gridSpacing = 5          // In dp
     private const val linearSpacing = 15
     private const val gridSpanCount = 2
 
-    private val linearLayoutDecoration = TaskListDecoration(1, linearSpacing, true, 0)
-    private val gridLayoutDecoration = TaskListDecoration(gridSpanCount, gridSpacing, true, 0)
+    private val linearDecoration = LinearLayoutDecoration(linearSpacing)
+    private val gridLayoutDecoration = TaskListDecoration(gridSpacing, true, gridSpanCount)
 
     var mainLayout = ViewLayout.LINEAR
 
@@ -76,7 +78,7 @@ object Settings {
                     layoutManager = linearLayout
                     // Remove previous decoration and replace it
                     if (itemDecorationCount > 0) removeItemDecorationAt(0)
-                    addItemDecoration(linearLayoutDecoration)
+                    addItemDecoration(linearDecoration)
                 }
             }
             ViewLayout.GRID -> {

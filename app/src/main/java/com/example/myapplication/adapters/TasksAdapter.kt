@@ -79,7 +79,7 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun toggleTag(tag: Int) {
             // No tag, don't display anything
-            if (tag == R.drawable.tag_base) { itemView.taskTag.visibility = View.GONE }
+            if (tag == R.drawable.tag_base) { itemView.taskTag.visibility = View.INVISIBLE }
             // Get image, set tag accordingly and display
             else {
                 itemView.taskTag.setImageResource(tag)

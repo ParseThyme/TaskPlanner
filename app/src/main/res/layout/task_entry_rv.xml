@@ -5,72 +5,64 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card"
+        android:id="@+id/contentCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/taskBGDefault"
         app:cardCornerRadius="0dp"
         app:cardElevation="0dp"
         app:cardMaxElevation="0dp"
-        app:contentPaddingBottom="5dp"
-        app:contentPaddingLeft="5dp"
-        app:contentPaddingTop="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/detailsLayout"
+            <ImageView
+                android:id="@+id/taskTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:tint="#555656"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/tag_booking" />
 
-                <ImageView
-                    android:id="@+id/taskTag"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tint="#555656"
-                    android:visibility="visible"
-                    app:layout_constraintEnd_toEndOf="@+id/taskTime"
-                    app:layout_constraintStart_toStartOf="@+id/taskTime"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/tag_booking" />
-
-                <TextView
-                    android:id="@+id/taskTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="4"
-                    android:gravity="center"
-                    android:text="@string/placeholderTime"
-                    android:textAllCaps="false"
-                    android:textSize="10sp"
-                    android:visibility="visible"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/taskTag" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/taskTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:ems="8"
+                android:text="@string/placeholderTime"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="@+id/textLayout"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/textLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:padding="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/editBtn"
-                app:layout_constraintStart_toEndOf="@+id/detailsLayout"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintStart_toEndOf="@+id/taskTag"
+                app:layout_constraintTop_toBottomOf="@+id/taskTime">
 
                 <TextView
                     android:id="@+id/desc"
@@ -99,13 +91,12 @@
     </androidx.cardview.widget.CardView>
 
     <View
-        android:id="@+id/topBarDivider"
+        android:id="@+id/taskDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card" />
+        app:layout_constraintTop_toBottomOf="@+id/contentCard" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

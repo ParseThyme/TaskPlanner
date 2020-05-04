@@ -30,7 +30,6 @@ const val defaultTimeMsg = "Set Time"
  * https://blog.mindorks.com/how-to-create-a-singleton-class-in-kotlin
  */
 
-
 // ########## Shortcuts ##########
 // https://stackoverflow.com/questions/2461824/how-to-programmatically-set-maxlength-in-android-textview
 // fun EditText.setMaxLength(length: Int) { this.filters = arrayOf(LengthFilter(length)) }

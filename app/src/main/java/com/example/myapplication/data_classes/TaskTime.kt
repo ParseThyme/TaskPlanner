@@ -2,6 +2,7 @@ package com.example.myapplication.data_classes
 
 import android.widget.TextView
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.debugMessagePrint
 import com.example.myapplication.utility.defaultTimeMsg
 
 data class TaskTime (
@@ -104,41 +105,41 @@ fun TaskTime.createStartTime(withTimeOfDay: Boolean = true): String {
     if (hour == 0) return defaultTimeMsg
 
     // Create start time
-    var timeAsString: String =
-        if (hour < 0) "12:00"
-        else "$hour:${minutesAsString(min)}"
+    val timeAsString: String = if (hour < 0) "12:00"
+                               else "$hour:${minutesAsString(min)}"
 
-    // If time of day included, add " AM" OR " PM" to end of string
-    if (withTimeOfDay) timeAsString += " $timeOfDay"
-
-    return timeAsString
+    // If time of day included, add "AM" OR "PM" to end of string
+    return if (withTimeOfDay) "$timeAsString$timeOfDay"
+           else timeAsString
 }
 
 fun TaskTime.createTimeWithDuration(): String {
-    var displayedTime = this.createStartTime()
+    var displayedTime: String = this.createStartTime()
 
     // Check if duration allocated. If so append end time based on duration.
-    if (this.duration > 0) {
+    if (duration > 0) {
         // Convert duration to hours and minutes
         val addedHours:Int = duration / 60
         val addedMinutes:Int = duration % 60
 
         // Add together hours and minutes from time and duration
-        var t2TimeOfDay:String = this.timeOfDay
-        var t2Min: Int = addedMinutes + this.min
-        var t2Hrs: Int = addedHours + this.hour + (t2Min/60)  // Add overflow (e.g. 70/60 = 1h10min)
-        t2Min %= 60                                           // Ensure minutes between 0-59
+        var endTimeOfDay:String = timeOfDay
+        var endMin: Int = addedMinutes + min
+        var endHrs: Int = addedHours + hour + (endMin/60)  // Add overflow (e.g. 70/60 = 1h10min)
+        endMin %= 60                                       // Ensure minutes between 0-59
 
         // Check hours value, if > 12 then we swapped time of day. E.g. 12am -> 2pm
-        if (t2Hrs > 12) {
-            t2Hrs %= 12
-            t2TimeOfDay = this.getOppositeTimeOfDay()
+        if (endHrs > 12) {
+            endHrs %= 12
+            endTimeOfDay = this.getOppositeTimeOfDay()
         }
 
-        // Append t2 to currently displayed time with newline in between
-        displayedTime = "${displayedTime}\n${t2Hrs}:${minutesAsString(t2Min)} $t2TimeOfDay"
+        // Append end time to currently displayed time
+        val endTime = "$endHrs:${minutesAsString(endMin)}$endTimeOfDay"
+        displayedTime = "$displayedTime - $endTime"
     }
 
+    debugMessagePrint("Displayed time: $displayedTime")
     return displayedTime
 }
 fun TaskTime.durationToString(): String {
@@ -152,7 +153,7 @@ fun TaskTime.durationToString(): String {
 
     // [2]. Duration 60m+. Return with hour and minutes format
     val hours = duration/60
-    val minutes = duration % 60
+    val minutes = duration%60
 
     // Create duration string with hour value
     var durationString = "$hours:00"

@@ -22,7 +22,10 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                        private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
 
-    // Assigned headers
+
+    // ##############################
+    // Headers
+    // ##############################
     private val headers = hashMapOf (
         // Key: [Period], Value = [Boolean]
         Period.PAST      to false,
@@ -33,31 +36,6 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     )
     private var headersAssigned = 0
 
-    // Initialization
-    init {
-        // Remove older entries, requires setting toggled on
-        if (Settings.deleteOldDates) { deleteOldTasks() }
-
-        // Do nothing if its a blank list, otherwise override default values based on loaded list
-        if (taskGroupList.isNotEmpty()) {
-            // 1. Given save exists, update values based on previously saved list
-            for (group: TaskGroup in taskGroupList) {
-                // Go through each group to get taskCount and numCollapsed.
-                DataTracker.taskCount += group.taskList.size
-                if (!group.isFoldedOut()) DataTracker.numFoldedIn++
-
-                // Clear previous selections
-                group.setSelected(false)
-            }
-
-            // Check if expand collapse icon needs updating
-            updateExpandCollapseIcon()
-        }
-    }
-
-    // ##############################
-    // Headers
-    // ##############################
     private fun TaskGroup.assignHeader() : Boolean {
         // If all headers have been assigned, exit
         if (headersAssigned == headers.size) {
@@ -81,6 +59,31 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         headers[period] = false
     }
 
+    // Initialization
+    init {
+        // Remove older entries, requires setting toggled on
+        if (Settings.deleteOldDates) { deleteOldTasks() }
+
+        // Override default values based on loaded list if not empty
+        if (taskGroupList.isNotEmpty()) {
+            // 1. Given save exists, update values based on previously saved list
+            for (group: TaskGroup in taskGroupList) {
+                // Go through each group to get taskCount and numCollapsed.
+                DataTracker.taskCount += group.taskList.size
+                if (!group.isFoldedOut()) DataTracker.numFoldedIn++
+
+                // Clear previous selections
+                group.setSelected(false)
+            }
+
+            // Check if expand collapse icon needs updating
+            updateExpandCollapseIcon()
+        }
+    }
+
+    // ##############################
+    // Standard RecyclerView Functions
+    // ##############################
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
     // When group made, apply updates to UI based on internal values
@@ -111,6 +114,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // ####################
         private fun bindHeader(header: TaskGroup) {
             itemView.txtHeader.text = header.label
+            itemView.tag = "header"
         }
 
         // ####################
@@ -336,6 +340,9 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     // ########## Modifying selected entries ##########
+
+    // ToDo: Bugfix. Delete multiple groups under header
+    // Add delete boolean to groups?
     fun delete() {
         // A. All selected, delete everything
         if (DataTracker.allSelected()) {
