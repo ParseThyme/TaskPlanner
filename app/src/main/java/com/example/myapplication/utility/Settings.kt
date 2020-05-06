@@ -8,7 +8,7 @@ import com.example.myapplication.data_classes.GroupType
 import com.example.myapplication.data_classes.TaskDate
 import com.example.myapplication.data_classes.today
 import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
-import com.example.myapplication.recyclerviewdecoration.TaskListDecoration
+import com.example.myapplication.recyclerviewdecoration.GridLayoutDecoration
 
 // ########## App settings ##########
 object Settings {
@@ -37,12 +37,12 @@ object Settings {
     private lateinit var linearLayout: LinearLayoutManager
     private lateinit var gridLayout: GridLayoutManager
 
-    private const val gridSpacing = 5          // In dp
+    private const val gridSpacing = 15          // In dp
     private const val linearSpacing = 15
-    private const val gridSpanCount = 2
+    private const val gridSpanSize = 2
 
     private val linearDecoration = LinearLayoutDecoration(linearSpacing)
-    private val gridLayoutDecoration = TaskListDecoration(gridSpacing, true, gridSpanCount)
+    private val gridLayoutDecoration = GridLayoutDecoration(gridSpacing, gridSpanSize)
 
     var mainLayout = ViewLayout.LINEAR
 
@@ -98,11 +98,11 @@ object Settings {
         linearLayout = LinearLayoutManager(parentRV.context)
 
         // B. Grid layout
-        gridLayout = GridLayoutManager(parentRV.context, gridSpanCount, GridLayoutManager.VERTICAL, false)
+        gridLayout = GridLayoutManager(parentRV.context, gridSpanSize, GridLayoutManager.VERTICAL, false)
         gridLayout.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 return when (taskGroupAdapter.getItemViewType(position)) {
-                    GroupType.HEADER.ordinal -> gridSpanCount
+                    GroupType.HEADER.ordinal -> gridSpanSize
                     GroupType.GROUP.ordinal -> 1
                     else -> -1
                 }
@@ -115,6 +115,7 @@ object Settings {
             adapter = taskGroupAdapter
         }
     }
+    fun usingGridLayout() : Boolean { return (mainLayout == ViewLayout.GRID) }
 
     // ####################
     // Tasks

@@ -7,10 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 class LinearLayoutDecoration(private val spacing: Int) : RecyclerView.ItemDecoration()
 {
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State ) {
-        // Headers = only pad bottom
         when (view.tag == "header") {
-            true -> outRect.set(0, 0, 0, spacing)
-            false -> outRect.set(spacing, 0, spacing, spacing)
+            true -> outRect.set(0, 0, 0, spacing)       // Header = Only pad bottom
+            false -> outRect.set(spacing, 0, spacing, spacing)     // Standard = Pad left, right, bottom
         }
     }
 }

@@ -139,7 +139,6 @@ fun TaskTime.createTimeWithDuration(): String {
         displayedTime = "$displayedTime - $endTime"
     }
 
-    debugMessagePrint("Displayed time: $displayedTime")
     return displayedTime
 }
 fun TaskTime.durationToString(): String {

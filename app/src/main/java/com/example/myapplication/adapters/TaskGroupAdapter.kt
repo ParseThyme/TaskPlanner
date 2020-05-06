@@ -519,7 +519,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             DataTracker.taskCount     -> changeCollapseExpandIcon(Fold.IN)   // All collapsed
         }
         // Ensure area occupied by grid is resized when row closed
-        if (Settings.mainLayout == ViewLayout.GRID) notifyDataSetChanged()
+        if (Settings.usingGridLayout()) notifyDataSetChanged()
     }
 
     // ########## Other ##########
