@@ -245,7 +245,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             true  -> addFromTop(date, tasks, deltaTop.sign)
             false -> addFromBottom(date, tasks, deltaBot.sign)
         }
-    }               // Multiple Tasks
+    }
     private fun addFromBottom(date: TaskDate, tasks: ArrayList<Task>, direction: Int) {
         when (direction) {
             0 -> { addToTaskGroup(taskGroupList.lastIndex, tasks) }      // Matching date, append to bottom
@@ -351,31 +351,59 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
         // B. Otherwise delete individual tasks
         else {
-            // I. Delete tasks
-            val deletedGroups: ArrayList<TaskGroup> = arrayListOf()
+            // Delete tasks
+            val deletedHeaders: ArrayList<TaskGroup> = arrayListOf()
+            var groupDeleted = false
             for (groupNum: Int in taskGroupList.lastIndex downTo 0) {
                 val group: TaskGroup = taskGroupList[groupNum]
-                // If group has children selected, perform deletion
+                // I. If group has children selected, perform deletion
                 if (group.numSelected != 0) {
                     group.selectedDelete()
                     notifyItemChanged(groupNum)
 
-                    // Check if group (and header) needs to be deleted. If so add to list
-                    deletedGroups.addAll(deleteGroup(groupNum))
+                    // II. Check if group needs to be deleted (all children have been deleted)
+                    if (group.taskList.size == 0) {
+                        taskGroupList.removeAt(groupNum)
+                        notifyItemRemoved(groupNum)
+                        groupDeleted = true
+
+                        // If group above is a header, check if it needs to be deleted (empty header)
+                        val abovePos = groupNum - 1
+                        if (deleteHeader(abovePos)) {
+                            deletedHeaders.add(taskGroupList[abovePos])  // Add to list of headers to be deleted
+                            removeHeader(taskGroupList[abovePos].period)
+                        }
+                    }
 
                     // Once all selected tasks deleted, exit early
                     if (DataTracker.numSelected == 0) break
                 }
             }
-            // II. Delete marked groups/headers
-            if (deletedGroups.isNotEmpty()) {
-                taskGroupList.removeAll(deletedGroups)
+            // Delete marked headers
+            if (deletedHeaders.isNotEmpty()) {
+                taskGroupList.removeAll(deletedHeaders)
                 notifyDataSetChanged()
-                updateExpandCollapseIcon()
             }
+            // If any group deleted, expand/collapse icon needs to be updated
+            if (groupDeleted) updateExpandCollapseIcon()
         }
     }
-    private fun deleteGroup(groupNum: Int) : ArrayList<TaskGroup> {
+    private fun deleteHeader(groupNum: Int) : Boolean {
+        // 1. Not header, do nothing
+        if (!taskGroupList[groupNum].isHeader()) return false
+
+        // 2. Is Header: check its index
+        when (groupNum) {
+            // A. Last in list (No task group below)
+            taskGroupList.lastIndex -> return true
+            // B. Not last in list (Has group below). Check if below is header
+            else -> {
+                if (taskGroupList[groupNum+1].isHeader()) return true
+            }
+        }
+
+        return false
+        /*
         val group: TaskGroup = taskGroupList[groupNum]
         val deleted: ArrayList<TaskGroup> = arrayListOf()
 
@@ -407,6 +435,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             }
         }
         return deleted
+        */
     }
 
     fun selectedSetTag(newTag: Int) {
