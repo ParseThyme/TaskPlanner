@@ -14,15 +14,14 @@ import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.sign
 
-class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
-                       private val taskClicked: (Task) -> Unit,
-                       private val dateClicked: (Int) -> Unit,
-                       private val scrollTo: (Int) -> Unit,
-                       private val changeCollapseExpandIcon: (Fold) -> Unit,
-                       private val updateSave: () -> Unit)
-    : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>() {
-
-
+class TaskGroupAdapter(
+     private val taskGroupList: ArrayList<GroupEntry>,
+     private val taskClicked: (Task) -> Unit,
+     private val dateClicked: (Int) -> Unit,
+     private val scrollTo: (Int) -> Unit,
+     private val changeCollapseExpandIcon: (Fold) -> Unit,
+     private val updateSave: () -> Unit) : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>()
+{
     // ##############################
     // Headers
     // ##############################
@@ -62,18 +61,27 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     // Initialization
     init {
         // Remove older entries, requires setting toggled on
-        if (Settings.deleteOldDates) { deleteOldTasks() }
+        // if (Settings.deleteOldDates) { deleteOldTasks() }
 
         // Override default values based on loaded list if not empty
         if (taskGroupList.isNotEmpty()) {
             // 1. Given save exists, update values based on previously saved list
-            for (group: TaskGroup in taskGroupList) {
-                // Go through each group to get taskCount and numCollapsed.
-                DataTracker.taskCount += group.taskList.size
-                if (!group.isFoldedOut()) DataTracker.numFoldedIn++
+            for (entry: GroupEntry in taskGroupList) {
+                when (entry.type) {
+                    GroupType.GROUP -> {
+                        val group: TaskGroup = entry.taskGroup!!
+                        // Go through each group to get taskCount and numCollapsed.
+                        DataTracker.taskCount += group.taskList.size
+                        if (!group.isFoldedOut()) DataTracker.numFoldedIn++
 
-                // Clear previous selections
-                group.setSelected(false)
+                        // Clear previous selections
+                        group.setSelected(false)
+                    }
+
+                    GroupType.HEADER -> {
+
+                    }
+                }
             }
 
             // Check if expand collapse icon needs updating
@@ -98,22 +106,22 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         return ViewHolder(inflatedView)
     }
     // 0 = Header, 1 = Standard Group
-    override fun getItemViewType(position: Int): Int { return taskGroupList[position].groupType.ordinal }
+    override fun getItemViewType(position: Int): Int { return taskGroupList[position].type.ordinal }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         // Bind content based on view passed in
-        fun bind(group: TaskGroup) {
-            when (group.groupType) {
-                GroupType.HEADER -> bindHeader(group)
-                GroupType.GROUP  -> bindGroup(group)
+        fun bind(entry: GroupEntry) {
+            when (entry.type) {
+                GroupType.HEADER -> bindHeader(entry.label)
+                GroupType.GROUP  -> bindGroup(entry.taskGroup!!)
             }
         }
 
         // ####################
         // Header
         // ####################
-        private fun bindHeader(header: TaskGroup) {
-            itemView.txtHeader.text = header.label
+        private fun bindHeader(label: String) {
+            itemView.txtHeader.text = label
             itemView.tag = "header"
         }
 
@@ -208,8 +216,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         }
         // 2. Second groupEntry. No need to sift through, as both min/max will be first entry (at [1])
         if (taskGroupList.size == 2) {
-            // Comparing date with first entry
-            val first: TaskDate = taskGroupList[1].date
+            // Comparing date with first entry. Value in this position will always be a taskGroup (not header)
+            val first: TaskDate = taskGroupList[1].taskGroup!!.date
             when {
                 // A. Same. Append to first task
                 date.id == first.id -> { addToTaskGroup(1, tasks) ; return }
@@ -218,8 +226,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 // C. Past. Add before current date
                 else -> {
                     // Check if header matches up. Otherwise need to add 1 pos before it
-                    if (date.getPeriod() == taskGroupList[0].period) {
-                        taskGroupList.add(1, TaskGroup(date, tasks))
+                    if (date.getPeriod() == taskGroupList[0].header!!.period) {
+                        taskGroupList.add(1, taskGroupEntry(date, tasks))
                         notifyItemInserted(1)
                         changeCollapseExpandIcon(Fold.OUT)
                     }
@@ -235,8 +243,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
          * - IF Top = Move downwards   - [0] will always be a header, so we start at [1]
          * - IF Bot = Move upwards     - [LastIndex] will always be a task
          */
-        val top: TaskDate = taskGroupList[1].date
-        val bot: TaskDate = taskGroupList[taskGroupList.lastIndex].date
+        val top: TaskDate = taskGroupList[1].taskGroup!!.date
+        val bot: TaskDate = taskGroupList[taskGroupList.lastIndex].taskGroup!!.date
         // Difference in days when compared to top and bottom value. Lower distance = starting pos
         val deltaTop: Int = dateDiff(top, date)
         val deltaBot: Int = dateDiff(bot, date)
@@ -254,15 +262,16 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             // Past date, iterate and move upwards
             -1 -> {
                 for (pos: Int in taskGroupList.lastIndex downTo 0) {
-                    val group: TaskGroup = taskGroupList[pos]
+                    val entry: GroupEntry = taskGroupList[pos]
                     // Skip headers
-                    if (group.groupType == GroupType.GROUP) {
+                    if (entry.type == GroupType.GROUP) {
+                        val groupID: Int = entry.taskGroup!!.date.id
                         // Matching date, append to existing list of tasks
-                        if (group.date.id == date.id) {
+                        if (groupID == date.id) {
                             addToTaskGroup(pos, tasks) ; return
                         }
                         // Date reached is earlier, create new date category with new task
-                        if (group.date.id < date.id) {
+                        if (groupID < date.id) {
                             addNewTaskGroup(pos + 1, date, tasks) ; return
                         }
                     }
@@ -277,8 +286,8 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             // Earlier date, add new group at top
             -1 -> {
                 // Given first pos == header, check if matches same period of new task
-                if (date.getPeriod() == taskGroupList[0].period) {
-                    taskGroupList.add(1, TaskGroup(date, tasks))
+                if (date.getPeriod() == taskGroupList[0].header!!.period) {
+                    taskGroupList.add(1, taskGroupEntry(date, tasks))
                     notifyItemInserted(1)
                     changeCollapseExpandIcon(Fold.OUT)
                 }
@@ -289,26 +298,28 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             // Future date, iterate and move downwards
             1 -> {
                 for (pos: Int in 1 until taskGroupList.size) {
-                    val group: TaskGroup = taskGroupList[pos]
+                    val entry: GroupEntry = taskGroupList[pos]
                     // Check headers
-                    when (group.groupType) {
+                    when (entry.type) {
                         // Check first task following header
                         GroupType.HEADER -> {
+                            val nextEntryDate: Int = taskGroupList[pos+1].taskGroup!!.date.id
                             // Matching date, append to existing list of tasks
-                            if (taskGroupList[pos+1].date.id == date.id) {
+                            if (nextEntryDate == date.id) {
                                 addToTaskGroup(pos, tasks)
                                 return
                             }
                             // Date reached is later, add new group before it
-                            if (taskGroupList[pos+1].date.id > date.id) {
+                            if (nextEntryDate > date.id) {
                                 addNewTaskGroup(pos, date, tasks)
                                 return
                             }
                         }
                         // Same logic as above, except checking exact group
                         GroupType.GROUP -> {
-                            if (group.date.id == date.id) { addToTaskGroup(pos, tasks) ; return }
-                            if (group.date.id > date.id)  { addNewTaskGroup(pos, date, tasks) ; return }
+                            val currGroupID: Int = entry.taskGroup!!.date.id
+                            if (currGroupID == date.id) { addToTaskGroup(pos, tasks) ; return }
+                            if (currGroupID > date.id)  { addNewTaskGroup(pos, date, tasks) ; return }
                         }
                     }
                 }
@@ -317,15 +328,15 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     private fun addNewTaskGroup(pos: Int, date: TaskDate, tasks: ArrayList<Task>) {
-        val newGroup = TaskGroup(date, tasks)
+        val newGroup: GroupEntry = taskGroupEntry(date, tasks)
 
         // 1. Add group
         taskGroupList.add(pos, newGroup)
         notifyItemInserted(pos)
 
         // 2. Check if header needs to be added
-        if (newGroup.assignHeader()) {
-            val newHeader: TaskGroup = newGroup.createHeader()
+        if (newGroup.taskGroup!!.assignHeader()) {
+            val newHeader: GroupEntry = headerEntry(date)
             taskGroupList.add(pos, newHeader)
             notifyItemInserted(pos)
         }
@@ -335,14 +346,11 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     }
     private fun addToTaskGroup(pos: Int, tasks: ArrayList<Task>) {
         // Appending an existing group
-        taskGroupList[pos].taskList.addAll(tasks)
+        taskGroupList[pos].taskGroup!!.taskList.addAll(tasks)
         notifyItemChanged(pos)
     }
 
     // ########## Modifying selected entries ##########
-
-    // ToDo: Bugfix. Delete multiple groups under header
-    // Add delete boolean to groups?
     fun delete() {
         // A. All selected, delete everything
         if (DataTracker.allSelected()) {
@@ -352,110 +360,79 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
         // B. Otherwise delete individual tasks
         else {
             // Delete tasks
-            val deletedHeaders: ArrayList<TaskGroup> = arrayListOf()
             var groupDeleted = false
             for (groupNum: Int in taskGroupList.lastIndex downTo 0) {
-                val group: TaskGroup = taskGroupList[groupNum]
-                // I. If group has children selected, perform deletion
-                if (group.numSelected != 0) {
-                    group.selectedDelete()
-                    notifyItemChanged(groupNum)
-
-                    // II. Check if group needs to be deleted (all children have been deleted)
-                    if (group.taskList.size == 0) {
-                        taskGroupList.removeAt(groupNum)
-                        notifyItemRemoved(groupNum)
-                        groupDeleted = true
-
-                        // If group above is a header, check if it needs to be deleted (empty header)
-                        val abovePos = groupNum - 1
-                        if (deleteHeader(abovePos)) {
-                            deletedHeaders.add(taskGroupList[abovePos])  // Add to list of headers to be deleted
-                            removeHeader(taskGroupList[abovePos].period)
+                val entry: GroupEntry = taskGroupList[groupNum]
+                when (entry.type) {
+                    GroupType.HEADER -> {
+                        var deleteHeader = false
+                        // Check header's index
+                        when (groupNum) {
+                            // A. Last in list (No task group below)
+                            taskGroupList.lastIndex -> deleteHeader = true
+                            // B. Not last in list (Has group below). Check if below is header
+                            else -> {
+                                if (taskGroupList[groupNum+1].isHeader()) deleteHeader = true
+                            }
+                        }
+                        // Check if header needs to be deleted (empty header)
+                        if (deleteHeader) {
+                            removeHeader(taskGroupList[groupNum].header!!.period)
+                            taskGroupList.removeAt(groupNum)
+                            notifyItemRemoved(groupNum)
                         }
                     }
 
-                    // Once all selected tasks deleted, exit early
-                    if (DataTracker.numSelected == 0) break
+                    GroupType.GROUP -> {
+                        val group: TaskGroup = entry.taskGroup!!
+                        // I. If group has children selected, perform deletion
+                        if (group.numSelected != 0) {
+                            group.selectedDelete()
+                            notifyItemChanged(groupNum)
+
+                            // II. Check if group needs to be deleted (all children have been deleted)
+                            if (group.taskList.size == 0) {
+                                taskGroupList.removeAt(groupNum)
+                                notifyItemRemoved(groupNum)
+                                groupDeleted = true
+                            }
+                        }
+                    }
                 }
+
+                // If above is a group and numSelected = 0, exit as we are done.
+                // Otherwise continue one more time to see if header needs to be deleted
+                if (DataTracker.numSelected == 0 && taskGroupList[groupNum - 1].isGroup()) break
             }
-            // Delete marked headers
-            if (deletedHeaders.isNotEmpty()) {
-                taskGroupList.removeAll(deletedHeaders)
-                notifyDataSetChanged()
-            }
-            // If any group deleted, expand/collapse icon needs to be updated
+            // If any group has been deleted, expand/collapse icon needs to be updated
             if (groupDeleted) updateExpandCollapseIcon()
         }
-    }
-    private fun deleteHeader(groupNum: Int) : Boolean {
-        // 1. Not header, do nothing
-        if (!taskGroupList[groupNum].isHeader()) return false
-
-        // 2. Is Header: check its index
-        when (groupNum) {
-            // A. Last in list (No task group below)
-            taskGroupList.lastIndex -> return true
-            // B. Not last in list (Has group below). Check if below is header
-            else -> {
-                if (taskGroupList[groupNum+1].isHeader()) return true
-            }
-        }
-
-        return false
-        /*
-        val group: TaskGroup = taskGroupList[groupNum]
-        val deleted: ArrayList<TaskGroup> = arrayListOf()
-
-        // When number of children == 0, group needs to be deleted
-        if (group.isEmpty()) {
-            // 1. Store group to be deleted
-            deleted.add(group)
-            // 2. Check if we need to store header provided task above group is a header
-            val groupAbove: TaskGroup = taskGroupList[groupNum - 1]
-            if (groupAbove.isHeader()) {
-                // Check whether header above deleted group needs to be deleted
-                val removeHeader: Boolean = when (groupNum) {
-                    // Group = last index. Above it is header so header itself needs to be removed
-                    taskGroupList.lastIndex -> true
-                    // Any other index
-                    else -> {
-                        // Below == header, mark for removal (Both above and below is header)
-                        if (taskGroupList[groupNum + 1].isHeader()) {
-                            true
-                        }
-                        // Otherwise below == group, don't mark
-                        else { return deleted }
-                    }
-                }
-                if (removeHeader) {
-                    deleted.add(groupAbove)
-                    removeHeader(groupAbove.period)
-                }
-            }
-        }
-        return deleted
-        */
     }
 
     fun selectedSetTag(newTag: Int) {
         // Uses same logic as delete(). We don't track group size in this case.
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
-            if (group.numSelected != 0) {
-                group.selectedSetTag(newTag)
-                notifyItemChanged(groupNum)
-                if (DataTracker.numSelected == 0) break
+            val entry: GroupEntry = taskGroupList[groupNum]
+            if (entry.isGroup()) {
+                val group: TaskGroup = entry.taskGroup!!
+                if (group.numSelected != 0) {
+                    group.selectedSetTag(newTag)
+                    notifyItemChanged(groupNum)
+                    if (DataTracker.numSelected == 0) break
+                }
             }
         }
     }
     fun selectedSetTime(newTime: TaskTime) {
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val group: TaskGroup = taskGroupList[groupNum]
-            if (group.numSelected != 0) {
-                group.selectedSetTime(newTime)
-                notifyItemChanged(groupNum)
-                if (DataTracker.numSelected == 0) break
+            val entry: GroupEntry = taskGroupList[groupNum]
+            if (entry.isGroup()) {
+                val group: TaskGroup = entry.taskGroup!!
+                if (group.numSelected != 0) {
+                    group.selectedSetTime(newTime)
+                    notifyItemChanged(groupNum)
+                    if (DataTracker.numSelected == 0) break
+                }
             }
         }
     }
@@ -467,10 +444,12 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             // 1. All tasks selected
             true -> {
                 // 1. Copy over every task, clearing selections
-                for (group: TaskGroup in taskGroupList) {
-                    for (task: Task in group.taskList) {
-                        task.selected = false
-                        movedTasks.add(task)
+                for (entry: GroupEntry in taskGroupList) {
+                    if (entry.isGroup()) {
+                        for (task: Task in entry.taskGroup!!.taskList) {
+                            task.selected = false
+                            movedTasks.add(task)
+                        }
                     }
                 }
                 // 2. Clear list, reset dataTracker and header data
@@ -482,9 +461,11 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
             // 2. Specific tasks selected
             false -> {
                 // 1. Copy over selected tasks
-                for (group: TaskGroup in taskGroupList) {
-                    for (task: Task in group.taskList) {
-                        if (task.selected) movedTasks.add(task)
+                for (entry: GroupEntry in taskGroupList) {
+                    if (entry.isGroup()) {
+                        for (task: Task in entry.taskGroup!!.taskList) {
+                            if (task.selected) movedTasks.add(task)
+                        }
                     }
                 }
                 // 2. Delete selected tasks at their previous positions
@@ -509,7 +490,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     // ########## Toggling ##########
     fun toggleGroupSelected(groupNum : Int) : Int {
-        val group: TaskGroup = taskGroupList[groupNum]
+        val group: TaskGroup = taskGroupList[groupNum].taskGroup!!
         val numSelectedPreToggle:Int = group.numSelected
 
         group.toggleSelected()
@@ -521,16 +502,18 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
 
     fun toggleSelectAll(selectAll : Boolean = true) {
         val end: Int = taskGroupList.size - 1
-        for (groupNum: Int in end downTo 0)
-            taskGroupList[groupNum].setSelected(selectAll)
+        for (groupNum: Int in end downTo 0) {
+            if (taskGroupList[groupNum].isGroup())
+                taskGroupList[groupNum].taskGroup!!.setSelected(selectAll)
+        }
 
         notifyDataSetChanged()
     }
     fun toggleFoldAll(newState: Fold = Fold.OUT) {
         for (index: Int in taskGroupList.lastIndex downTo 0) {
-            val group: TaskGroup = taskGroupList[index]
-            if (!group.isHeader()) {    // Toggle fold state, ignoring headers
-                group.state = newState
+            val entry: GroupEntry = taskGroupList[index]
+            if (entry.isGroup()) {    // Toggle fold state, ignoring headers
+                entry.taskGroup!!.state = newState
                 notifyItemChanged(index)
             }
         }
@@ -552,6 +535,7 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
     }
 
     // ########## Other ##########
+    /*
     private fun deleteOldTasks() {
         val iterator: MutableListIterator<TaskGroup> = taskGroupList.listIterator()
         while (iterator.hasNext()) {
@@ -562,4 +546,5 @@ class TaskGroupAdapter(private val taskGroupList: ArrayList<TaskGroup>,
                 break   // Stop when date is today's date or later
         }
     }
+    */
 }

@@ -1,42 +1,50 @@
 package com.example.myapplication.data_classes
 
 import android.view.View
-import com.example.myapplication.utility.debugMessagePrint
 import kotlin.collections.ArrayList
+
+// Creating container to hold TaskGroup/GroupHeader
+// https://stackoverflow.com/questions/55819584/kotlin-multiple-class-for-data-storage
 
 // ########## Data Type ##########
 data class TaskGroup (
-    // A. Assigned as standard group
     val date: TaskDate = TaskDate(),                // Date category of group
     val taskList: ArrayList<Task> = arrayListOf(),  // Child task list
 
+    // Selection/Folding
     var numSelected: Int = 0,                       // Child tasks selected
-    var state: Fold = Fold.OUT,                     // Toggle state (expanded/collapsed)
-
-    // B. Assigned as a header
-    val groupType: GroupType = GroupType.GROUP,
-    val period: Period = Period.NA,
-    val label: String = ""
+    var state: Fold = Fold.OUT                      // Toggle state (expanded/collapsed)
 )
+data class GroupHeader(val period: Period = Period.NA)
 
-fun TaskGroup.allSelected() : Boolean { return numSelected == taskList.count() }
-fun TaskGroup.isEmpty() : Boolean { return taskList.isEmpty() }
+data class GroupEntry(
+    val label: String,
+    val type: GroupType,
+    val taskGroup: TaskGroup?,
+    val header: GroupHeader?
+)
+enum class GroupType { HEADER, GROUP }
 
 // #######################################################
 // Headers
 // #######################################################
-fun TaskGroup.isHeader() : Boolean { return (groupType == GroupType.HEADER) }
-fun TaskGroup.createHeader() : TaskGroup {
-    val headerPeriod: Period = this.date.getPeriod()
-    return TaskGroup(
-        TaskDate(), arrayListOf(), 0, Fold.OUT,
-        GroupType.HEADER, headerPeriod, headerPeriod.asString())
+fun headerEntry(date: TaskDate) : GroupEntry {
+    val period : Period = date.getPeriod()
+    return GroupEntry(period.asString(), GroupType.HEADER, null, GroupHeader(period))
 }
-enum class GroupType { HEADER, GROUP }
+
+fun GroupEntry.isHeader() : Boolean { return (type == GroupType.HEADER) }
+fun GroupEntry.isGroup() : Boolean { return (type == GroupType.GROUP) }
 
 // #######################################################
-// Modifying selected group
+// TaskGroup
 // #######################################################
+fun taskGroupEntry(date: TaskDate, tasks: ArrayList<Task>) : GroupEntry {
+    return GroupEntry(date.asStringShort(), GroupType.GROUP, TaskGroup(date, tasks), null)
+}
+
+// ########## Selecting/Deselecting entire group ##########
+fun TaskGroup.allSelected() : Boolean { return numSelected == taskList.count() }
 fun TaskGroup.selectedDelete() {
     // Deleting entire group
     if (numSelected == taskList.size) {
@@ -87,18 +95,6 @@ fun TaskGroup.selectedSetTime(newTime: TaskTime) {
         if (numSelected == 0) return
     }
 }
-
-// #######################################################
-// Selecting/Deselecting entire group
-// #######################################################
-fun TaskGroup.toggleSelected() {
-    // Select all if not all selected, otherwise deselect all
-
-    // [A]. Deselect all (All have been selected)
-    if (allSelected()) { setSelected(false) }
-    // [B]. Select all (not all have been selected)
-    else { setSelected(true) }
-}
 fun TaskGroup.setSelected(selected: Boolean) {
     // Override highlighting with either selectAll on or off
 
@@ -127,21 +123,16 @@ fun TaskGroup.setSelected(selected: Boolean) {
         }
     }
 }
+fun TaskGroup.toggleSelected() {
+    // Select all if not all selected, otherwise deselect all
 
-fun TaskGroup.getSelected() : ArrayList<Task> {
-    // All selected, return entire taskList
-    if (allSelected()) { return taskList }
-
-    // Otherwise go through list and return selected
-    val selected: ArrayList<Task> = arrayListOf()
-    for (index: Int in taskList.size - 1 downTo 0) {
-        if (taskList[index].selected) { selected.add(taskList[index]) }
-    }
-    return selected
+    // [A]. Deselect all (All have been selected)
+    if (allSelected()) { setSelected(false) }
+    // [B]. Select all (not all have been selected)
+    else { setSelected(true) }
 }
-// #######################################################
-// Fold type (IN/OUT). Whether group is expanded/collapsed
-// #######################################################
+
+// ########## Fold (Group expanded/collapsed) ##########
 fun Fold.isNew(view: View): Boolean {
     if (view.visibility == View.VISIBLE && this == Fold.OUT)
         return false
