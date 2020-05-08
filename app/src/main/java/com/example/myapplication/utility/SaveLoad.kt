@@ -2,8 +2,7 @@ package com.example.myapplication.utility
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.myapplication.data_classes.GroupEntry
-import com.example.myapplication.data_classes.TaskGroupOld
+import com.example.myapplication.data_classes.TaskGroup
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -18,7 +17,7 @@ class SaveLoad(context: Context) {
     // ####################
     // Save
     // ####################
-    fun saveTaskGroupList(savedList: ArrayList<GroupEntry>) {
+    fun saveTaskGroupList(savedList: ArrayList<TaskGroup>) {
         // Create gson to convert data to json format
         val json: String = Gson().toJson(savedList)
         // Place data in editor then apply
@@ -51,10 +50,10 @@ class SaveLoad(context: Context) {
     // ####################
     // Load
     // ####################
-    fun loadTaskGroupList() : ArrayList<GroupEntry> {
+    fun loadTaskGroupList() : ArrayList<TaskGroup> {
         val json: String? = sharedPref.getString(keyTaskGroupList, null)
         // Using util function to convert data to json
-        val savedData: ArrayList<GroupEntry> = Gson().fromJson(json)
+        val savedData: ArrayList<TaskGroup> = Gson().fromJson(json)
 
         // Check for existing data, if so return it
         if (!savedData.isNullOrEmpty()) { return savedData }

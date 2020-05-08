@@ -1,45 +1,42 @@
 package com.example.myapplication.data_classes
 
 import android.view.View
+import com.example.myapplication.utility.debugMessagePrint
+import kotlin.collections.ArrayList
 
-// ####################
-// GroupEntry -> Either GroupHeader or TaskGroup
-// ####################
-abstract class GroupEntry {
-    abstract val label: String
-    abstract val type: GroupType
-}
-enum class GroupType { HEADER, GROUP }
-// Attempt casting to either header/taskGroup
-fun GroupEntry.isHeader() : Boolean { return this is GroupHeader }
-fun GroupEntry.isTaskGroup() : Boolean { return this is TaskGroup }
-
-// ####################
-// Header
-// ####################
-data class GroupHeader (
-    val period: Period,
-    override val label: String = period.asString(),    // Period label
-    override val type: GroupType = GroupType.HEADER
-):GroupEntry()
-
-// ####################
-// Entry
-// ####################
+// ########## Data Type ##########
 data class TaskGroup (
-  val date: TaskDate = TaskDate(),                     // Date category of group
-  val taskList: ArrayList<Task> = arrayListOf(),       // Child task list
-  var numSelected: Int = 0,                            // Child tasks selected
-  var state: Fold = Fold.OUT,                          // Folding state state (expanded/collapsed)
+    // A. Assigned as standard group
+    val date: TaskDate = TaskDate(),                // Date category of group
+    val taskList: ArrayList<Task> = arrayListOf(),  // Child task list
 
-  override val label: String = date.asStringShort(),   // Group label
-  override val type: GroupType = GroupType.GROUP
-):GroupEntry()
+    var numSelected: Int = 0,                       // Child tasks selected
+    var state: Fold = Fold.OUT,                     // Toggle state (expanded/collapsed)
+
+    // B. Assigned as a header
+    val groupType: GroupType = GroupType.GROUP,
+    val period: Period = Period.NA,
+    val label: String = ""
+)
 
 fun TaskGroup.allSelected() : Boolean { return numSelected == taskList.count() }
-// fun TaskGroup.isEmpty() : Boolean { return taskList.isEmpty() }
+fun TaskGroup.isEmpty() : Boolean { return taskList.isEmpty() }
 
-// ########## Modifying selected group ##########
+// #######################################################
+// Headers
+// #######################################################
+fun TaskGroup.isHeader() : Boolean { return (groupType == GroupType.HEADER) }
+fun TaskGroup.createHeader() : TaskGroup {
+    val headerPeriod: Period = this.date.getPeriod()
+    return TaskGroup(
+        TaskDate(), arrayListOf(), 0, Fold.OUT,
+        GroupType.HEADER, headerPeriod, headerPeriod.asString())
+}
+enum class GroupType { HEADER, GROUP }
+
+// #######################################################
+// Modifying selected group
+// #######################################################
 fun TaskGroup.selectedDelete() {
     // Deleting entire group
     if (numSelected == taskList.size) {
@@ -91,7 +88,9 @@ fun TaskGroup.selectedSetTime(newTime: TaskTime) {
     }
 }
 
-// ########## Selecting/Deselecting entire group ##########
+// #######################################################
+// Selecting/Deselecting entire group
+// #######################################################
 fun TaskGroup.toggleSelected() {
     // Select all if not all selected, otherwise deselect all
 
@@ -128,7 +127,7 @@ fun TaskGroup.setSelected(selected: Boolean) {
         }
     }
 }
-/*
+
 fun TaskGroup.getSelected() : ArrayList<Task> {
     // All selected, return entire taskList
     if (allSelected()) { return taskList }
@@ -140,9 +139,9 @@ fun TaskGroup.getSelected() : ArrayList<Task> {
     }
     return selected
 }
-*/
-
-// ########## Fold (IN/OUT). Whether group is expanded/collapsed ##########
+// #######################################################
+// Fold type (IN/OUT). Whether group is expanded/collapsed
+// #######################################################
 fun Fold.isNew(view: View): Boolean {
     if (view.visibility == View.VISIBLE && this == Fold.OUT)
         return false

@@ -88,6 +88,67 @@ class PopupTime : Popup() {
         time.update(increment)
         this.text = time.createStartTime(false)
         timeOfDayView.text = time.timeOfDay
+
+        /*
+        var newMinutes: Int = time.min
+        var hourDelta = 0
+        var flipToD = false
+
+        if (increment) {
+            newMinutes += timeDelta
+
+            // Result is a number over 60
+            if (newMinutes > 59) {
+                // Calculate how many hours we need to add to time and add it
+                hourDelta = newMinutes / 60
+                // Ensure time between 0-60
+                newMinutes %= 60
+            }
+        }
+        else {
+            newMinutes -= timeDelta
+
+            // Result is number under 0 minutes
+            if (newMinutes < 0) {
+                // Ensure time in appropriate range
+                newMinutes += 60
+                // Calculate hours required to subtract
+                hourDelta = -((newMinutes + 60) / 60)
+            }
+        }
+
+        // Assuming hour has been updated, make sure result is in range
+        if (hourDelta != 0) {
+            val hourResult = time.hour + hourDelta
+
+            when {
+                // Values > 12, reset back to 1
+                hourResult > 12 -> {
+                    time.hour = 1
+                    flipToD = true
+                }
+                // Values < 1, reset to 12
+                hourResult < 1 -> {
+                    time.hour = 12
+                    flipToD = true
+                }
+                // Standard hour increment/decrement. Value between 1-12
+                else -> time.hour = hourResult
+            }
+
+            if (flipToD) {
+                // Flip time of day
+                time.timeOfDay = time.getOppositeTimeOfDay()
+                timeOfDayView.text = time.timeOfDay
+            }
+        }
+
+        // Update minute value
+        time.min = newMinutes
+
+        // Show new displayed time
+        this.text = time.createStartTime(false)
+         */
     }
     private fun TextView.updateLength(btnUp: View, btnDown: View, increment: Boolean = true) {
         // Increment
