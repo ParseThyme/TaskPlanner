@@ -34,7 +34,8 @@ class MainActivity : AppCompatActivity() {
     private var newDate: TaskDate = today()
 
     // Data
-    private var taskGroupList: ArrayList<TaskGroup> = ArrayList()
+    // private var taskGroupList: ArrayList<TaskGroupOld> = ArrayList()
+    private var taskGroupList: ArrayList<GroupEntry> = ArrayList()
     private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables
