@@ -10,15 +10,18 @@ import kotlin.collections.ArrayList
 data class TaskGroup (
     val date: TaskDate = TaskDate(),                // Date category of group
     val taskList: ArrayList<Task> = arrayListOf(),  // Child task list
+    val label: String,
 
     // Selection/Folding
     var numSelected: Int = 0,                       // Child tasks selected
     var state: Fold = Fold.OUT                      // Toggle state (expanded/collapsed)
 )
-data class GroupHeader(val period: Period = Period.NA)
+data class GroupHeader(
+    val period: Period = Period.PAST,
+    val label: String
+)
 
 data class GroupEntry(
-    val label: String,
     val type: GroupType,
     val taskGroup: TaskGroup?,
     val header: GroupHeader?
@@ -28,9 +31,8 @@ enum class GroupType { HEADER, GROUP }
 // #######################################################
 // Headers
 // #######################################################
-fun headerEntry(date: TaskDate) : GroupEntry {
-    val period : Period = date.getPeriod()
-    return GroupEntry(period.asString(), GroupType.HEADER, null, GroupHeader(period))
+fun headerEntry(period: Period) : GroupEntry {
+    return GroupEntry(GroupType.HEADER, null, GroupHeader(period, period.asString()))
 }
 
 fun GroupEntry.isHeader() : Boolean { return (type == GroupType.HEADER) }
@@ -40,7 +42,7 @@ fun GroupEntry.isGroup() : Boolean { return (type == GroupType.GROUP) }
 // TaskGroup
 // #######################################################
 fun taskGroupEntry(date: TaskDate, tasks: ArrayList<Task>) : GroupEntry {
-    return GroupEntry(date.asStringShort(), GroupType.GROUP, TaskGroup(date, tasks), null)
+    return GroupEntry(GroupType.GROUP, TaskGroup(date, tasks, date.asStringShort()), null)
 }
 
 // ########## Selecting/Deselecting entire group ##########

@@ -39,18 +39,6 @@ fun TaskDate.reassign(newDate: TaskDate) {
 // ####################
 // Date Range checking
 // ####################
-fun TaskDate.isPastDate(): Boolean {
-    val cal = Calendar.getInstance()
-    val today = idFormat.format(cal.timeInMillis).toInt()
-
-    // Compare values, if id is < today's id. Then we know that its an earlier date. E.g:
-    // Today: 20200316 = 2020, March, 16
-    // Date:  20200314 = 2020, March, 14
-    return when {
-        (id < today) -> true
-        else -> false
-    }
-}
 fun TaskDate.getPeriod() : Period {
     val diff: Int = this.diffFromToday()
     return when {
@@ -71,24 +59,11 @@ fun dateDiff(from: TaskDate, to: TaskDate) : Int {
 
     return millisecondsToDays(d2 - d1)
 }
-fun TaskDate.diffFromToday() : Int {
-    return dateDiff(Settings.today, this)
-    /*
-    val cal: Calendar = Calendar.getInstance()
-
-    cal.set(Settings.today.year, Settings.today.month, Settings.today.day)
-    val today = cal.timeInMillis
-
-    cal.set(this.year, this.month, this.day)
-    val date = cal.timeInMillis
-
-    // Convert from ms to seconds, to minutes to hours to days
-    return ((date - today) / 1000 / 60 / 60 / 24).toInt()
-     */
-}
+fun TaskDate.diffFromToday() : Int { return dateDiff(Settings.today, this) }
 
 fun Period.asString() : String {
     return when (this) {
+        Period.PAST -> "Past Dates"
         Period.THIS_WEEK -> "This Week"
         Period.NEXT_WEEK -> "Next Week"
         Period.FORTNIGHT -> "Fortnight"
@@ -96,7 +71,7 @@ fun Period.asString() : String {
         else -> ""
     }
 }
-enum class Period { NA, PAST, THIS_WEEK, NEXT_WEEK, FORTNIGHT, FUTURE }
+enum class Period { PAST, THIS_WEEK, NEXT_WEEK, FORTNIGHT, FUTURE }
 
 // ####################
 // Labels / ToString()

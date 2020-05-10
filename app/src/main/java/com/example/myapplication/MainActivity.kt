@@ -69,26 +69,14 @@ class MainActivity : AppCompatActivity() {
 
         // ToDo: Implement tags list to be saved and loaded
         tagsList = arrayListOf (
-            R.drawable.tag_booking,
-            R.drawable.tag_mail,
-            R.drawable.tag_delivery,
-            R.drawable.tag_flight,
-            R.drawable.tag_read,
-            R.drawable.tag_medicine,
+            R.drawable.tag_booking, R.drawable.tag_mail, R.drawable.tag_delivery,
+            R.drawable.tag_flight, R.drawable.tag_read, R.drawable.tag_medicine,
 
-            R.drawable.tag_event,
-            R.drawable.tag_buy,
-            R.drawable.tag_food,
-            R.drawable.tag_movie,
-            R.drawable.tag_pet,
-            R.drawable.tag_workout,
+            R.drawable.tag_event, R.drawable.tag_buy, R.drawable.tag_food,
+            R.drawable.tag_movie, R.drawable.tag_pet, R.drawable.tag_workout,
 
-            R.drawable.tag_important,
-            R.drawable.tag_one,
-            R.drawable.tag_two,
-            R.drawable.tag_three,
-            R.drawable.tag_four,
-            R.drawable.tag_five
+            R.drawable.tag_important, R.drawable.tag_one, R.drawable.tag_two,
+            R.drawable.tag_three, R.drawable.tag_four, R.drawable.tag_five
         )
         PopupManager.setup(tagsList)
 

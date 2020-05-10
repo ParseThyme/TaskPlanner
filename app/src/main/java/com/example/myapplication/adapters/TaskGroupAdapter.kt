@@ -35,6 +35,23 @@ class TaskGroupAdapter(
     )
     private var headersAssigned = 0
 
+    private fun TaskGroup.checkAddHeader() : Boolean{
+        // If all headers have been assigned, exit
+        if (headersAssigned == headers.size) return false
+
+        // 1. Get period group belongs to
+        val period: Period = date.getPeriod()
+        // 2. Check if period assigned yet, if not mark to assign, update counter
+        if (headers[period] == false) {
+            headers[period] = true
+            headersAssigned++
+            return true
+        }
+
+        return false
+    }
+
+    /*
     private fun TaskGroup.assignHeader() : Boolean {
         // If all headers have been assigned, exit
         if (headersAssigned == headers.size) {
@@ -53,6 +70,7 @@ class TaskGroupAdapter(
 
         return false
     }
+    */
     private fun removeHeader(period: Period) {
         headersAssigned--
         headers[period] = false
@@ -65,25 +83,30 @@ class TaskGroupAdapter(
 
         // Override default values based on loaded list if not empty
         if (taskGroupList.isNotEmpty()) {
-            // 1. Given save exists, update values based on previously saved list
+            // List of tasks to rearrange
+            val sortedList: ArrayList<GroupEntry> = arrayListOf()
+            // Given save exists, update values based on previously saved list
             for (entry: GroupEntry in taskGroupList) {
                 when (entry.type) {
                     GroupType.GROUP -> {
                         val group: TaskGroup = entry.taskGroup!!
-                        // Go through each group to get taskCount and numCollapsed.
+
+                        // 1. Go through each group to get taskCount and numCollapsed. Clear prev selections
                         DataTracker.taskCount += group.taskList.size
                         if (!group.isFoldedOut()) DataTracker.numFoldedIn++
-
-                        // Clear previous selections
                         group.setSelected(false)
-                    }
 
-                    GroupType.HEADER -> {
-
+                        // 2A. Check if header has been added yet, if not add header
+                        if (group.checkAddHeader()) { sortedList.add(headerEntry(group.date.getPeriod())) }
+                        // 2B. Add copy of task
+                        sortedList.add(entry)
                     }
+                    GroupType.HEADER -> { }
                 }
             }
-
+            // Override current list with correctly sorted headers
+            taskGroupList.clear()
+            taskGroupList.addAll(sortedList)
             // Check if expand collapse icon needs updating
             updateExpandCollapseIcon()
         }
@@ -112,7 +135,7 @@ class TaskGroupAdapter(
         // Bind content based on view passed in
         fun bind(entry: GroupEntry) {
             when (entry.type) {
-                GroupType.HEADER -> bindHeader(entry.label)
+                GroupType.HEADER -> bindHeader(entry.header!!)
                 GroupType.GROUP  -> bindGroup(entry.taskGroup!!)
             }
         }
@@ -120,8 +143,8 @@ class TaskGroupAdapter(
         // ####################
         // Header
         // ####################
-        private fun bindHeader(label: String) {
-            itemView.txtHeader.text = label
+        private fun bindHeader(header: GroupHeader) {
+            itemView.txtHeader.text = header.label
             itemView.tag = "header"
         }
 
@@ -266,6 +289,7 @@ class TaskGroupAdapter(
                     // Skip headers
                     if (entry.type == GroupType.GROUP) {
                         val groupID: Int = entry.taskGroup!!.date.id
+
                         // Matching date, append to existing list of tasks
                         if (groupID == date.id) {
                             addToTaskGroup(pos, tasks) ; return
@@ -294,7 +318,6 @@ class TaskGroupAdapter(
                 // Otherwise insert at top position (header will be generated)
                 else { addNewTaskGroup(0, date, tasks) }
             }
-
             // Future date, iterate and move downwards
             1 -> {
                 for (pos: Int in 1 until taskGroupList.size) {
@@ -335,9 +358,9 @@ class TaskGroupAdapter(
         notifyItemInserted(pos)
 
         // 2. Check if header needs to be added
-        if (newGroup.taskGroup!!.assignHeader()) {
-            val newHeader: GroupEntry = headerEntry(date)
-            taskGroupList.add(pos, newHeader)
+        if (newGroup.taskGroup!!.checkAddHeader()) {
+            // Add new header before designated group
+            taskGroupList.add(pos, headerEntry(date.getPeriod()))
             notifyItemInserted(pos)
         }
 
