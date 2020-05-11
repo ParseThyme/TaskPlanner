@@ -425,7 +425,7 @@ class TaskGroupAdapter(
 
                 // If above is a group and numSelected = 0, exit as we are done.
                 // Otherwise continue one more time to see if header needs to be deleted
-                if (DataTracker.numSelected == 0 && taskGroupList[groupNum - 1].isGroup()) break
+                if (DataTracker.numSelected == 0 && taskGroupList[groupNum].isGroup()) break
             }
             // If any group has been deleted, expand/collapse icon needs to be updated
             if (groupDeleted) updateExpandCollapseIcon()
