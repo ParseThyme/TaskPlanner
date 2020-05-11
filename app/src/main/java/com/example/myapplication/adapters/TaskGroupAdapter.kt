@@ -50,27 +50,6 @@ class TaskGroupAdapter(
 
         return false
     }
-
-    /*
-    private fun TaskGroup.assignHeader() : Boolean {
-        // If all headers have been assigned, exit
-        if (headersAssigned == headers.size) {
-            debugMessagePrint("All headers assigned")
-            return false
-        }
-
-        // 1. Get period group belongs to
-        val period: Period = date.getPeriod()
-        // 2. Check if period assigned yet, if not mark to assign, update counter
-        if (headers[period] == false) {
-            headers[period] = true
-            headersAssigned++
-            return true
-        }
-
-        return false
-    }
-    */
     private fun removeHeader(period: Period) {
         headersAssigned--
         headers[period] = false
@@ -373,6 +352,13 @@ class TaskGroupAdapter(
         notifyItemChanged(pos)
     }
 
+    private fun above(pos:Int): GroupEntry {
+        return when (pos) {
+            0    -> taskGroupList[0]        // At topmost position (nothing above), return self
+            else -> taskGroupList[pos - 1]  // Return entry above it
+        }
+    }
+
     // ########## Modifying selected entries ##########
     fun delete() {
         // A. All selected, delete everything
@@ -394,9 +380,7 @@ class TaskGroupAdapter(
                             // A. Last in list (No task group below)
                             taskGroupList.lastIndex -> deleteHeader = true
                             // B. Not last in list (Has group below). Check if below is header
-                            else -> {
-                                if (taskGroupList[groupNum+1].isHeader()) deleteHeader = true
-                            }
+                            else -> if (taskGroupList[groupNum+1].isHeader()) deleteHeader = true
                         }
                         // Check if header needs to be deleted (empty header)
                         if (deleteHeader) {
@@ -405,7 +389,6 @@ class TaskGroupAdapter(
                             notifyItemRemoved(groupNum)
                         }
                     }
-
                     GroupType.GROUP -> {
                         val group: TaskGroup = entry.taskGroup!!
                         // I. If group has children selected, perform deletion
@@ -425,7 +408,7 @@ class TaskGroupAdapter(
 
                 // If above is a group and numSelected = 0, exit as we are done.
                 // Otherwise continue one more time to see if header needs to be deleted
-                if (DataTracker.numSelected == 0 && taskGroupList[groupNum].isGroup()) break
+                if (DataTracker.numSelected == 0 && above(groupNum).isGroup()) break
             }
             // If any group has been deleted, expand/collapse icon needs to be updated
             if (groupDeleted) updateExpandCollapseIcon()

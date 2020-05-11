@@ -7,6 +7,7 @@ import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.GroupType
 import com.example.myapplication.data_classes.TaskDate
 import com.example.myapplication.data_classes.today
+import com.example.myapplication.data_classes.firstDayOfWeek
 import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
 import com.example.myapplication.recyclerviewdecoration.GridLayoutDecoration
 
@@ -31,6 +32,7 @@ object Settings {
     private const val defMaxDays: Int = 56
     var maxDays: Int = defMaxDays
     lateinit var today: TaskDate
+    lateinit var firstDayOfWeek: TaskDate
 
     // Layout
     private lateinit var parentRV: RecyclerView
@@ -51,7 +53,8 @@ object Settings {
     }
 
     fun init() {
-        this.today = today()
+        today = today()
+        firstDayOfWeek = firstDayOfWeek()
     }
 
     fun setDefault() {
