@@ -405,7 +405,6 @@ class TaskGroupAdapter(
                         }
                     }
                 }
-
                 // If above is a group and numSelected = 0, exit as we are done.
                 // Otherwise continue one more time to see if header needs to be deleted
                 if (DataTracker.numSelected == 0 && above(groupNum).isGroup()) break
