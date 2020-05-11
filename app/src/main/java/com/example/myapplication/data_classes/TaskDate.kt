@@ -1,9 +1,13 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.debugMessagePrint
 import com.example.myapplication.utility.millisecondsToDays
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.util.*
+import java.util.Calendar.DAY_OF_WEEK
+import java.util.Calendar.getInstance
 
 // Add new task formats + variables
 // Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
@@ -16,12 +20,23 @@ data class TaskDate(
 
 fun today(): TaskDate {
     // Get calendar and add additional days, if addedDays == 0 then defaults to today's day
-    val cal = Calendar.getInstance()
+    val cal: Calendar = getInstance()
 
     // ID, used for sorting. E.g. 12th Feb 2020 = 20200212 -> 2020 | 02 | 12 (YYYYMMDD ordering)
     val id = idFormat.format(cal.timeInMillis).toInt()
 
     // Used for calculating subsequent days
+    val day: Int = cal.get(Calendar.DAY_OF_MONTH)
+    val month: Int = cal.get(Calendar.MONTH)
+    val year: Int = cal.get(Calendar.YEAR)
+
+    return TaskDate(id, day, month, year)
+}
+fun firstDayOfWeek(): TaskDate {
+    val cal: Calendar = getInstance()
+    cal.firstDayOfWeek = Calendar.MONDAY
+
+    val id = idFormat.format(cal.timeInMillis).toInt()
     val day: Int = cal.get(Calendar.DAY_OF_MONTH)
     val month: Int = cal.get(Calendar.MONTH)
     val year: Int = cal.get(Calendar.YEAR)
@@ -40,7 +55,10 @@ fun TaskDate.reassign(newDate: TaskDate) {
 // Date Range checking
 // ####################
 fun TaskDate.getPeriod() : Period {
-    val diff: Int = this.diffFromToday()
+    // debugMessagePrint("Mon of Week: ${Settings.firstDayOfWeek}")
+    // debugMessagePrint("DateDiff: ${dateDiff(Settings.firstDayOfWeek, this)}")
+
+    val diff: Int = dateDiff(Settings.firstDayOfWeek, this)
     return when {
         diff < 0 -> Period.PAST
         diff in 0..6 -> Period.THIS_WEEK
@@ -59,7 +77,6 @@ fun dateDiff(from: TaskDate, to: TaskDate) : Int {
 
     return millisecondsToDays(d2 - d1)
 }
-fun TaskDate.diffFromToday() : Int { return dateDiff(Settings.today, this) }
 
 fun Period.asString() : String {
     return when (this) {
@@ -117,11 +134,13 @@ fun TaskDate.addDays(addedDays: Int): TaskDate { return this.addPeriod(true, add
 
 private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
     val cal = Calendar.getInstance()
-    cal.set(this.year, this.month, this.day)
+    cal.set(year, month, day)
 
     // Either add days to current date, or months. Increment/Decrement based on value
-    if (days) { cal.add(Calendar.DATE, value) }
-    else { cal.add(Calendar.MONTH, value) }
+    when (days) {
+        true  -> cal.add(Calendar.DATE, value)      // Add Days
+        false -> cal.add(Calendar.MONTH, value)     // Add Months
+    }
 
     // ID, used for sorting. E.g. 12th Feb 2020 = 20200212 -> 2020 | 02 | 12 (YYYYMMDD ordering)
     val id = idFormat.format(cal.timeInMillis).toInt()
