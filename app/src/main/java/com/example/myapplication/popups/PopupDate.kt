@@ -8,38 +8,75 @@ import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.popup_date.view.*
-import kotlinx.android.synthetic.main.popup_time.view.txtDate
 
 class PopupDate : Popup() {
     // Today's date and cap date
     private lateinit var today: TaskDate
-    lateinit var endDate: TaskDate
+    private lateinit var endDate: TaskDate
+    // Monday of end week. If date is later than it. We know date belongs to final week
+    private lateinit var monEndWeek: TaskDate
 
     private var date: TaskDate = TaskDate()
-    private var dateDelta: DateDelta = DateDelta.D
 
     fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskDate, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo, anchor)
         val view:View = window.contentView
 
-        // Get today's date. Should update when clock strikes 12:00AM for new day
+        // Get tracked dates. today, endDate, and monEndWeek
         today = today()
-
-        // Copy over most recent date (or edited date) and get date cap
-        date = edited.copy()
         endDate = today.addDays(Settings.maxDays)
+        monEndWeek = endDate.firstDayOfWeek()
+
+        // Copy over most recent date (or edited date)
+        date = edited.copy()
 
         // Refresh in case 12:00 midnight
         if (date.id < today.id) { date = today() }
-        // Check whether we need to hide any of the up/down buttons. Do so if matching today or end date
-        if (date.id == today.id) { view.btnDecDate.visibility = View.INVISIBLE }
-        else if (date.id == endDate.id) { view.btnIncDate.visibility = View.INVISIBLE }
 
-        // Apply values based on set date
-        view.txtDate.text = date.asStringShort()
-        view.txtDeltaDays.text = dateDelta.toString()
+        view.txtSelectedDate.text = date.asStringShort()    // Selected date
 
-        // onClick behaviours:
+        // Generate week given selected date
+        val week: ArrayList<TaskDate> = date.getWeek()
+
+        // Check whether we need to hide forward/backward buttons. Do so if matching this week or last week
+        when {
+            date.thisWeek() -> {
+                view.btnPeriodPrev.visibility = View.INVISIBLE
+                // Hide past dates. When marked as 0, display as "-" and do nothing when clicked
+                val pastDays: Int = dateDiff(today.firstDayOfWeek(), today)
+                for (index: Int in 0 until pastDays) { week[index].day = 0 }
+            }
+            date.finalWeek() -> {
+                view.btnPeriodNext.visibility = View.INVISIBLE
+            }
+        }
+
+        // onClick:
+        // Mo - Su cells
+        view.mon.setupClickableDay(week[0], view.txtMon, view.txtSelectedDate)
+        view.tue.setupClickableDay(week[1], view.txtTue, view.txtSelectedDate)
+        view.wed.setupClickableDay(week[2], view.txtWed, view.txtSelectedDate)
+        view.thu.setupClickableDay(week[3], view.txtThu, view.txtSelectedDate)
+        view.fri.setupClickableDay(week[4], view.txtFri, view.txtSelectedDate)
+        view.sat.setupClickableDay(week[5], view.txtSat, view.txtSelectedDate)
+        view.sun.setupClickableDay(week[6], view.txtSun, view.txtSelectedDate)
+
+        // Apply changes
+        view.btnApplyDate.setOnClickListener {
+            edited.replace(date)
+            modify?.text = date.asStringShort()
+            window.dismiss()
+        }
+
+        // ToDo:
+        // Reset button
+        // Adjust months to properly display
+
+        // Val startMonth = week[0].month
+        // Val endMonth = week[6].month
+        // If same only show start month
+
+        /*
         view.btnDecDate.setOnClickListener { view.txtDate.updateDate(view.btnIncDate, view.btnDecDate, false) }
         view.btnIncDate.setOnClickListener { view.txtDate.updateDate(view.btnIncDate, view.btnDecDate) }
 
@@ -53,68 +90,27 @@ class PopupDate : Popup() {
             view.txtDate.text = date.asStringShort()
             view.txtDeltaDays.text = "D"
         }
-        view.btnApplyDate.setOnClickListener {
-            edited.reassign(date)
-            modify?.text = date.asStringShort()
-            window.dismiss()
-        }
+        */
 
         return window
     }
 
-    private fun TextView.updateDate(incBtn: View, decBtn: View, increment: Boolean = true) {
-        // Change delta value based on days. For month, we use another function for calculation
-        val deltaPeriod = when (dateDelta) {
-            DateDelta.D -> 1
-            DateDelta.W -> 7
-            else -> 1
-        }
+    private fun View.setupClickableDay(taskDate: TaskDate, display: TextView, selectedDate: TextView) {
+        // 1. Set initial display
+        display.text = taskDate.dayNumString()
 
-        // Move date forward
-        if (increment) {
-            // If date previously at start date, re-enable decrementing date
-            if (date.id == today.id) { decBtn.visibility = View.VISIBLE }
+        // Don't add a click listener if past date (display shown as "-")
+        if (taskDate.day != 0) {
+            // ClickListener = override selected date and update its display
+            this.setOnClickListener {
+                date = taskDate
+                selectedDate.text = taskDate.asStringShort()
 
-            date = if (dateDelta == DateDelta.M)
-                 date.addMonths(deltaPeriod)       // Adding month
-            else date.addDays(deltaPeriod)         // Adding days
-
-            // Check if result is over end date
-            if (date.id >= endDate.id) {
-                date = endDate.copy()
-                incBtn.visibility = View.INVISIBLE
+                // ToDo: Highlight this yellow
             }
         }
-        // Move date backwards
-        else {
-            // If date previously at end date, re-enable incrementing date
-            if (date.id == endDate.id) { incBtn.visibility = View.VISIBLE }
-
-            date = if (dateDelta == DateDelta.M)
-                 date.addMonths(-deltaPeriod)       // Subtracting month
-            else date.addDays(-deltaPeriod)         // Subtracting days
-
-            // Check if result is before today, if so reset to today and disable decrementing
-            if (date.id <= today.id) {
-                date = today.copy()
-                decBtn.visibility = View.INVISIBLE
-            }
-        }
-
-        // Assign new value
-        this.text = date.asStringShort()
-    }
-    private fun TextView.updateDelta() {
-        dateDelta = dateDelta.next()
-        this.text = dateDelta.toString()
     }
 
-    enum class DateDelta { D, W, M }
-    private fun DateDelta.next(): DateDelta {
-        return when (this) {
-            DateDelta.D -> DateDelta.W
-            DateDelta.W -> DateDelta.M
-            else -> DateDelta.D
-        }
-    }
+    private fun TaskDate.thisWeek() : Boolean { return getPeriod() == Period.THIS_WEEK }
+    private fun TaskDate.finalWeek() : Boolean { return id >= monEndWeek.id }
 }

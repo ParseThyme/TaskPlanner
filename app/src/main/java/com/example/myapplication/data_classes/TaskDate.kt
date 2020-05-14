@@ -8,6 +8,7 @@ import java.time.DayOfWeek
 import java.util.*
 import java.util.Calendar.DAY_OF_WEEK
 import java.util.Calendar.getInstance
+import kotlin.collections.ArrayList
 
 // Add new task formats + variables
 // Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
@@ -32,9 +33,10 @@ fun today(): TaskDate {
 
     return TaskDate(id, day, month, year)
 }
-fun firstDayOfWeek(): TaskDate {
+fun TaskDate.firstDayOfWeek(): TaskDate {
     val cal: Calendar = getInstance()
-    cal.firstDayOfWeek = Calendar.MONDAY
+    cal.set(year, month, day)                   // Set calendar to specific day
+    cal.set(DAY_OF_WEEK, Calendar.MONDAY)       // Get first day in the week of that date
 
     val id = idFormat.format(cal.timeInMillis).toInt()
     val day: Int = cal.get(Calendar.DAY_OF_MONTH)
@@ -44,7 +46,7 @@ fun firstDayOfWeek(): TaskDate {
     return TaskDate(id, day, month, year)
 }
 
-fun TaskDate.reassign(newDate: TaskDate) {
+fun TaskDate.replace(newDate: TaskDate) {
     id = newDate.id
     day = newDate.day
     month = newDate.month
@@ -52,12 +54,9 @@ fun TaskDate.reassign(newDate: TaskDate) {
 }
 
 // ####################
-// Date Range checking
+// Date Ranges
 // ####################
 fun TaskDate.getPeriod() : Period {
-    // debugMessagePrint("Mon of Week: ${Settings.firstDayOfWeek}")
-    // debugMessagePrint("DateDiff: ${dateDiff(Settings.firstDayOfWeek, this)}")
-
     val diff: Int = dateDiff(Settings.firstDayOfWeek, this)
     return when {
         diff < 0 -> Period.PAST
@@ -68,7 +67,7 @@ fun TaskDate.getPeriod() : Period {
     }
 }
 fun dateDiff(from: TaskDate, to: TaskDate) : Int {
-    val cal: Calendar = Calendar.getInstance()
+    val cal: Calendar = getInstance()
 
     cal.set(from.year, from.month, from.day)
     val d1 = cal.timeInMillis
@@ -76,6 +75,16 @@ fun dateDiff(from: TaskDate, to: TaskDate) : Int {
     val d2 = cal.timeInMillis
 
     return millisecondsToDays(d2 - d1)
+}
+
+fun TaskDate.getWeek() : ArrayList<TaskDate> {
+    var currDay: TaskDate = firstDayOfWeek()                // Start at Monday
+    val week: ArrayList<TaskDate> = arrayListOf()           // Create of days
+    for (index: Int in 0 until 7) {                         // Go from Mon-Sun fill in days
+        week.add(currDay.copy())
+        currDay = currDay.addDays(1)
+    }
+    return week
 }
 
 fun Period.asString() : String {
@@ -100,12 +109,12 @@ fun TaskDate.asStringShort(): String {
     val dayNameShort: String = SimpleDateFormat("EE").format(timeInMills).dropLast(1)
     val monthShort: String = SimpleDateFormat("MMM").format(timeInMills)
 
-    // Mo-1-Feb
-    return "$dayNameShort | $day $monthShort"    // E.g. Fr 21 Feb
+    // Mo | 1st Feb
+    return "$dayNameShort | $day $monthShort"
 }
 fun TaskDate.asString(): String {
     // Get task's date
-    val cal:Calendar = Calendar.getInstance()
+    val cal:Calendar = getInstance()
     cal.set(this.year, this.month, this.day)
 
     // Calculate timeInMills, create label
@@ -125,12 +134,18 @@ fun TaskDate.dayNameShort(): String {
     // Mo, Tu, We, Th, Fr, Sa, Su
     return SimpleDateFormat("EE").format(timeInMills).dropLast(1)
 }
+fun TaskDate.dayNumString(): String {
+    return if
+       (day == 0) "-"
+    else
+        day.toString()
+}
 
 // ####################
 // Date addition
 // ####################
-fun TaskDate.addMonths(addedMonths: Int): TaskDate { return this.addPeriod(false, addedMonths) }
-fun TaskDate.addDays(addedDays: Int): TaskDate { return this.addPeriod(true, addedDays) }
+fun TaskDate.addMonths(months: Int): TaskDate { return this.addPeriod(false, months) }
+fun TaskDate.addDays(days: Int): TaskDate { return this.addPeriod(true, days) }
 
 private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
     val cal = Calendar.getInstance()

@@ -57,6 +57,15 @@ fun millisecondsToDays(milliseconds: Long) : Int {
  return (milliseconds / 1000 / 60 / 60 / 24).toInt()
 }
 
+/*
+// https://stackoverflow.com/questions/42308580/kotlin-extension-for-next-enum-value-without-reflection
+inline fun <reified T: Enum<T>> T.next(): T {
+ val values = enumValues<T>()
+ val nextOrdinal = (ordinal + 1) % values.size
+ return values[nextOrdinal]
+}
+*/
+
 /** ########## Tutorials: ##########
  - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/
  - OnClick: https://stackoverflow.com/questions/54219825/android-kotlin-how-to-add-click-listener-to-recyclerview-adapter

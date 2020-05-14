@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardLayout"
@@ -66,7 +66,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/selectableDatesLayout"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/optionsLayout">
@@ -87,13 +87,13 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:tint="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/txtDate"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtSelectedDate"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/txtDate"
+                    app:layout_constraintTop_toTopOf="@+id/txtSelectedDate"
                     app:srcCompat="@drawable/ic_date" />
 
                 <TextView
-                    android:id="@+id/txtDate"
+                    android:id="@+id/txtSelectedDate"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:background="@android:color/white"
@@ -138,9 +138,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toEndOf="@+id/sunday"
+                app:layout_constraintEnd_toEndOf="@+id/sun"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/thursday">
+                app:layout_constraintTop_toBottomOf="@+id/thu">
 
                 <ImageView
                     android:id="@+id/btnPeriodPrev"
@@ -182,7 +182,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/monday"
+                android:id="@+id/mon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -190,7 +190,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/txtCurrMonth">
 
                 <TextView
-                    android:id="@+id/mondayLabel"
+                    android:id="@+id/monLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -203,27 +203,27 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/mondayDate"
+                    android:id="@+id/txtMon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/mondayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/monLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/tuesday"
+                android:id="@+id/tue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/monday"
-                app:layout_constraintTop_toTopOf="@+id/monday">
+                app:layout_constraintStart_toEndOf="@+id/mon"
+                app:layout_constraintTop_toTopOf="@+id/mon">
 
                 <TextView
-                    android:id="@+id/tuesdayLabel"
+                    android:id="@+id/tueLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -236,27 +236,27 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tuesdayDate"
+                    android:id="@+id/txtTue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tuesdayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/tueLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/wednesday"
+                android:id="@+id/wed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/tuesday"
-                app:layout_constraintTop_toTopOf="@+id/tuesday">
+                app:layout_constraintStart_toEndOf="@+id/tue"
+                app:layout_constraintTop_toTopOf="@+id/tue">
 
                 <TextView
-                    android:id="@+id/wednesdayLabel"
+                    android:id="@+id/wedLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -269,27 +269,27 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/wednesdayDate"
+                    android:id="@+id/txtWed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/wednesdayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/wedLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/thursday"
+                android:id="@+id/thu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/wednesday"
-                app:layout_constraintTop_toTopOf="@+id/wednesday">
+                app:layout_constraintStart_toEndOf="@+id/wed"
+                app:layout_constraintTop_toTopOf="@+id/wed">
 
                 <TextView
-                    android:id="@+id/thursdayLabel"
+                    android:id="@+id/thuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -302,27 +302,27 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/thursdayDate"
+                    android:id="@+id/txtThu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/thursdayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/thuLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/friday"
+                android:id="@+id/fri"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/thursday"
-                app:layout_constraintTop_toTopOf="@+id/thursday">
+                app:layout_constraintStart_toEndOf="@+id/thu"
+                app:layout_constraintTop_toTopOf="@+id/thu">
 
                 <TextView
-                    android:id="@+id/fridayLabel"
+                    android:id="@+id/friLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -335,27 +335,27 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/fridayDate"
+                    android:id="@+id/txtFri"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/fridayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/friLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/saturday"
+                android:id="@+id/sat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/friday"
-                app:layout_constraintTop_toTopOf="@+id/friday">
+                app:layout_constraintStart_toEndOf="@+id/fri"
+                app:layout_constraintTop_toTopOf="@+id/fri">
 
                 <TextView
-                    android:id="@+id/saturdayLabel"
+                    android:id="@+id/satLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -368,27 +368,27 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/saturdayDate"
+                    android:id="@+id/txtSat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/saturdayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/satLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/sunday"
+                android:id="@+id/sun"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/saturday"
-                app:layout_constraintTop_toTopOf="@+id/saturday">
+                app:layout_constraintStart_toEndOf="@+id/sat"
+                app:layout_constraintTop_toTopOf="@+id/sat">
 
                 <TextView
-                    android:id="@+id/sundayLabel"
+                    android:id="@+id/sunLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
@@ -401,16 +401,16 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/sundayDate"
+                    android:id="@+id/txtSun"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:ems="2"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="-"
+                    android:text="NA"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sundayLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/sunLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

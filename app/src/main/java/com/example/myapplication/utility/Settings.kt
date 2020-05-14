@@ -20,7 +20,7 @@ object Settings {
 
     // Tasks
     // Time
-    var durationMax: Int = 480   // 8 hours, 480 minutes
+    var durationMax: Int = 480   // 8 hours == 480 minutes
     private const val defTimeDelta: Int = 5
     var timeDelta: Int = defTimeDelta
     // Coloration
@@ -29,7 +29,7 @@ object Settings {
     var taskBaseColor: String = "#00000000"
 
     // Date / Calendar values
-    private const val defMaxDays: Int = 56
+    private const val defMaxDays: Int = 56  // 8 Weeks
     var maxDays: Int = defMaxDays
     lateinit var today: TaskDate
     lateinit var firstDayOfWeek: TaskDate
@@ -54,7 +54,7 @@ object Settings {
 
     fun init() {
         today = today()
-        firstDayOfWeek = firstDayOfWeek()
+        firstDayOfWeek = today.firstDayOfWeek()
     }
 
     fun setDefault() {
