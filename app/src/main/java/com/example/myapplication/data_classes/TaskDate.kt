@@ -1,14 +1,11 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.debugMessagePrint
 import com.example.myapplication.utility.millisecondsToDays
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
 import java.util.*
 import java.util.Calendar.DAY_OF_WEEK
 import java.util.Calendar.getInstance
-import kotlin.collections.ArrayList
 
 // Add new task formats + variables
 // Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
@@ -56,14 +53,14 @@ fun TaskDate.replace(newDate: TaskDate) {
 // ####################
 // Date Ranges
 // ####################
-fun TaskDate.getPeriod() : Period {
+fun TaskDate.getWeek() : Week {
     val diff: Int = dateDiff(Settings.firstDayOfWeek, this)
     return when {
-        diff < 0 -> Period.PAST
-        diff in 0..6 -> Period.THIS_WEEK
-        diff in 7..13 -> Period.NEXT_WEEK
-        diff in 14..20 -> Period.FORTNIGHT
-        else -> Period.FUTURE
+        diff < 0 -> Week.PAST
+        diff in 0..6 -> Week.THIS
+        diff in 7..13 -> Week.NEXT
+        diff in 14..20 -> Week.FORTNIGHT
+        else -> Week.FUTURE
     }
 }
 fun dateDiff(from: TaskDate, to: TaskDate) : Int {
@@ -77,27 +74,30 @@ fun dateDiff(from: TaskDate, to: TaskDate) : Int {
     return millisecondsToDays(d2 - d1)
 }
 
-fun TaskDate.getWeek() : ArrayList<TaskDate> {
-    var currDay: TaskDate = firstDayOfWeek()                // Start at Monday
-    val week: ArrayList<TaskDate> = arrayListOf()           // Create of days
-    for (index: Int in 0 until 7) {                         // Go from Mon-Sun fill in days
-        week.add(currDay.copy())
-        currDay = currDay.addDays(1)
-    }
-    return week
-}
-
-fun Period.asString() : String {
+fun Week.asString() : String {
     return when (this) {
-        Period.PAST -> "Past Dates"
-        Period.THIS_WEEK -> "This Week"
-        Period.NEXT_WEEK -> "Next Week"
-        Period.FORTNIGHT -> "Fortnight"
-        Period.FUTURE -> "3+ Weeks"
-        else -> ""
+        Week.PAST -> "Past Dates"
+        Week.THIS -> "This Week"
+        Week.NEXT -> "Next Week"
+        Week.FORTNIGHT -> "Fortnight"
+        Week.FUTURE -> "Future"
     }
 }
-enum class Period { PAST, THIS_WEEK, NEXT_WEEK, FORTNIGHT, FUTURE }
+fun Week.next(loop: Boolean = false) : Week {
+    return when (this) {
+        Week.PAST -> Week.THIS
+        Week.THIS -> Week.NEXT
+        Week.NEXT -> Week.FORTNIGHT
+        Week.FORTNIGHT -> Week.FUTURE
+        Week.FUTURE -> {
+            when (loop) {
+                true -> Week.PAST           // If looping, go back to first entry
+                else -> Week.FUTURE         // Not looping, stop at this point
+            }
+        }
+    }
+}
+enum class Week { PAST, THIS, NEXT, FORTNIGHT, FUTURE }
 
 // ####################
 // Labels / ToString()
@@ -134,21 +134,21 @@ fun TaskDate.dayNameShort(): String {
     // Mo, Tu, We, Th, Fr, Sa, Su
     return SimpleDateFormat("EE").format(timeInMills).dropLast(1)
 }
-fun TaskDate.dayNumString(): String {
-    return if
-       (day == 0) "-"
-    else
-        day.toString()
-}
 
 // ####################
 // Date addition
 // ####################
 fun TaskDate.addMonths(months: Int): TaskDate { return this.addPeriod(false, months) }
-fun TaskDate.addDays(days: Int): TaskDate { return this.addPeriod(true, days) }
+fun TaskDate.addDays(days: Int): TaskDate {
+    // Test adding days together, if < 28, update id and day variable. Year and Month untouched
+    return when (day + days < 28) {
+        true  -> TaskDate(id + days, day + days, month, year)
+        false -> this.addPeriod(true, days)
+    }
+}
 
 private fun TaskDate.addPeriod(days: Boolean, value: Int): TaskDate {
-    val cal = Calendar.getInstance()
+    val cal: Calendar = getInstance()
     cal.set(year, month, day)
 
     // Either add days to current date, or months. Increment/Decrement based on value

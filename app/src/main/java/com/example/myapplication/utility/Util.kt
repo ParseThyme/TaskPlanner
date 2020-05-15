@@ -44,9 +44,7 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
 fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }
 
-fun debugMessagePrint(message: String) {
-   Log.d("Test", message)
-}
+fun debugMessagePrint(message: String) { Log.d("Test", message) }
 
 fun millisecondsToDays(milliseconds: Long) : Int {
  /* 1. /1000 == ms to s
@@ -57,8 +55,8 @@ fun millisecondsToDays(milliseconds: Long) : Int {
  return (milliseconds / 1000 / 60 / 60 / 24).toInt()
 }
 
-/*
 // https://stackoverflow.com/questions/42308580/kotlin-extension-for-next-enum-value-without-reflection
+/*
 inline fun <reified T: Enum<T>> T.next(): T {
  val values = enumValues<T>()
  val nextOrdinal = (ordinal + 1) % values.size

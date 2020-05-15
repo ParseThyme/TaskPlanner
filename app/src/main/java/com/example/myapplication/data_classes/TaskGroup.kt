@@ -17,7 +17,7 @@ data class TaskGroup (
     var state: Fold = Fold.OUT                      // Toggle state (expanded/collapsed)
 )
 data class GroupHeader(
-    val period: Period = Period.PAST,
+    val week: Week = Week.PAST,
     val label: String
 )
 
@@ -31,8 +31,8 @@ enum class GroupType { HEADER, GROUP }
 // #######################################################
 // Headers
 // #######################################################
-fun headerEntry(period: Period) : GroupEntry {
-    return GroupEntry(GroupType.HEADER, null, GroupHeader(period, period.asString()))
+fun headerEntry(week: Week) : GroupEntry {
+    return GroupEntry(GroupType.HEADER, null, GroupHeader(week, week.asString()))
 }
 
 fun GroupEntry.isHeader() : Boolean { return (type == GroupType.HEADER) }

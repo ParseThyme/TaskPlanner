@@ -27,11 +27,11 @@ class TaskGroupAdapter(
     // ##############################
     private val headers = hashMapOf (
         // Key: [Period], Value = [Boolean]
-        Period.PAST      to false,
-        Period.THIS_WEEK to false,
-        Period.NEXT_WEEK to false,
-        Period.FORTNIGHT to false,
-        Period.FUTURE    to false
+        Week.PAST      to false,
+        Week.THIS      to false,
+        Week.NEXT      to false,
+        Week.FORTNIGHT to false,
+        Week.FUTURE    to false
     )
     private var headersAssigned = 0
 
@@ -39,20 +39,20 @@ class TaskGroupAdapter(
         // If all headers have been assigned, exit
         if (headersAssigned == headers.size) return false
 
-        // 1. Get period group belongs to
-        val period: Period = date.getPeriod()
-        // 2. Check if period assigned yet, if not mark to assign, update counter
-        if (headers[period] == false) {
-            headers[period] = true
+        // 1. Get week group belongs to
+        val week: Week = date.getWeek()
+        // 2. Check if week assigned yet, if not mark to assign, update counter
+        if (headers[week] == false) {
+            headers[week] = true
             headersAssigned++
             return true
         }
 
         return false
     }
-    private fun removeHeader(period: Period) {
+    private fun removeHeader(week: Week) {
         headersAssigned--
-        headers[period] = false
+        headers[week] = false
     }
 
     // Initialization
@@ -76,7 +76,7 @@ class TaskGroupAdapter(
                         group.setSelected(false)
 
                         // 2A. Check if header has been added yet, if not add header
-                        if (group.checkAddHeader()) { sortedList.add(headerEntry(group.date.getPeriod())) }
+                        if (group.checkAddHeader()) { sortedList.add(headerEntry(group.date.getWeek())) }
                         // 2B. Add copy of task
                         sortedList.add(entry)
                     }
@@ -228,7 +228,7 @@ class TaskGroupAdapter(
                 // C. Past. Add before current date
                 else -> {
                     // Check if header matches up. Otherwise need to add 1 pos before it
-                    if (date.getPeriod() == taskGroupList[0].header!!.period) {
+                    if (date.getWeek() == taskGroupList[0].header!!.week) {
                         taskGroupList.add(1, taskGroupEntry(date, tasks))
                         notifyItemInserted(1)
                         changeCollapseExpandIcon(Fold.OUT)
@@ -288,8 +288,8 @@ class TaskGroupAdapter(
             0 -> { addToTaskGroup(1, tasks) }
             // Earlier date, add new group at top
             -1 -> {
-                // Given first pos == header, check if matches same period of new task
-                if (date.getPeriod() == taskGroupList[0].header!!.period) {
+                // Given first pos == header, check if matches same week of new task
+                if (date.getWeek() == taskGroupList[0].header!!.week) {
                     taskGroupList.add(1, taskGroupEntry(date, tasks))
                     notifyItemInserted(1)
                     changeCollapseExpandIcon(Fold.OUT)
@@ -339,7 +339,7 @@ class TaskGroupAdapter(
         // 2. Check if header needs to be added
         if (newGroup.taskGroup!!.checkAddHeader()) {
             // Add new header before designated group
-            taskGroupList.add(pos, headerEntry(date.getPeriod()))
+            taskGroupList.add(pos, headerEntry(date.getWeek()))
             notifyItemInserted(pos)
         }
 
@@ -384,7 +384,7 @@ class TaskGroupAdapter(
                         }
                         // Check if header needs to be deleted (empty header)
                         if (deleteHeader) {
-                            removeHeader(taskGroupList[groupNum].header!!.period)
+                            removeHeader(taskGroupList[groupNum].header!!.week)
                             taskGroupList.removeAt(groupNum)
                             notifyItemRemoved(groupNum)
                         }
@@ -487,7 +487,7 @@ class TaskGroupAdapter(
         DataTracker.numSelected = 0             // Reset selected count
 
         // Reset header parameters
-        for (period: Period in headers.keys) headers[period] = false
+        for (week: Week in headers.keys) headers[week] = false
         headersAssigned = 0
 
         notifyDataSetChanged()
