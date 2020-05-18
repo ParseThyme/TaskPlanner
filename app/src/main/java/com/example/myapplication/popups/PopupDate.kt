@@ -140,6 +140,9 @@ class PopupDate : Popup() {
 
         // [D]. Apply changes
         view.btnApplyDate.setOnClickListener {
+            // Store current week selected cell is in
+            selected.week = currWeek
+
             edited.replace(date)
             modify?.text = date.asStringShort()
             window.dismiss()
@@ -177,8 +180,6 @@ class PopupDate : Popup() {
                 selected.applyBackgroundColor(Color.WHITE)
                 selected.view = highlightedView
                 selected.applyBackgroundColor(Settings.highlightColor)
-                // Store current week selected cell is in
-                selected.week = currWeek
             }
         }
     }
