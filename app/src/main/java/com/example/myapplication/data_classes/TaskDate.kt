@@ -51,8 +51,10 @@ fun TaskDate.replace(newDate: TaskDate) {
 }
 
 // ####################
-// Date Ranges
+// Date Ranges, Weeks, Months
 // ####################
+enum class Week { PAST, THIS, NEXT, FORTNIGHT, FUTURE }
+
 fun TaskDate.getWeek() : Week {
     val diff: Int = dateDiff(Settings.firstDayOfWeek, this)
     return when {
@@ -63,17 +65,6 @@ fun TaskDate.getWeek() : Week {
         else -> Week.FUTURE
     }
 }
-fun dateDiff(from: TaskDate, to: TaskDate) : Int {
-    val cal: Calendar = getInstance()
-
-    cal.set(from.year, from.month, from.day)
-    val d1 = cal.timeInMillis
-    cal.set(to.year, to.month, to.day)
-    val d2 = cal.timeInMillis
-
-    return millisecondsToDays(d2 - d1)
-}
-
 fun Week.asString() : String {
     return when (this) {
         Week.PAST -> "Past Dates"
@@ -97,7 +88,28 @@ fun Week.next(loop: Boolean = false) : Week {
         }
     }
 }
-enum class Week { PAST, THIS, NEXT, FORTNIGHT, FUTURE }
+
+fun TaskDate.monthNext() : Int { return (month + 1) % 12 }
+fun TaskDate.monthPrev() : Int { return (month - 1) % 12 }
+fun Int.monthAsString(): String {
+    return when (this) {
+        0 -> "Jan"      1 -> "Feb"      2 -> "Mar"      3 -> "Apr"
+        4 -> "May"      5 -> "Jun"      6 -> "Jul"      7 -> "Aug"
+        8 -> "Sep"      9 -> "Oct"      10 -> "Nov"     11 -> "Dec"
+        else -> "$this: invalid month"
+    }
+}
+
+fun dateDiff(from: TaskDate, to: TaskDate) : Int {
+    val cal: Calendar = getInstance()
+
+    cal.set(from.year, from.month, from.day)
+    val d1 = cal.timeInMillis
+    cal.set(to.year, to.month, to.day)
+    val d2 = cal.timeInMillis
+
+    return millisecondsToDays(d2 - d1)
+}
 
 // ####################
 // Labels / ToString()
@@ -127,7 +139,7 @@ fun TaskDate.asString(): String {
     return "$day$ordinal $month"
 }
 fun TaskDate.dayNameShort(): String {
-    val cal:Calendar = Calendar.getInstance()
+    val cal:Calendar = getInstance()
     cal.set(this.year, this.month, this.day)
     val timeInMills = cal.timeInMillis
 
