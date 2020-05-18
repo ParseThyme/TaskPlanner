@@ -1,6 +1,8 @@
 package com.example.myapplication.data_classes
 
+import android.widget.TextView
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.applyBackgroundColor
 
 data class PopupDateDay(
     val taskDate: TaskDate,
@@ -12,10 +14,17 @@ data class PopupDateWeek(
     val days: ArrayList<PopupDateDay> = arrayListOf(),
     var month: Int = 0
 )
+data class SelectedPopupDateDay(
+    var view: TextView? = null,
+    var week: Int = 0               // Index selected view can be found in
+)
+
+fun SelectedPopupDateDay.applyBackgroundColor(color: Int)    { this.view!!.applyBackgroundColor(color) }
+fun SelectedPopupDateDay.applyBackgroundColor(color: String) { this.view!!.applyBackgroundColor(color) }
 
 class PopupDateData {
     var weeks: ArrayList<PopupDateWeek> = arrayListOf()
-    var months = hashMapOf<Int, Int>()          // [Month, Index]
+    var months = hashMapOf<Int, Int>()                      // [Month, Index]
 
     init { createEntries() }
 

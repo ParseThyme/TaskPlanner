@@ -9,7 +9,6 @@ import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.applyBackgroundColor
 import kotlinx.android.synthetic.main.popup_date.view.*
 
 class PopupDate : Popup() {
@@ -18,7 +17,7 @@ class PopupDate : Popup() {
     // Most recently chosen date
     private var date: TaskDate = TaskDate()
     // Highlighted cell
-    private lateinit var selectedCell: TextView
+    private var selected: SelectedPopupDateDay = SelectedPopupDateDay()
     // Data/Information pertaining to weeks in popup created
     private val data : PopupDateData = PopupDateData()
     private val weeks = data.weeks
@@ -35,9 +34,10 @@ class PopupDate : Popup() {
         val view:View = window.contentView
 
         // 1. Get tracked variables
-        today = today()             // Today's date
-        date = edited.copy()        // Most recently selected date
-        currMonth = date.month
+        today = today()                // Today's date
+        date = edited.copy()           // Most recently selected date
+        currMonth = date.month         // Match month to currently chosen month
+        currWeek = selected.week       // Match week to currently chosen week
 
         // Refresh in case 12:00 midnight
         if (date.id < today.id) { date = today() }
@@ -174,9 +174,11 @@ class PopupDate : Popup() {
                 updatedTextView.text = clickedDay.taskDate.asStringShort()
 
                 // Clear previous highlight, switch then highlight new cell view
-                selectedCell.applyBackgroundColor(Color.WHITE)
-                selectedCell = highlightedView
-                selectedCell.applyBackgroundColor(Settings.highlightColor)
+                selected.applyBackgroundColor(Color.WHITE)
+                selected.view = highlightedView
+                selected.applyBackgroundColor(Settings.highlightColor)
+                // Store current week selected cell is in
+                selected.week = currWeek
             }
         }
     }
@@ -186,15 +188,15 @@ class PopupDate : Popup() {
             textViews[index].text = dayData[index].label
             // Highlight date yellow if selected
             if (dayData[index].taskDate.id == date.id) {
-                selectedCell = textViews[index]
-                selectedCell.applyBackgroundColor(Settings.highlightColor)
+                selected.view = textViews[index]
+                selected.applyBackgroundColor(Settings.highlightColor)
             }
         }
     }
 
     private fun TextView.updateWeekLabel() {
         this.text = weeks[currWeek].week.asString()      // Update text display
-        selectedCell.applyBackgroundColor(Color.WHITE)   // Unhighlight selectedCell
+        selected.applyBackgroundColor(Color.WHITE)   // Unhighlight selectedCell
     }
 
     private fun TextView.monthNext(btnMonthPrev: ImageView, btnMonthNext: ImageView) {
