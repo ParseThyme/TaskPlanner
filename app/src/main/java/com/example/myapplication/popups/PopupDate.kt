@@ -10,6 +10,7 @@ import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.popup_date.view.*
+import kotlinx.android.synthetic.main.task_edit_view.view.*
 
 class PopupDate : Popup() {
     // Today's date
@@ -143,6 +144,7 @@ class PopupDate : Popup() {
             // Store current week selected cell is in
             selected.week = currWeek
 
+            // Update passed in date
             edited.replace(date)
             modify?.text = date.asStringShort()
             window.dismiss()
@@ -150,6 +152,13 @@ class PopupDate : Popup() {
 
         // ToDo:
         // Reset button
+        view.btnResetDate.setOnClickListener {
+            // Move and month to currently selected date
+            // currWeek = selected.week
+            // currMonth =
+
+            // Update back/forward buttons accordingly
+        }
 
         /*
         view.btnResetDate.setOnClickListener {

@@ -51,7 +51,7 @@ class PopupTime : Popup() {
         view.txtDeltaTime.setOnClickListener { view.txtDeltaTime.updateDelta() }
 
         // Reset values
-        view.btnResetDate.setOnClickListener { view.resetValues() }
+        view.btnResetTime.setOnClickListener { view.resetValues() }
 
         // Save updated time when window closed
         view.btnApplyTime.setOnClickListener {
