@@ -6,8 +6,6 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.defaultTimeMsg
 import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime : Popup() {
@@ -20,6 +18,11 @@ class PopupTime : Popup() {
         // Copy over most recent time
         time = edited.copy()
 
+        view.txtTimeHour.setOnClickListener {
+            view.timeShortcutHour.visibility = View.VISIBLE
+        }
+
+        /*
         // For unset times, reset value to default
         if (!time.isValid()) { view.resetValues() }
 
@@ -71,11 +74,13 @@ class PopupTime : Popup() {
             modify?.text = defaultTimeMsg
             window.dismiss()
         }
+        */
 
         window.show(attachTo)
         return window
     }
 
+    /*
     private fun View.resetValues() {
         time.resetValues()
         txtDate.text = time.createStartTime(false)
@@ -186,4 +191,5 @@ class PopupTime : Popup() {
         time.timeOfDay = time.getOppositeTimeOfDay()
         text = time.timeOfDay
     }
+    */
 }
