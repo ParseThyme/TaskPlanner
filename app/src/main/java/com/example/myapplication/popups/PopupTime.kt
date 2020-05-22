@@ -19,7 +19,7 @@ class PopupTime : Popup() {
         time = edited.copy()
 
         view.txtTimeHour.setOnClickListener {
-            view.timeShortcutHour.visibility = View.VISIBLE
+            view.timeSetHour.visibility = View.VISIBLE
         }
 
         /*

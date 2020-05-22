@@ -3,14 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/timePopupLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
         android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -39,131 +42,128 @@
             app:layout_constraintTop_toBottomOf="@+id/windowLabel">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/timeDisplayLayout"
+                android:id="@+id/timeSelectedLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/iconTime"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/timeSetLayout"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:padding="5dp"
-                    android:tint="@android:color/white"
+                    android:background="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btnTimeHourUp"
-                    app:srcCompat="@drawable/ic_time" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/txtTimeHour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@android:color/white"
-                    android:ems="2"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="12"
-                    app:layout_constraintBottom_toBottomOf="@+id/iconTime"
-                    app:layout_constraintStart_toEndOf="@+id/iconTime"
-                    app:layout_constraintTop_toTopOf="@+id/iconTime" />
+                    <ImageView
+                        android:id="@+id/iconTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        android:padding="5dp"
+                        android:tint="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_time" />
 
-                <TextView
-                    android:id="@+id/labelTimeDivider"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@android:color/white"
-                    android:gravity="center"
-                    android:text=":"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/txtTimeHour"
-                    app:layout_constraintStart_toEndOf="@id/txtTimeHour"
-                    app:layout_constraintTop_toTopOf="@+id/txtTimeHour" />
+                    <TextView
+                        android:id="@+id/txtTimeHour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="12"
+                        app:layout_constraintStart_toEndOf="@+id/iconTime"
+                        app:layout_constraintTop_toBottomOf="@+id/btnTimeHourUp" />
 
-                <TextView
-                    android:id="@+id/txtTimeMinute"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@android:color/white"
-                    android:ems="2"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="00"
-                    app:layout_constraintBottom_toBottomOf="@+id/labelTimeDivider"
-                    app:layout_constraintStart_toEndOf="@+id/labelTimeDivider"
-                    app:layout_constraintTop_toTopOf="@+id/labelTimeDivider" />
+                    <TextView
+                        android:id="@+id/labelTimeDivider"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:text=":"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtTimeHour"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/txtTimeOfDay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:background="@color/colorPrimary"
-                    android:ems="2"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="AM"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/txtTimeMinute"
-                    app:layout_constraintStart_toEndOf="@+id/txtTimeMinute"
-                    app:layout_constraintTop_toTopOf="@+id/txtTimeMinute" />
+                    <TextView
+                        android:id="@+id/txtTimeMinute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="00"
+                        app:layout_constraintStart_toEndOf="@+id/labelTimeDivider"
+                        app:layout_constraintTop_toBottomOf="@+id/btnTimeMinUp" />
 
-                <ImageView
-                    android:id="@+id/btnTimeHourUp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:tint="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/txtTimeHour"
-                    app:layout_constraintStart_toEndOf="@+id/iconTime"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_up" />
+                    <TextView
+                        android:id="@+id/txtTimeOfDay"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:text="PM"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtTimeMinute"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/btnTimeMinUp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:tint="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/txtTimeMinute"
-                    app:layout_constraintStart_toEndOf="@+id/labelTimeDivider"
-                    app:layout_constraintTop_toTopOf="@+id/btnTimeHourUp"
-                    app:srcCompat="@drawable/ic_arrow_up" />
+                    <ImageView
+                        android:id="@+id/btnTimeHourUp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toStartOf="@+id/labelTimeDivider"
+                        app:layout_constraintStart_toStartOf="@+id/txtTimeHour"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_up" />
 
-                <ImageView
-                    android:id="@+id/btnTimeHourDown"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:tint="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/txtTimeHour"
-                    app:layout_constraintStart_toEndOf="@+id/iconTime"
-                    app:layout_constraintTop_toBottomOf="@+id/txtTimeHour"
-                    app:srcCompat="@drawable/ic_arrow_down" />
+                    <ImageView
+                        android:id="@+id/btnTimeHourDown"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/txtTimeHour"
+                        app:layout_constraintEnd_toStartOf="@+id/labelTimeDivider"
+                        app:layout_constraintStart_toStartOf="@+id/txtTimeHour"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTimeHour"
+                        app:srcCompat="@drawable/ic_arrow_down" />
 
-                <ImageView
-                    android:id="@+id/btnTimeMinDown"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:tint="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@id/btnTimeHourDown"
-                    app:layout_constraintEnd_toEndOf="@+id/txtTimeMinute"
-                    app:layout_constraintStart_toEndOf="@+id/labelTimeDivider"
-                    app:layout_constraintTop_toTopOf="@+id/btnTimeHourDown"
-                    app:srcCompat="@drawable/ic_arrow_down" />
+                    <ImageView
+                        android:id="@+id/btnTimeMinUp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/txtTimeMinute"
+                        app:layout_constraintStart_toStartOf="@+id/txtTimeMinute"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_up" />
+
+                    <ImageView
+                        android:id="@+id/btnTimeMinDown"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/txtTimeMinute"
+                        app:layout_constraintStart_toStartOf="@+id/txtTimeMinute"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTimeMinute"
+                        app:srcCompat="@drawable/ic_arrow_down" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/timeShortcutHour"
-                    android:layout_width="0dp"
+                    android:id="@+id/timeSetHour"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginTop="5dp"
                     android:visibility="visible"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btnTimeHourDown">
+                    app:layout_constraintTop_toBottomOf="@+id/timeSetLayout">
 
                     <TextView
                         android:id="@+id/labelEditHour"
@@ -172,7 +172,7 @@
                         android:background="@color/colorPrimary"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="Hour"
                         android:textColor="@android:color/white"
                         android:textSize="12sp"
@@ -181,73 +181,69 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/setTimeHour3"
+                        android:id="@+id/timeHour3"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="3"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/labelEditHour" />
 
                     <TextView
-                        android:id="@+id/setTimeHour6"
+                        android:id="@+id/timeHour6"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="6"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toEndOf="@+id/setTimeHour3"
-                        app:layout_constraintTop_toTopOf="@+id/setTimeHour3" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/timeHour3"
+                        app:layout_constraintTop_toTopOf="@+id/timeHour3" />
 
                     <TextView
-                        android:id="@+id/setTimeHour9"
+                        android:id="@+id/timeHour9"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginTop="5dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="9"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="@+id/setTimeHour3"
-                        app:layout_constraintTop_toBottomOf="@+id/setTimeHour3" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/timeHour3" />
 
                     <TextView
-                        android:id="@+id/setTimeHour12"
+                        android:id="@+id/timeHour12"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="12"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toEndOf="@+id/setTimeHour9"
-                        app:layout_constraintTop_toTopOf="@+id/setTimeHour9" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/timeHour9"
+                        app:layout_constraintTop_toTopOf="@+id/timeHour9" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/timeShortcutMin"
+                    android:id="@+id/timeSetMin"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
                     android:visibility="visible"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/timeShortcutHour">
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/timeSetHour"
+                    app:layout_constraintTop_toTopOf="@+id/timeSetHour">
 
                     <TextView
                         android:id="@+id/labelEditMin"
@@ -256,8 +252,8 @@
                         android:background="@color/colorPrimary"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
-                        android:text="Minute"
+                        android:padding="2dp"
+                        android:text="Minutes"
                         android:textColor="@android:color/white"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -265,61 +261,57 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/setTimeMin0"
+                        android:id="@+id/timeMin0"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="00"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/labelEditMin" />
 
                     <TextView
-                        android:id="@+id/setTimeMin5"
+                        android:id="@+id/timeMin5"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="05"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toEndOf="@+id/setTimeMin0"
-                        app:layout_constraintTop_toTopOf="@+id/setTimeMin0" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/timeMin0"
+                        app:layout_constraintTop_toTopOf="@+id/timeMin0" />
 
                     <TextView
-                        android:id="@+id/setTimeMin15"
+                        android:id="@+id/timeMin15"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginTop="5dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="15"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/setTimeMin0" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/timeMin5"
+                        app:layout_constraintStart_toStartOf="@+id/timeMin0"
+                        app:layout_constraintTop_toBottomOf="@+id/timeMin0" />
 
                     <TextView
-                        android:id="@+id/setTimeMin30"
+                        android:id="@+id/timeMin30"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="5dp"
+                        android:padding="2dp"
                         android:text="30"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toEndOf="@+id/setTimeMin15"
-                        app:layout_constraintTop_toTopOf="@+id/setTimeMin15" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/timeMin15"
+                        app:layout_constraintTop_toTopOf="@+id/timeMin15" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -331,45 +323,247 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:background="#FFFFFF"
-                app:layout_constraintStart_toEndOf="@+id/timeDisplayLayout"
+                app:layout_constraintStart_toEndOf="@+id/timeSelectedLayout"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/iconDuration"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/durationInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintStart_toEndOf="@+id/durationShortcutLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/deltaLayout">
+
+                    <TextView
+                        android:id="@+id/labelStart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:ems="4"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="Start/End"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtTimeStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="4"
+                        android:gravity="center|right"
+                        android:padding="2dp"
+                        android:text="12:00 pm"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@+id/labelStart"
+                        app:layout_constraintTop_toBottomOf="@+id/labelStart" />
+
+                    <TextView
+                        android:id="@+id/txtTimeEnd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="4"
+                        android:gravity="center|right"
+                        android:padding="2dp"
+                        android:text="8:00 am"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTimeStart" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/durationSetLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/durationShortcutLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/iconDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        android:padding="0dp"
+                        android:tint="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_timer" />
+
+                    <ImageView
+                        android:id="@+id/btnDurationUp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/iconDuration"
+                        app:layout_constraintStart_toStartOf="@+id/txtDuration"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_up" />
+
+                    <ImageView
+                        android:id="@+id/btnDurationDown"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/txtDuration"
+                        app:layout_constraintTop_toBottomOf="@+id/txtDuration"
+                        app:srcCompat="@drawable/ic_arrow_down" />
+
+                    <TextView
+                        android:id="@+id/txtDuration"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:gravity="center"
+                        android:minEms="2"
+                        android:padding="2dp"
+                        android:text="7:30"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/iconDuration"
+                        app:layout_constraintTop_toBottomOf="@+id/btnDurationUp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/durationShortcutLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:padding="5dp"
-                    android:tint="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_duration" />
+                    app:layout_constraintTop_toBottomOf="@+id/durationSetLayout">
 
-                <TextView
-                    android:id="@+id/txtDurationHour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:ems="2"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="0h"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/iconDuration"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/labelDurationShortcut"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="Duration"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/txtDurationMin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:ems="3"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="00m"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/txtDurationHour"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/duration15m"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="15m"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@+id/labelDurationShortcut"
+                        app:layout_constraintTop_toBottomOf="@+id/labelDurationShortcut" />
+
+                    <TextView
+                        android:id="@+id/duration30m"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="30m"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/duration15m"
+                        app:layout_constraintTop_toTopOf="@+id/duration15m" />
+
+                    <TextView
+                        android:id="@+id/duration1h"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="1hr"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/duration15m" />
+
+                    <TextView
+                        android:id="@+id/duration2h"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="2hr"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toEndOf="@+id/duration1h"
+                        app:layout_constraintTop_toTopOf="@+id/duration1h" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/deltaLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:background="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/durationSetLayout"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/iconDelta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        android:tint="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_delta" />
+
+                    <TextView
+                        android:id="@+id/delta5min"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:ems="2"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="30m"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/iconDelta"
+                        app:layout_constraintTop_toBottomOf="@+id/btnDeltaUp" />
+
+                    <ImageView
+                        android:id="@+id/btnDeltaUp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/delta5min"
+                        app:layout_constraintStart_toStartOf="@+id/delta5min"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_up" />
+
+                    <ImageView
+                        android:id="@+id/btnDeltaDown"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/delta5min"
+                        app:layout_constraintStart_toStartOf="@+id/delta5min"
+                        app:layout_constraintTop_toBottomOf="@+id/delta5min"
+                        app:srcCompat="@drawable/ic_arrow_down" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

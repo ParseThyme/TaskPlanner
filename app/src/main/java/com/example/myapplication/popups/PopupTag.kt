@@ -9,7 +9,7 @@ import com.example.myapplication.R
 import com.example.myapplication.adapters.TaskTagAdapter
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.utility.Settings
-import kotlinx.android.synthetic.main.popup_tag_grid_rv.view.*
+import kotlinx.android.synthetic.main.popup_tag.view.*
 
 class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
     fun create(attachTo: View, modify: ImageView?, context: Context, edited: Task): PopupWindow {
@@ -18,7 +18,7 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
         if (tagsList.size < spanCount)
             spanCount = tagsList.size
 
-        val window = create(context, R.layout.popup_tag_grid_rv)
+        val window = create(context, R.layout.popup_tag)
         val view: View = window.contentView
 
         // Change tag

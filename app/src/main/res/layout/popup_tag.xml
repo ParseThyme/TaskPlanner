@@ -7,6 +7,7 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/tagPopupLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
@@ -52,7 +53,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tagTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/tagTitle"
+            tools:itemCount="3"
+            tools:listitem="@layout/popup_tag_entry" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

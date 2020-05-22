@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.utility.inflate
 import kotlinx.android.synthetic.main.popup_tag_entry.view.*
-import kotlinx.android.synthetic.main.popup_tag_grid_rv.view.*
+import kotlinx.android.synthetic.main.popup_tag.view.*
 
 class TaskTagAdapter(private val tagsList: ArrayList<Int>,
                      private val selectAndClose: (Int) -> Unit)
