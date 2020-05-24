@@ -10,7 +10,6 @@ import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
 import kotlinx.android.synthetic.main.popup_date.view.*
-import kotlinx.android.synthetic.main.task_edit_view.view.*
 
 class PopupDate : Popup() {
     // Today's date
@@ -18,9 +17,11 @@ class PopupDate : Popup() {
     // Most recently chosen date
     private var date: TaskDate = TaskDate()
     // Highlighted cell
-    private var selected: SelectedPopupDateDay = SelectedPopupDateDay()
+    private var selected: SelectedPopupDateDay =
+        SelectedPopupDateDay()
     // Data/Information pertaining to weeks in popup created
-    private val data : PopupDateData = PopupDateData()
+    private val data : PopupDateData =
+        PopupDateData()
     private val weeks = data.weeks
     private val months = data.months
     private val endWeek = Settings.maxWeeks - 1

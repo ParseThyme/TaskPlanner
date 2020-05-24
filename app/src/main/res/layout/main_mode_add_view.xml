@@ -15,7 +15,7 @@
         android:drawableStart="@drawable/ic_date"
         android:drawableLeft="@drawable/ic_date"
         android:drawablePadding="2dp"
-        android:ems="8"
+        android:ems="7"
         android:gravity="center"
         android:paddingLeft="5dp"
         android:paddingTop="2dp"
@@ -37,14 +37,15 @@
         android:drawableStart="@drawable/ic_time"
         android:drawableLeft="@drawable/ic_time"
         android:drawablePadding="2dp"
-        android:ems="7"
         android:gravity="center"
+        android:maxEms="10"
+        android:minEms="6"
         android:paddingLeft="5dp"
         android:paddingTop="2dp"
         android:paddingRight="5dp"
         android:paddingBottom="2dp"
         android:text="@string/placeholderTime"
-        android:textSize="10sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/txtSetDate"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -131,7 +132,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnStar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/btnStar"
-            app:srcCompat="@drawable/ic_add" />
+            app:srcCompat="@drawable/ic_add_box" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

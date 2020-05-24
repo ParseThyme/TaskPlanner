@@ -85,8 +85,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:gravity="center"
-                        android:paddingLeft="0dp"
-                        android:paddingRight="0dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
                         android:text=":"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -112,6 +112,7 @@
                         android:gravity="center"
                         android:padding="3dp"
                         android:text="PM"
+                        android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/txtTimeMinute"
@@ -181,19 +182,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/btnTimeHour3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:background="@android:color/white"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="3"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/labelEditHour" />
-
-                    <TextView
                         android:id="@+id/btnTimeHour6"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
@@ -203,21 +191,8 @@
                         android:padding="2dp"
                         android:text="6"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnTimeHour3"
-                        app:layout_constraintTop_toTopOf="@+id/btnTimeHour3" />
-
-                    <TextView
-                        android:id="@+id/btnTimeHour9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:background="@android:color/white"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="9"
-                        android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/btnTimeHour3" />
+                        app:layout_constraintTop_toBottomOf="@+id/labelEditHour" />
 
                     <TextView
                         android:id="@+id/btnTimeHour12"
@@ -229,8 +204,8 @@
                         android:padding="2dp"
                         android:text="12"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnTimeHour9"
-                        app:layout_constraintTop_toTopOf="@+id/btnTimeHour9" />
+                        app:layout_constraintStart_toEndOf="@+id/btnTimeHour6"
+                        app:layout_constraintTop_toTopOf="@+id/btnTimeHour6" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -274,19 +249,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/labelEditMin" />
 
                     <TextView
-                        android:id="@+id/btnTimeMin15"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:background="@android:color/white"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="15"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnTimeMin0"
-                        app:layout_constraintTop_toTopOf="@+id/btnTimeMin0" />
-
-                    <TextView
                         android:id="@+id/btnTimeMin30"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
@@ -296,22 +258,8 @@
                         android:padding="2dp"
                         android:text="30"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnTimeMin15"
-                        app:layout_constraintStart_toStartOf="@+id/btnTimeMin0"
-                        app:layout_constraintTop_toBottomOf="@+id/btnTimeMin0" />
-
-                    <TextView
-                        android:id="@+id/btnTimeMin45"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:background="@android:color/white"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="45"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnTimeMin30"
-                        app:layout_constraintTop_toTopOf="@+id/btnTimeMin30" />
+                        app:layout_constraintStart_toEndOf="@+id/btnTimeMin0"
+                        app:layout_constraintTop_toTopOf="@+id/btnTimeMin0" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -328,62 +276,48 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/durationInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    app:layout_constraintStart_toEndOf="@+id/durationShortcutLayout"
-                    app:layout_constraintTop_toBottomOf="@+id/deltaLayout">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/durationShortcutLayout">
 
                     <TextView
                         android:id="@+id/labelStart"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
                         android:background="@color/colorPrimary"
                         android:ems="4"
                         android:gravity="center"
                         android:padding="2dp"
-                        android:text="Start/End"
+                        android:text="End:"
                         android:textColor="@android:color/white"
                         android:textSize="12sp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/txtTimeEnd"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/txtTimeStart"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/white"
-                        android:ems="4"
-                        android:gravity="center|right"
-                        android:padding="2dp"
-                        android:text="12:00 pm"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toStartOf="@+id/labelStart"
-                        app:layout_constraintTop_toBottomOf="@+id/labelStart" />
-
-                    <TextView
                         android:id="@+id/txtTimeEnd"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:background="@android:color/white"
                         android:ems="4"
-                        android:gravity="center|right"
-                        android:padding="2dp"
-                        android:text="12:00 pm"
+                        android:gravity="center"
+                        android:text="12:00pm"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txtTimeStart" />
+                        app:layout_constraintBottom_toBottomOf="@+id/labelStart"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/labelStart" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/durationSetLayout"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/durationShortcutLayout"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -420,7 +354,7 @@
 
                     <TextView
                         android:id="@+id/txtDuration"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/white"
                         android:gravity="center"
@@ -435,9 +369,10 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/durationShortcutLayout"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/durationSetLayout">
 
@@ -446,71 +381,47 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
+                        android:ems="4"
                         android:gravity="center"
                         android:padding="2dp"
                         android:text="Duration"
                         android:textColor="@android:color/white"
                         android:textSize="12sp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/btnDuration0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/btnDuration15m"
+                        android:id="@+id/btnDuration0"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="2dp"
-                        android:text="15m"
+                        android:text=":00"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toStartOf="@+id/labelDurationShortcut"
-                        app:layout_constraintTop_toBottomOf="@+id/labelDurationShortcut" />
+                        app:layout_constraintBottom_toBottomOf="@+id/labelDurationShortcut"
+                        app:layout_constraintEnd_toStartOf="@+id/btnDuration1h"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/btnDuration1h"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:background="@android:color/white"
                         android:ems="2"
                         android:gravity="center"
-                        android:padding="2dp"
-                        android:text="1hr"
+                        android:text="1:00"
                         android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnDuration15m"
-                        app:layout_constraintTop_toTopOf="@+id/btnDuration15m" />
+                        app:layout_constraintBottom_toBottomOf="@+id/btnDuration0"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/btnDuration0" />
 
-                    <TextView
-                        android:id="@+id/btnDuration30m"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/white"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="30m"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/btnDuration15m" />
-
-                    <TextView
-                        android:id="@+id/btnDuration2h"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/white"
-                        android:ems="2"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="2hr"
-                        android:textSize="14sp"
-                        app:layout_constraintStart_toEndOf="@+id/btnDuration30m"
-                        app:layout_constraintTop_toTopOf="@+id/btnDuration30m" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/deltaLayout"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
@@ -533,7 +444,7 @@
 
                     <TextView
                         android:id="@+id/txtDelta"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/white"
                         android:ems="2"
@@ -587,7 +498,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_remove" />
+                app:srcCompat="@drawable/ic_minus" />
 
             <ImageButton
                 android:id="@+id/btnResetTime"

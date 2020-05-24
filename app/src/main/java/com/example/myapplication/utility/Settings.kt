@@ -125,19 +125,37 @@ object Settings {
     // ####################
     // Tasks
     // ####################
-    fun updateTimeDelta() : String {
-        when (timeDelta) {
-            5 -> timeDelta = 30
-            30 -> timeDelta = 60
-            60 -> timeDelta = 5
+    fun updateTimeDelta(increment: Boolean = true) : String {
+        when (increment) {
+            // Increase delta
+            true -> {
+                timeDelta = when (timeDelta) {
+                    5 -> 15
+                    15 -> 30
+                    30 -> 60
+                    else -> 5       // 60 -> 5
+                }
+            }
+            // Decrease delta
+            false -> {
+                timeDelta = when (timeDelta) {
+                    5 -> 60
+                    15 -> 5
+                    30 -> 15
+                    else -> 30      // 60 -> 30
+                }
+            }
         }
         return timeDeltaAsString()
     }
     fun timeDeltaAsString() : String {
         // Replace string with 1h if 60 minutes, otherwise append on m for minute values
         var result:String = timeDelta.toString()
-        if (timeDelta == 60) result = "1h"
-        else result += "m"
+        // 5m, 30m, 1h
+        result = when (timeDelta) {
+            60 -> "1h"
+            else -> "${result}m"
+        }
         return result
     }
 }

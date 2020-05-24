@@ -1,6 +1,7 @@
-package com.example.myapplication.data_classes
+package com.example.myapplication.popups
 
 import android.widget.TextView
+import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.utility.applyBackgroundColor
 import com.example.myapplication.utility.debugMessagePrint
@@ -35,8 +36,6 @@ class PopupDateData {
         // Start date
         var currDate: TaskDate = today().firstDayOfWeek()
         val pastCount: Int = dateDiff(currDate, today())    // E.g. today = Wed. From Mon-Wed = 3
-
-        debugMessagePrint("Past count: $pastCount")
 
         // 1. Create entries for first week
         val firstWeek = PopupDateWeek(Week.THIS)

@@ -113,14 +113,15 @@ fun TaskTime.update(increment: Boolean = true) {
 */
 
 fun TaskTime.updateMin(increment: Boolean = true) {
+    val minDelta = 5
     when (increment) {
         true -> {
-            min += Settings.timeDelta
+            min += minDelta
             // Result is a number over 60, Ensure time between 0-60
             if (min > 59) min %= 60
         }
         false -> {
-            min -= Settings.timeDelta
+            min -= minDelta
             // Result is number under 0 minutes, Ensure time in appropriate range
             if (min < 0) min += 60
         }
@@ -151,6 +152,20 @@ fun TaskTime.updateHour(increment: Boolean = true) {
 
     if (updateTimeOfDay) timeOfDay = getOppositeTimeOfDay()
 }
+fun TaskTime.updateDuration(increment: Boolean = true) {
+    when (increment) {
+        // Increase duration
+        true -> {
+            duration += Settings.timeDelta
+            if (duration > Settings.durationMax) duration = Settings.durationMax // Prevent overflow
+        }
+        // Decrease duration
+        false -> {
+            duration -= Settings.timeDelta
+            if (duration < 0) duration = 0      // Set duration to 0 for negative values
+        }
+    }
+}
 
 // ####################
 // Creating string labels
@@ -173,11 +188,7 @@ fun TaskTime.startTimeLabel(withTimeOfDay: Boolean = true): String {
 }
 fun TaskTime.endTimeLabel(): String {
     // No need to create end time label if duration <= 0
-    if (duration <= 0) {
-        val startTime: String = startTimeLabel()
-        debugMessagePrint("No end time for $startTime")
-        return startTime
-    }
+    if (duration <= 0) return "NA"
 
     // Convert duration to hours and minutes
     val addedHours:Int = duration / 60
@@ -207,9 +218,9 @@ fun TaskTime.startAndEndTimeLabel(): String {
 }
 
 fun TaskTime.durationAsString(): String {
-    // [1]. Duration as Int from 0 to 59 minutes. Return number as : followed by duration. E.g. :30
+    // [1]. Duration as Int from 0 to 59 minutes.
     when (duration) {
-        in 1..9   -> return duration.minutesAsString()
+        in 0..9   -> return ":${duration.minutesAsString()}"
         in 10..59 -> return ":$duration"
     }
 
