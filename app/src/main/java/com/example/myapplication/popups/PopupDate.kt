@@ -46,7 +46,7 @@ class PopupDate : Popup() {
         // 2. Setup Arrays
         // [A]. Cell underneath, text updated
         val updatedTextViews: ArrayList<TextView> = arrayListOf(
-            view.txtMon, view.txtTue, view.txtWed, view.txtThu, view.txtFri, view.txtSat, view.txtSun)
+            view.txtSun, view.txtMon, view.txtTue, view.txtWed, view.txtThu, view.txtFri, view.txtSat)
 
         // 3. Setup text displays
         view.txtSelectedDate.text = date.asStringShort()        // Selected date
@@ -65,13 +65,13 @@ class PopupDate : Popup() {
 
         // 5. Setup onClick behaviours
         // [A]. Mo - Su cells
-        view.mon.setupDayClickListener(0, view.txtMon, view.txtSelectedDate)
-        view.tue.setupDayClickListener(1, view.txtTue, view.txtSelectedDate)
-        view.wed.setupDayClickListener(2, view.txtWed, view.txtSelectedDate)
-        view.thu.setupDayClickListener(3, view.txtThu, view.txtSelectedDate)
-        view.fri.setupDayClickListener(4, view.txtFri, view.txtSelectedDate)
-        view.sat.setupDayClickListener(5, view.txtSat, view.txtSelectedDate)
-        view.sun.setupDayClickListener(6, view.txtSun, view.txtSelectedDate)
+        view.sun.setupDayClickListener(0, view.txtSun, view.txtSelectedDate)
+        view.mon.setupDayClickListener(1, view.txtMon, view.txtSelectedDate)
+        view.tue.setupDayClickListener(2, view.txtTue, view.txtSelectedDate)
+        view.wed.setupDayClickListener(3, view.txtWed, view.txtSelectedDate)
+        view.thu.setupDayClickListener(4, view.txtThu, view.txtSelectedDate)
+        view.fri.setupDayClickListener(5, view.txtFri, view.txtSelectedDate)
+        view.sat.setupDayClickListener(6, view.txtSat, view.txtSelectedDate)
 
         // [B]. Week
         view.btnWeekNext.setOnClickListener {

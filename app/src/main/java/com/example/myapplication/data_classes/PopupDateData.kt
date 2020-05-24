@@ -3,6 +3,7 @@ package com.example.myapplication.data_classes
 import android.widget.TextView
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.utility.applyBackgroundColor
+import com.example.myapplication.utility.debugMessagePrint
 
 data class PopupDateDay(
     val taskDate: TaskDate,
@@ -28,12 +29,14 @@ class PopupDateData {
 
     init { createEntries() }
 
-    private fun PopupDateWeek.sunday() : PopupDateDay { return days[6] }
+    private fun PopupDateWeek.lastDay() : PopupDateDay { return days[6] }
 
     private fun createEntries() {
         // Start date
         var currDate: TaskDate = today().firstDayOfWeek()
         val pastCount: Int = dateDiff(currDate, today())    // E.g. today = Wed. From Mon-Wed = 3
+
+        debugMessagePrint("Past count: $pastCount")
 
         // 1. Create entries for first week
         val firstWeek = PopupDateWeek(Week.THIS)
@@ -48,7 +51,7 @@ class PopupDateData {
             currDate = currDate.addDays(1)
         }
         // Store week, first unique month
-        firstWeek.month = firstWeek.sunday().taskDate.month
+        firstWeek.month = firstWeek.lastDay().taskDate.month
         months[firstWeek.month] = 0
         weeks.add(firstWeek)
 
@@ -61,7 +64,7 @@ class PopupDateData {
                 weekEntry.days.add(PopupDateDay(currDate.copy(), currDate.day.toString()))
                 currDate = currDate.addDays(1)
             }
-            weekEntry.month = weekEntry.sunday().taskDate.month
+            weekEntry.month = weekEntry.lastDay().taskDate.month
             // Add instance where new month reached
             if (!months.containsKey(weekEntry.month)) months[weekEntry.month] = week
             // Add week to weeks list

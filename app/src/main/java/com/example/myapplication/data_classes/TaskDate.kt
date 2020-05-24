@@ -33,7 +33,7 @@ fun today(): TaskDate {
 fun TaskDate.firstDayOfWeek(): TaskDate {
     val cal: Calendar = getInstance()
     cal.set(year, month, day)                   // Set calendar to specific day
-    cal.set(DAY_OF_WEEK, Calendar.MONDAY)       // Get first day in the week of that date
+    cal.set(DAY_OF_WEEK, Calendar.SUNDAY)       // Get first day in the week of that date
 
     val id = idFormat.format(cal.timeInMillis).toInt()
     val day: Int = cal.get(Calendar.DAY_OF_MONTH)
