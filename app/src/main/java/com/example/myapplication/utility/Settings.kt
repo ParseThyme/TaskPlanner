@@ -127,9 +127,7 @@ object Settings {
     // ####################
     fun updateTimeDelta() : String {
         when (timeDelta) {
-            5 -> timeDelta = 10
-            10 -> timeDelta = 15
-            15 -> timeDelta = 30
+            5 -> timeDelta = 30
             30 -> timeDelta = 60
             60 -> timeDelta = 5
         }
@@ -138,8 +136,8 @@ object Settings {
     fun timeDeltaAsString() : String {
         // Replace string with 1h if 60 minutes, otherwise append on m for minute values
         var result:String = timeDelta.toString()
-        if (timeDelta == 60) result = "1H"
-        else result += "M"
+        if (timeDelta == 60) result = "1h"
+        else result += "m"
         return result
     }
 }

@@ -8,14 +8,27 @@ import com.example.myapplication.utility.defaultTimeMsg
 data class TaskTime (
     var hour: Int = 0,
     var min: Int = 0,
-    var timeOfDay: String = "AM",
+    var timeOfDay: TimeOfDay = TimeOfDay.PM,
     var duration: Int = 0
 )
 
 fun TaskTime.isValid(): Boolean { return hour > 0 }
-fun TaskTime.getOppositeTimeOfDay(): String {
-    if (timeOfDay == "AM") { return "PM" }
-    return "AM"
+
+// ####################
+// Time Of Day
+// ####################
+enum class TimeOfDay {AM, PM}
+fun TimeOfDay.asString() : String{
+    return when (this) {
+        TimeOfDay.AM -> "am"
+        TimeOfDay.PM -> "pm"
+    }
+}
+fun TaskTime.getOppositeTimeOfDay(): TimeOfDay {
+    return when (timeOfDay) {
+        TimeOfDay.AM -> TimeOfDay.PM
+        else -> TimeOfDay.AM
+    }
 }
 
 // ####################
@@ -24,7 +37,7 @@ fun TaskTime.getOppositeTimeOfDay(): String {
 fun TaskTime.resetValues() {
     hour = 12
     min = 0
-    timeOfDay = "AM"
+    timeOfDay = TimeOfDay.PM
     duration = 0
 }
 fun TaskTime.clear(applyToView: TextView? = null) {
@@ -33,10 +46,11 @@ fun TaskTime.clear(applyToView: TextView? = null) {
 
     hour = -1
     min = 0
-    timeOfDay = "AM"
+    timeOfDay = TimeOfDay.PM
     duration = 0
 }
 
+/*
 fun TaskTime.update(increment: Boolean = true) {
     var newMinutes: Int = min
     var hourDelta = 0
@@ -96,81 +110,119 @@ fun TaskTime.update(increment: Boolean = true) {
     // Update minute value
     min = newMinutes
 }
+*/
+
+fun TaskTime.updateMin(increment: Boolean = true) {
+    when (increment) {
+        true -> {
+            min += Settings.timeDelta
+            // Result is a number over 60, Ensure time between 0-60
+            if (min > 59) min %= 60
+        }
+        false -> {
+            min -= Settings.timeDelta
+            // Result is number under 0 minutes, Ensure time in appropriate range
+            if (min < 0) min += 60
+        }
+    }
+}
+fun TaskTime.updateHour(increment: Boolean = true) {
+    val hourDelta = 1
+    var updateTimeOfDay = false
+
+    when (increment) {
+        // Increase hour. If result is >12 then loop back from 1 and update time of day
+        true -> {
+            hour += hourDelta
+            if (hour > 12) {
+                updateTimeOfDay = true
+                hour %= 12
+            }
+        }
+        // Decrease hour. If result is <1 then start from 12 and update time of day
+        false -> {
+            hour -= hourDelta
+            if (hour < 1) {
+                updateTimeOfDay = true
+                hour += 12
+            }
+        }
+    }
+
+    if (updateTimeOfDay) timeOfDay = getOppositeTimeOfDay()
+}
 
 // ####################
 // Creating string labels
 // ####################
-fun TaskTime.createStartTime(withTimeOfDay: Boolean = true): String {
+fun TaskTime.startTimeLabel(withTimeOfDay: Boolean = true): String {
     // If time is 0, return base string message
     if (hour == 0) return defaultTimeMsg
 
     // Create start time
-    val timeAsString: String = if (hour < 0) "12:00"
-                               else "$hour:${minutesAsString(min)}"
-
-    // If time of day included, add "AM" OR "PM" to end of string
-    return if (withTimeOfDay) "$timeAsString$timeOfDay"
-           else timeAsString
-}
-
-fun TaskTime.createTimeWithDuration(): String {
-    var displayedTime: String = this.createStartTime()
-
-    // Check if duration allocated. If so append end time based on duration.
-    if (duration > 0) {
-        // Convert duration to hours and minutes
-        val addedHours:Int = duration / 60
-        val addedMinutes:Int = duration % 60
-
-        // Add together hours and minutes from time and duration
-        var endTimeOfDay:String = timeOfDay
-        var endMin: Int = addedMinutes + min
-        var endHrs: Int = addedHours + hour + (endMin/60)  // Add overflow (e.g. 70/60 = 1h10min)
-        endMin %= 60                                       // Ensure minutes between 0-59
-
-        // Check hours value, if > 12 then we swapped time of day. E.g. 12am -> 2pm
-        if (endHrs > 12) {
-            endHrs %= 12
-            endTimeOfDay = this.getOppositeTimeOfDay()
-        }
-
-        // Append end time to currently displayed time
-        val endTime = "$endHrs:${minutesAsString(endMin)}$endTimeOfDay"
-        displayedTime = "$displayedTime - $endTime"
+    val timeAsString: String = when {
+        (hour < 0) -> "12:00"
+              else -> "$hour:${min.minutesAsString()}"
     }
 
-    return displayedTime
+    // If time of day included, add "AM" OR "PM" to end of string
+    return when (withTimeOfDay) {
+        true  -> "$timeAsString${timeOfDay.asString()}"
+        false -> timeAsString
+    }
 }
-fun TaskTime.durationToString(): String {
+fun TaskTime.endTimeLabel(): String {
+    // No need to create end time label if duration <= 0
+    if (duration <= 0) {
+        val startTime: String = startTimeLabel()
+        debugMessagePrint("No end time for $startTime")
+        return startTime
+    }
+
+    // Convert duration to hours and minutes
+    val addedHours:Int = duration / 60
+    val addedMinutes:Int = duration % 60
+
+    // Add together hours and minutes from time and duration
+    var endTimeOfDay:String = timeOfDay.asString()
+    var endMin: Int = addedMinutes + min
+    var endHrs: Int = addedHours + hour + (endMin/60)  // Add overflow (e.g. 70/60 = 1h10min)
+    endMin %= 60                                       // Ensure minutes between 0-59
+
+    // Check hours value, if > 12 then we swapped time of day. E.g. 12am -> 2pm
+    if (endHrs > 12) {
+        endHrs %= 12
+        endTimeOfDay = this.getOppositeTimeOfDay().asString()
+    }
+
+    // Append end time to currently displayed time
+    return "$endHrs:${endMin.minutesAsString()}$endTimeOfDay"
+}
+fun TaskTime.startAndEndTimeLabel(): String {
+    // If no duration, return just start time. Otherwise create end time label and return both combined
+    return if (duration <= 0)
+        startTimeLabel()
+    else
+        "${startTimeLabel()} - ${endTimeLabel()}"
+}
+
+fun TaskTime.durationAsString(): String {
     // [1]. Duration as Int from 0 to 59 minutes. Return number as : followed by duration. E.g. :30
-    if (duration in 0..59) {
-        // Extra: If duration from 1 - 9. Add extra 0 in front
-        if (duration in 1..9)
-            return ":0$duration"
-        return ":$duration"
+    when (duration) {
+        in 1..9   -> return duration.minutesAsString()
+        in 10..59 -> return ":$duration"
     }
 
     // [2]. Duration 60m+. Return with hour and minutes format
-    val hours = duration/60
-    val minutes = duration%60
-
-    // Create duration string with hour value
-    var durationString = "$hours:00"
-
-    // Append on minutes if > 0
-    if (minutes > 0) {
-        durationString =
-            if (minutes in 1..9)
-                "$hours:0$minutes"      // Append extra 0 for 0-9 values
-            else
-                "$hours:$minutes"       // Otherwise show minutes normally
-    }
-
-    return durationString
+    val hours: Int = duration/60
+    val minutes: Int = duration%60
+    return "$hours:${minutes.minutesAsString()}"
 }
-
-fun minutesAsString(minutes: Int): String {
+fun Int.minutesAsString(): String {
     // If minutes are 0-9 append extra 0 in front
-    if (minutes in 0..9) return "0$minutes"
-    return minutes.toString()
+    return when (this) {
+        in   0..9 -> "0$this"
+        in 10..59 -> "$this"
+             else -> "[!] $this"
+    }
 }

@@ -43,7 +43,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
-                android:ems="8"
+                android:ems="9"
                 android:text="@string/placeholderTime"
                 android:textAllCaps="false"
                 android:textSize="12sp"

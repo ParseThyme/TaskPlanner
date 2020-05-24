@@ -6,7 +6,7 @@ data class Task (
     var desc : String = "",
 
     var tag: Int = R.drawable.tag_base,
-    var time: TaskTime = TaskTime(0,0,"AM", 0),
+    var time: TaskTime = TaskTime(0,0,TimeOfDay.PM, 0),
 
     var selected : Boolean = false
 )

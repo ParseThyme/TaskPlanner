@@ -6,10 +6,12 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.defaultTimeMsg
 import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime : Popup() {
-    private var time: TaskTime = TaskTime(12, 0, "PM", 0)
+    private var time: TaskTime = TaskTime(12, 0, TimeOfDay.PM, 0)
 
     fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime, anchor: Anchor = Anchor.Above) : PopupWindow {
         val window:PopupWindow = create(context, R.layout.popup_time)
@@ -18,8 +20,65 @@ class PopupTime : Popup() {
         // Copy over most recent time
         time = edited.copy()
 
-        view.txtTimeHour.setOnClickListener {
-            view.timeSetHour.visibility = View.VISIBLE
+        // Set text display
+        // If time unset, set default values
+        if (!time.isValid()) time.resetValues()
+
+        // Set text display based on current time values
+        view.updateDisplay()
+
+        // Click behaviour
+        // Time - Hour
+        view.btnTimeHourUp.setOnClickListener { view.txtTimeHour.updateHour(view.txtTimeOfDay) }
+        view.btnTimeHourDown.setOnClickListener { view.txtTimeHour.updateHour(view.txtTimeOfDay, false) }
+        view.btnTimeHour3.setOnClickListener { view.txtTimeHour.setHour(3) }
+        view.btnTimeHour6.setOnClickListener { view.txtTimeHour.setHour(6) }
+        view.btnTimeHour9.setOnClickListener { view.txtTimeHour.setHour(9) }
+        view.btnTimeHour12.setOnClickListener { view.txtTimeHour.setHour(12) }
+        // Time - Min
+        view.btnTimeMinUp.setOnClickListener { view.txtTimeMinute.updateMin() }
+        view.btnTimeMinDown.setOnClickListener { view.txtTimeMinute.updateMin(false) }
+        view.btnTimeMin0.setOnClickListener { view.txtTimeMinute.setMin(0) }
+        view.btnTimeMin15.setOnClickListener { view.txtTimeMinute.setMin(15)  }
+        view.btnTimeMin30.setOnClickListener { view.txtTimeMinute.setMin(30) }
+        view.btnTimeMin45.setOnClickListener { view.txtTimeMinute.setMin(45) }
+        // Time - TimeOfDay
+        view.txtTimeOfDay.setOnClickListener {
+            time.timeOfDay = time.getOppositeTimeOfDay()
+            view.txtTimeOfDay.text = time.timeOfDay.asString()
+        }
+
+        // Duration
+        view.btnDurationUp.setOnClickListener {  }
+        view.btnDurationDown.setOnClickListener {  }
+        view.btnDuration15m.setOnClickListener { view.txtDuration.setDuration(15) }
+        view.btnDuration30m.setOnClickListener { view.txtDuration.setDuration(30) }
+        view.btnDuration1h.setOnClickListener { view.txtDuration.setDuration(60) }
+        view.btnDuration2h.setOnClickListener { view.txtDuration.setDuration(120) }
+
+        // Delta value
+        view.btnDeltaUp.setOnClickListener {  }
+        view.btnDeltaDown.setOnClickListener {  }
+
+        // Reset, Clear Time & Confirm
+        view.btnResetTime.setOnClickListener {
+            time.resetValues()
+            view.updateDisplay()
+        }
+        view.btnClearTime.setOnClickListener {
+            edited.clear()
+            modify?.text = defaultTimeMsg
+            window.dismiss()
+        }
+        view.btnApplyTime.setOnClickListener {
+            edited.apply {
+                hour = time.hour
+                min = time.min
+                duration = time.duration
+                timeOfDay = time.timeOfDay
+            }
+            modify?.text = time.startAndEndTimeLabel()
+            window.dismiss()
         }
 
         /*
@@ -52,109 +111,54 @@ class PopupTime : Popup() {
 
         // Delta value, affects increment for time and duration
         view.txtDeltaTime.setOnClickListener { view.txtDeltaTime.updateDelta() }
-
-        // Reset values
-        view.btnResetTime.setOnClickListener { view.resetValues() }
-
-        // Save updated time when window closed
-        view.btnApplyTime.setOnClickListener {
-            edited.apply {
-                hour = time.hour
-                min = time.min
-                duration = time.duration
-                timeOfDay = time.timeOfDay
-            }
-            modify?.text = time.createTimeWithDuration()
-            window.dismiss()
-        }
-
-        // Clear selected time
-        view.btnClearTime.setOnClickListener {
-            edited.clear()
-            modify?.text = defaultTimeMsg
-            window.dismiss()
-        }
         */
 
         window.show(attachTo)
         return window
     }
 
+    private fun TextView.updateHour(timeOfDayView: TextView, increment: Boolean = true) {
+        // Update hour text
+        time.updateHour(increment)
+        text = time.hour.toString()
+        // Update time of day text
+        timeOfDayView.text = time.timeOfDay.asString()
+    }
+    private fun TextView.setHour(hour: Int) {
+        time.hour = hour
+        this.text = hour.toString()
+    }
+
+    private fun TextView.updateMin(increment: Boolean = true) {
+        time.updateMin(increment)
+        text = time.min.minutesAsString()
+    }
+    private fun TextView.setMin(minutes: Int) {
+        time.min = minutes
+        this.text = minutes.minutesAsString()
+    }
+
+    private fun TextView.updateDuration(increment: Boolean = true) {
+
+    }
+    private fun TextView.setDuration(duration: Int) {
+        time.duration = duration
+        this.text = time.durationAsString()
+    }
+
+    private fun View.updateDisplay() {
+        // Time
+        txtTimeHour.text = time.hour.toString()
+        txtTimeMinute.text = time.min.minutesAsString()
+        txtTimeOfDay.text = time.timeOfDay.asString()
+        txtTimeStart.text = time.startTimeLabel()
+        // Duration
+        txtDuration.text = time.durationAsString()
+        // TimeDelta
+        txtDelta.text = Settings.timeDeltaAsString()
+    }
+
     /*
-    private fun View.resetValues() {
-        time.resetValues()
-        txtDate.text = time.createStartTime(false)
-        txtTimeOfDay.text = time.timeOfDay
-        txtDuration.text = time.durationToString()
-        txtDeltaTime.text = "5m"
-    }
-
-    private fun TextView.updateTime(timeOfDayView: TextView, increment: Boolean = true) {
-        time.update(increment)
-        this.text = time.createStartTime(false)
-        timeOfDayView.text = time.timeOfDay
-
-        /*
-        var newMinutes: Int = time.min
-        var hourDelta = 0
-        var flipToD = false
-
-        if (increment) {
-            newMinutes += timeDelta
-
-            // Result is a number over 60
-            if (newMinutes > 59) {
-                // Calculate how many hours we need to add to time and add it
-                hourDelta = newMinutes / 60
-                // Ensure time between 0-60
-                newMinutes %= 60
-            }
-        }
-        else {
-            newMinutes -= timeDelta
-
-            // Result is number under 0 minutes
-            if (newMinutes < 0) {
-                // Ensure time in appropriate range
-                newMinutes += 60
-                // Calculate hours required to subtract
-                hourDelta = -((newMinutes + 60) / 60)
-            }
-        }
-
-        // Assuming hour has been updated, make sure result is in range
-        if (hourDelta != 0) {
-            val hourResult = time.hour + hourDelta
-
-            when {
-                // Values > 12, reset back to 1
-                hourResult > 12 -> {
-                    time.hour = 1
-                    flipToD = true
-                }
-                // Values < 1, reset to 12
-                hourResult < 1 -> {
-                    time.hour = 12
-                    flipToD = true
-                }
-                // Standard hour increment/decrement. Value between 1-12
-                else -> time.hour = hourResult
-            }
-
-            if (flipToD) {
-                // Flip time of day
-                time.timeOfDay = time.getOppositeTimeOfDay()
-                timeOfDayView.text = time.timeOfDay
-            }
-        }
-
-        // Update minute value
-        time.min = newMinutes
-
-        // Show new displayed time
-        this.text = time.createStartTime(false)
-         */
-    }
     private fun TextView.updateLength(btnUp: View, btnDown: View, increment: Boolean = true) {
         // Increment
         if (increment) {
@@ -186,10 +190,5 @@ class PopupTime : Popup() {
         this.text = time.durationToString()
     }
     private fun TextView.updateDelta() { this.text = Settings.updateTimeDelta() }
-    private fun TextView.updateTimeOfDay() {
-        // Flip time of day
-        time.timeOfDay = time.getOppositeTimeOfDay()
-        text = time.timeOfDay
-    }
     */
 }
