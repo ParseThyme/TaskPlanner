@@ -26,9 +26,9 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
             layoutManager = GridLayoutManager(context, spanCount)
             adapter = TaskTagAdapter(tagsList)
             // Select and close function passed into TaskTagAdapter
-            { taskTag: Int ->           // Input Param
-                modify?.setImageResource(taskTag)
-                edited.tag = taskTag
+            { chosenTag: Int ->           // Input Param
+                modify?.setImageResource(chosenTag)
+                edited.tag = chosenTag
                 window.dismiss()
             }
         }

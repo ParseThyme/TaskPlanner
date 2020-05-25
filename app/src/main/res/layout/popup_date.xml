@@ -20,7 +20,7 @@
             android:id="@+id/optionsLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/selectableDatesLayout"
+            app:layout_constraintEnd_toEndOf="@+id/selectablePeriodLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -66,7 +66,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/selectableDatesLayout"
+            android:id="@+id/selectablePeriodLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -117,27 +117,27 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/selectedDate"
+                android:id="@+id/chosenDateLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/iconDate"
+                    android:id="@+id/btnChosenDate"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:background="@color/colorPrimary"
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"
                     android:tint="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/txtSelectedDate"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtChosenDate"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/txtSelectedDate"
+                    app:layout_constraintTop_toTopOf="@+id/txtChosenDate"
                     app:srcCompat="@drawable/ic_date" />
 
                 <TextView
-                    android:id="@+id/txtSelectedDate"
+                    android:id="@+id/txtChosenDate"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:background="@android:color/white"
@@ -145,7 +145,7 @@
                     android:gravity="center"
                     android:padding="5dp"
                     android:text="We | 20 May"
-                    app:layout_constraintStart_toEndOf="@+id/iconDate"
+                    app:layout_constraintStart_toEndOf="@+id/btnChosenDate"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
