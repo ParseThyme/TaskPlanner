@@ -2,7 +2,6 @@ package com.example.myapplication.utility
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Point
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.main_activity_view.view.*
 
 // ########## Hardcoded values (unmodified by app) ##########

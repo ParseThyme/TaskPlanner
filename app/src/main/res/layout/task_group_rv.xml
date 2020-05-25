@@ -68,7 +68,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/labelDay"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/labelDate"
-                app:srcCompat="@drawable/ic_arrow_down" />
+                app:srcCompat="@drawable/arrow_down" />
 
             <View
                 android:id="@+id/dividerVert"

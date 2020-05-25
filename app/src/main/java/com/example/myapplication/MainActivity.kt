@@ -77,6 +77,8 @@ class MainActivity : AppCompatActivity() {
 
             R.drawable.tag_important, R.drawable.tag_one, R.drawable.tag_two,
             R.drawable.tag_three, R.drawable.tag_four, R.drawable.tag_five
+
+            ,R.drawable.tag_assignment, R.drawable.tag_file, R.drawable.tag_bug
         )
         PopupManager.setup(tagsList)
 

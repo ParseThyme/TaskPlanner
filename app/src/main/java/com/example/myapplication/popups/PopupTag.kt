@@ -18,7 +18,7 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
         if (tagsList.size < spanCount)
             spanCount = tagsList.size
 
-        val window = create(context, R.layout.popup_tag)
+        val window: PopupWindow = create(context, R.layout.popup_tag)
         val view: View = window.contentView
 
         // Change tag

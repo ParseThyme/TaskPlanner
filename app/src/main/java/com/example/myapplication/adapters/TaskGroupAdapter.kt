@@ -177,13 +177,13 @@ class TaskGroupAdapter(
 
                         // Open group and update icon (only do so if not done already)
                         itemView.rvTaskGroup.visibility = View.VISIBLE
-                        itemView.btnFold.setImageResource(R.drawable.ic_arrow_down)
+                        itemView.btnFold.setImageResource(R.drawable.arrow_down)
                     }
 
                     Fold.IN -> {
                         // Close group, and change icon
                         itemView.rvTaskGroup.visibility = View.GONE
-                        itemView.btnFold.setImageResource(R.drawable.ic_arrow_up)
+                        itemView.btnFold.setImageResource(R.drawable.arrow_up)
                     }
                 }
             }

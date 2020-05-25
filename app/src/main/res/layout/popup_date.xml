@@ -89,7 +89,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_up" />
+                    app:srcCompat="@drawable/arrow_up" />
 
                 <ImageView
                     android:id="@+id/btnMonthNext"
@@ -100,7 +100,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/txtCurrMonth"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_down" />
+                    app:srcCompat="@drawable/arrow_down" />
 
                 <TextView
                     android:id="@+id/txtCurrMonth"
@@ -410,7 +410,7 @@
                     android:tint="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_left" />
+                    app:srcCompat="@drawable/arrow_left" />
 
                 <TextView
                     android:id="@+id/txtWeek"
@@ -436,7 +436,7 @@
                     android:tint="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_right" />
+                    app:srcCompat="@drawable/arrow_right" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

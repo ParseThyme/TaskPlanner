@@ -1,13 +1,16 @@
 package com.example.myapplication.popups
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
 import com.example.myapplication.utility.Keyboard
+import com.example.myapplication.utility.applyBackgroundColor
 
 abstract class Popup {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button
@@ -19,7 +22,8 @@ abstract class Popup {
         // Apply parameters to window
         window.apply{
             isFocusable = true
-            width = WindowManager.LayoutParams.WRAP_CONTENT
+            // width = WindowManager.LayoutParams.WRAP_CONTENT
+            width = WindowManager.LayoutParams.MATCH_PARENT
             height = WindowManager.LayoutParams.WRAP_CONTENT
             contentView = view
         }
@@ -53,6 +57,9 @@ abstract class Popup {
         }
         // 2. Otherwise shift position accordingly above/below parent
         else {
+            // Remove background
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
             // Get created window measurements to determine shifts
             this.contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
