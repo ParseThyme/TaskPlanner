@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables
-    private lateinit var saveLoad: SaveLoad
+    private lateinit var saveData: SaveData
     private lateinit var taskGroupAdapter: TaskGroupAdapter
 
     // ########## Main ##########
@@ -66,22 +66,6 @@ class MainActivity : AppCompatActivity() {
         // Setup singletons
         Keyboard.setup(this, addMode.txtTaskDesc)
         Keyboard.addInputValidation(addMode.btnNewTask)
-
-        // ToDo: Implement tags list to be saved and loaded
-        tagsList = arrayListOf(
-            R.drawable.tag_booking, R.drawable.tag_assignment, R.drawable.tag_mail, R.drawable.tag_file,
-            R.drawable.tag_scan, R.drawable.tag_print, R.drawable.tag_bug, R.drawable.tag_build,
-
-            R.drawable.tag_tv ,R.drawable.tag_read, R.drawable.tag_music_note, R.drawable.tag_game,
-            R.drawable.tag_photo, R.drawable.tag_movie, R.drawable.tag_food, R.drawable.tag_event,
-
-            R.drawable.tag_buy, R.drawable.tag_pet, R.drawable.tag_workout, R.drawable.tag_medicine,
-            R.drawable.tag_delivery, R.drawable.tag_flight, R.drawable.tag_train, R.drawable.tag_car,
-
-            R.drawable.tag_important, R.drawable.tag_flag, R.drawable.tag_1, R.drawable.tag_2,
-            R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
-        )
-        PopupManager.setup(tagsList)
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
@@ -134,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         }
         titleBar.btnToggleLayout.setOnClickListener {
             Settings.setLayout()
-            saveLoad.saveLayout()
+            saveData.saveLayout()
             toggleLayoutButton()
         }
         // btnSettings.setOnClickListener { }
@@ -323,18 +307,38 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Save/Load ##########
     private fun loadSave() {
-        saveLoad = SaveLoad(this)
+        saveData = SaveData(this)
 
         // Uncomment for broken data
         // saveLoad.clearAllData()
 
+        // Load tagsList. If not present, create new list
+        tagsList = saveData.loadTagsList()
+        if (tagsList.isEmpty()) {
+            tagsList = arrayListOf(
+                R.drawable.tag_booking, R.drawable.tag_assignment, R.drawable.tag_mail, R.drawable.tag_file,
+                R.drawable.tag_scan, R.drawable.tag_print, R.drawable.tag_bug, R.drawable.tag_build,
+
+                R.drawable.tag_tv ,R.drawable.tag_read, R.drawable.tag_music_note, R.drawable.tag_game,
+                R.drawable.tag_photo, R.drawable.tag_movie, R.drawable.tag_food, R.drawable.tag_event,
+
+                R.drawable.tag_buy, R.drawable.tag_pet, R.drawable.tag_workout, R.drawable.tag_medicine,
+                R.drawable.tag_delivery, R.drawable.tag_flight, R.drawable.tag_train, R.drawable.tag_car,
+
+                R.drawable.tag_important, R.drawable.tag_flag, R.drawable.tag_1, R.drawable.tag_2,
+                R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
+            )
+            saveData.saveTagsList(tagsList)
+        }
+        PopupManager.setup(tagsList)
+
         // Load data
-        taskGroupList = saveLoad.loadTaskGroupList()
+        taskGroupList = saveData.loadTaskGroupList()
 
         // Load settings
-        Settings.mainLayout = saveLoad.loadLayout()
+        Settings.mainLayout = saveData.loadLayout()
     }
-    private fun updateSave() { saveLoad.saveTaskGroupList(taskGroupList) }
+    private fun updateSave() { saveData.saveTaskGroupList(taskGroupList) }
 
     /*
     private fun deleteSave() {
