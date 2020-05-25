@@ -68,17 +68,18 @@ class MainActivity : AppCompatActivity() {
         Keyboard.addInputValidation(addMode.btnNewTask)
 
         // ToDo: Implement tags list to be saved and loaded
-        tagsList = arrayListOf (
-            R.drawable.tag_booking, R.drawable.tag_mail, R.drawable.tag_delivery,
-            R.drawable.tag_flight, R.drawable.tag_read, R.drawable.tag_medicine,
+        tagsList = arrayListOf(
+            R.drawable.tag_booking, R.drawable.tag_assignment, R.drawable.tag_mail, R.drawable.tag_file,
+            R.drawable.tag_scan, R.drawable.tag_print, R.drawable.tag_bug, R.drawable.tag_build,
 
-            R.drawable.tag_event, R.drawable.tag_buy, R.drawable.tag_food,
-            R.drawable.tag_movie, R.drawable.tag_pet, R.drawable.tag_workout,
+            R.drawable.tag_tv ,R.drawable.tag_read, R.drawable.tag_music_note, R.drawable.tag_game,
+            R.drawable.tag_photo, R.drawable.tag_movie, R.drawable.tag_food, R.drawable.tag_event,
 
-            R.drawable.tag_important, R.drawable.tag_one, R.drawable.tag_two,
-            R.drawable.tag_three, R.drawable.tag_four, R.drawable.tag_five
+            R.drawable.tag_buy, R.drawable.tag_pet, R.drawable.tag_workout, R.drawable.tag_medicine,
+            R.drawable.tag_delivery, R.drawable.tag_flight, R.drawable.tag_train, R.drawable.tag_car,
 
-            ,R.drawable.tag_assignment, R.drawable.tag_file, R.drawable.tag_bug
+            R.drawable.tag_important, R.drawable.tag_flag, R.drawable.tag_1, R.drawable.tag_2,
+            R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
         )
         PopupManager.setup(tagsList)
 

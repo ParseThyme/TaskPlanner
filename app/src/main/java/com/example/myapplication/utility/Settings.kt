@@ -16,7 +16,7 @@ object Settings {
     var deleteOldDates: Boolean = false
 
     // Popup Windows
-    var tagRowSize = 6
+    var tagRowSize = 8
 
     // Tasks
     // Time
