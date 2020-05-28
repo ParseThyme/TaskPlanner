@@ -34,17 +34,15 @@ fun TaskTime.getOppositeTimeOfDay(): TimeOfDay {
 // ####################
 // Set values
 // ####################
-fun TaskTime.resetValues() {
-    hour = 12
+fun unsetTime() : TaskTime { return TaskTime(-1, 0, TimeOfDay.AM, 0)}
+fun TaskTime.unset() {
+    hour = -1
     min = 0
     timeOfDay = TimeOfDay.AM
     duration = 0
 }
-fun TaskTime.clear(applyToView: TextView? = null) {
-    // Optional, update textView with default time message
-    if (applyToView != null) applyToView.text = defaultTimeMsg
-
-    hour = -1
+fun TaskTime.setDefault() {
+    hour = 12
     min = 0
     timeOfDay = TimeOfDay.AM
     duration = 0
@@ -171,8 +169,8 @@ fun TaskTime.updateDuration(increment: Boolean = true) {
 // Creating string labels
 // ####################
 fun TaskTime.startTimeLabel(withTimeOfDay: Boolean = true): String {
-    // If time is 0, return base string message
-    if (hour == 0) return defaultTimeMsg
+    // If time is <0, return base string message
+    if (hour <= 0) return defaultTimeMsg
 
     // Create start time
     val timeAsString: String = when {

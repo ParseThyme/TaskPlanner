@@ -22,7 +22,7 @@ class PopupTime : Popup() {
 
         // Set text display
         // If time unset, set default values
-        if (!chosenTime.isValid()) chosenTime.resetValues()
+        if (!chosenTime.isValid()) chosenTime.setDefault()
 
         // Check duration, prevent decrement/increment if at end caps
         when (chosenTime.duration ) {
@@ -93,11 +93,12 @@ class PopupTime : Popup() {
 
         // Reset, Clear Time & Confirm
         view.btnResetTime.setOnClickListener {
-            chosenTime.resetValues()
+            chosenTime.setDefault()
             view.updateDisplay()
         }
         view.btnClearTime.setOnClickListener {
-            edited.clear()
+            // edited.clear()
+            edited.unset()
             modify?.text = defaultTimeMsg
             window.dismiss()
         }

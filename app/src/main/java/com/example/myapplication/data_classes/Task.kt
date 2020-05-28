@@ -10,11 +10,3 @@ data class Task (
 
     var selected : Boolean = false
 )
-
-fun Task.clear(paramType: TaskParam) {
-    when (paramType) {
-        TaskParam.Tag -> this.tag = R.drawable.tag_base
-        TaskParam.Time -> this.time.clear()
-    }
-}
-enum class TaskParam { Tag, Time }

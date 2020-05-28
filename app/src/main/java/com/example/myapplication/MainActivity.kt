@@ -74,7 +74,10 @@ class MainActivity : AppCompatActivity() {
         // Apply starting date to be today's date at bottom bar
         addMode.txtSetDate.text = Settings.today.asStringShort()
         // Set time to be blank
-        newTask.time.clear(addMode.txtSetTime)
+        // newTask.time.clear(addMode.txtSetTime)
+
+        newTask.time.unset()
+        addMode.txtSetTime.text = defaultTimeMsg
 
         // Buttons (topBar and bottomBar)
         setupButtons()
@@ -144,7 +147,9 @@ class MainActivity : AppCompatActivity() {
             // Reset text entry and time
             addMode.txtTaskDesc.setText("")
             addMode.txtTaskDesc.clearFocus()
-            newTask.time.clear(addMode.txtSetTime)
+            // newTask.time.clear(addMode.txtSetTime)
+            newTask.time.unset()
+            addMode.txtSetTime.text = defaultTimeMsg
 
             // Save changes
             updateSave()
@@ -158,7 +163,9 @@ class MainActivity : AppCompatActivity() {
             // Reset all values (exclude text entry)
             newTask.tag = R.drawable.tag_base
             newDate = today()
-            newTask.time.clear()
+            // newTask.time.clear()
+            newTask.time.unset()
+            addMode.txtSetTime.text = defaultTimeMsg
 
             // Update views
             addMode.btnSetTag.setImageResource(newTask.tag)
@@ -205,6 +212,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        selectMode.btnClearParams.setOnClickListener {
+            taskGroupAdapter.selectedClearAll()
+            setMode(Mode.ADD)
+            updateSave()
+        }
         selectMode.btnDelete.setOnClickListener {
             taskGroupAdapter.delete()
             setMode(Mode.ADD)

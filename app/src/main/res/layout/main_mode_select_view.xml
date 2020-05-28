@@ -3,105 +3,119 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+        android:id="@+id/selectModeContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
         android:padding="5dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/changeLayout"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardBtnToDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/labelChange"
-                android:layout_width="0dp"
+                android:id="@+id/btnToDate"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
+                android:background="@android:color/white"
+                android:drawableTop="@drawable/ic_date"
+                android:ems="4"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Change"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="Set Date" />
+        </androidx.cardview.widget.CardView>
 
-            <ImageButton
-                android:id="@+id/btnToDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="5dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/labelChange"
-                app:srcCompat="@drawable/ic_date" />
-
-            <ImageView
-                android:id="@+id/btnToTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnToDate"
-                app:layout_constraintTop_toBottomOf="@+id/labelChange"
-                app:srcCompat="@drawable/ic_time" />
-
-            <ImageButton
-                android:id="@+id/btnToTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="5dp"
-                android:tint="#555656"
-                app:layout_constraintStart_toEndOf="@+id/btnToTime"
-                app:layout_constraintTop_toBottomOf="@+id/labelChange"
-                app:srcCompat="@drawable/tag_base" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/deleteLayout"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardBtnToTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
-            android:background="@android:color/white"
-            app:layout_constraintStart_toEndOf="@+id/changeLayout"
+            app:layout_constraintStart_toEndOf="@+id/cardBtnToDate"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/labelDelete"
+                android:id="@+id/btnToTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
+                android:drawableTop="@drawable/ic_time"
+                android:ems="4"
+                android:gravity="center"
                 android:padding="5dp"
-                android:text="Delete"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="Set Time" />
+        </androidx.cardview.widget.CardView>
 
-            <ImageButton
-                android:id="@+id/btnDelete"
-                android:layout_width="0dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardBtnToTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            app:layout_constraintStart_toEndOf="@+id/cardBtnToTime"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/btnToTag"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/tag_base"
+                android:ems="4"
+                android:gravity="center"
                 android:padding="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/labelDelete"
-                app:layout_constraintTop_toBottomOf="@+id/labelDelete"
-                app:srcCompat="@drawable/ic_delete" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:text="Set Tag"
+                app:drawableTint="@color/iconTint" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardBtnClearParams"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            app:layout_constraintStart_toEndOf="@+id/cardBtnToTag"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/btnClearParams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_reset_parameters"
+                android:ems="4"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Clear" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardBtnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            app:layout_constraintStart_toEndOf="@+id/cardBtnClearParams"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/ic_delete"
+                android:ems="4"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Delete" />
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

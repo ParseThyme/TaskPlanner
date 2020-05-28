@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
 import android.view.View
+import com.example.myapplication.R
 import kotlin.collections.ArrayList
 
 // Creating container to hold TaskGroup/GroupHeader
@@ -71,7 +72,7 @@ fun TaskGroup.selectedDelete() {
         if (numSelected == 0) return
     }
 }
-fun TaskGroup.selectedSetTag(newTag: Int) {
+fun TaskGroup.selectedSetTag(newTag: Int = R.drawable.tag_base) {
     // See above for logic
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
@@ -84,7 +85,7 @@ fun TaskGroup.selectedSetTag(newTag: Int) {
         if (numSelected == 0) return
     }
 }
-fun TaskGroup.selectedSetTime(newTime: TaskTime) {
+fun TaskGroup.selectedSetTime(newTime: TaskTime = unsetTime()) {
     // See above for logic
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
@@ -97,9 +98,21 @@ fun TaskGroup.selectedSetTime(newTime: TaskTime) {
         if (numSelected == 0) return
     }
 }
+fun TaskGroup.selectedClear() {
+    for (index: Int in taskList.size - 1 downTo 0) {
+        val task: Task = taskList[index]
+        if (task.selected) {
+            numSelected--
+            DataTracker.numSelected--
+            task.selected = false
+            task.time.unset()
+            task.tag = R.drawable.tag_base
+        }
+        if (numSelected == 0) return
+    }
+}
 fun TaskGroup.setSelected(selected: Boolean) {
     // Override highlighting with either selectAll on or off
-
     // [A]. Select all
     if (selected) {
         for (task in taskList) {

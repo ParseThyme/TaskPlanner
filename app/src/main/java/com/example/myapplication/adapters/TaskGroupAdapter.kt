@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.*
@@ -361,7 +360,7 @@ class TaskGroupAdapter(
         when (DataTracker.allSelected()) {
             // A. All selected, delete everything
             true -> {
-                clearAll()
+                deleteAll()
                 DataTracker.taskCount = 0
             }
             // B. Otherwise delete individual tasks
@@ -413,33 +412,6 @@ class TaskGroupAdapter(
         }
     }
 
-    fun selectedSetTag(newTag: Int) {
-        // Uses same logic as delete(). We don't track group size in this case.
-        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val entry: GroupEntry = taskGroupList[groupNum]
-            if (entry.isGroup()) {
-                val group: TaskGroup = entry.taskGroup!!
-                if (group.numSelected != 0) {
-                    group.selectedSetTag(newTag)
-                    notifyItemChanged(groupNum)
-                    if (DataTracker.numSelected == 0) break
-                }
-            }
-        }
-    }
-    fun selectedSetTime(newTime: TaskTime) {
-        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
-            val entry: GroupEntry = taskGroupList[groupNum]
-            if (entry.isGroup()) {
-                val group: TaskGroup = entry.taskGroup!!
-                if (group.numSelected != 0) {
-                    group.selectedSetTime(newTime)
-                    notifyItemChanged(groupNum)
-                    if (DataTracker.numSelected == 0) break
-                }
-            }
-        }
-    }
     fun selectedSetDate(newDate: TaskDate) {
         // Store list of tasks to be changed
         val movedTasks: ArrayList<Task> = arrayListOf()
@@ -457,7 +429,7 @@ class TaskGroupAdapter(
                     }
                 }
                 // 2. Clear list, reset dataTracker and header data
-                clearAll()
+                deleteAll()
                 // 3. Create new group at [0] and add all tasks to it. Header is to be generated
                 addNewTaskGroup(0, newDate, movedTasks)
             }
@@ -479,8 +451,48 @@ class TaskGroupAdapter(
             }
         }
     }
+    fun selectedSetTime(newTime: TaskTime) {
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val entry: GroupEntry = taskGroupList[groupNum]
+            if (entry.isGroup()) {
+                val group: TaskGroup = entry.taskGroup!!
+                if (group.numSelected != 0) {
+                    group.selectedSetTime(newTime)
+                    notifyItemChanged(groupNum)
+                    if (DataTracker.numSelected == 0) break
+                }
+            }
+        }
+    }
+    fun selectedSetTag(newTag: Int) {
+        // Uses same logic as delete(). We don't track group size in this case.
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val entry: GroupEntry = taskGroupList[groupNum]
+            if (entry.isGroup()) {
+                val group: TaskGroup = entry.taskGroup!!
+                if (group.numSelected != 0) {
+                    group.selectedSetTag(newTag)
+                    notifyItemChanged(groupNum)
+                    if (DataTracker.numSelected == 0) break
+                }
+            }
+        }
+    }
+    fun selectedClearAll() {
+        for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
+            val entry: GroupEntry = taskGroupList[groupNum]
+            if (entry.isGroup()) {
+                val group: TaskGroup = entry.taskGroup!!
+                if (group.numSelected != 0) {
+                    group.selectedClear()
+                    notifyItemChanged(groupNum)
+                    if (DataTracker.numSelected == 0) break
+                }
+            }
+        }
+    }
 
-    private fun clearAll() {
+    private fun deleteAll() {
         // Empty everything and reset values
         taskGroupList.clear()                   // Clear entire group list
         DataTracker.numSelected = 0             // Reset selected count
