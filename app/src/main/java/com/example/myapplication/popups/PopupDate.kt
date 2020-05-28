@@ -140,16 +140,16 @@ class PopupDate : Popup() {
             if (currWeek == 0) view.btnWeekPrev.visibility = View.INVISIBLE
         }
 
-        // [D]. Apply changes
+        // [D]. Apply changes / Dismiss window
         view.btnApplyDate.setOnClickListener {
             // Store current week selected cell is in
             chosenDateView.week = currWeek
-
             // Update passed in date
             edited.replace(chosenDate)
             modify?.text = chosenDate.asStringShort()
             window.dismiss()
         }
+        view.dateDismissBackground.setOnClickListener { window.dismiss() }
 
         // [E]. Reset button, selected date jump
         view.btnResetDate.setOnClickListener {

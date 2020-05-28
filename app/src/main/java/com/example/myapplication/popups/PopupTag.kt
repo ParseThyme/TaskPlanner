@@ -21,6 +21,12 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
         val window: PopupWindow = create(context, R.layout.popup_tag)
         val view: View = window.contentView
 
+        // Remove tag
+        view.btnClearTag.setOnClickListener {
+            modify?.setImageResource(R.drawable.tag_base)
+            edited.tag = R.drawable.tag_base
+            window.dismiss()
+        }
         // Change tag
         view.tagsRv.apply {
             layoutManager = GridLayoutManager(context, spanCount)
@@ -32,13 +38,8 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
                 window.dismiss()
             }
         }
-
-        // Remove tag
-        view.btnClearTag.setOnClickListener {
-            modify?.setImageResource(R.drawable.tag_base)
-            edited.tag = R.drawable.tag_base
-            window.dismiss()
-        }
+        // Dismiss window
+        view.tagDismissBackground.setOnClickListener { window.dismiss() }
 
         window.show(attachTo)
         return window

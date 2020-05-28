@@ -120,10 +120,7 @@ class TaskGroupAdapter(
         // ####################
         // Header
         // ####################
-        fun bindHeader(header: GroupHeader) {
-            // Assign Text
-            itemView.txtHeader.text = header.label
-        }
+        fun bindHeader(header: GroupHeader) { itemView.txtHeader.text = header.label }
 
         // ####################
         // Group entry

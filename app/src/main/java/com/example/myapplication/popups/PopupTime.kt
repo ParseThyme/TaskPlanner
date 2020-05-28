@@ -111,6 +111,7 @@ class PopupTime : Popup() {
             modify?.text = chosenTime.startAndEndTimeLabel()
             window.dismiss()
         }
+        view.timeDismissBackground.setOnClickListener { window.dismiss() }
 
         window.show(attachTo)
         return window
