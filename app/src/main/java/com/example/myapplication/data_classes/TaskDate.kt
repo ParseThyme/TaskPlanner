@@ -1,6 +1,7 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.debugMessagePrint
 import com.example.myapplication.utility.millisecondsToDays
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,6 +56,7 @@ fun TaskDate.replace(newDate: TaskDate) {
 // ####################
 enum class Week { PAST, THIS, NEXT, FORTNIGHT, FUTURE }
 
+fun TaskDate.getWeekNum() : Int { return (dateDiff(Settings.firstDayOfWeek, this)) / 7 }
 fun TaskDate.getWeek() : Week {
     val diff: Int = dateDiff(Settings.firstDayOfWeek, this)
     return when {

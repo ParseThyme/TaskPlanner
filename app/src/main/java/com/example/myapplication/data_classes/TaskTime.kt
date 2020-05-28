@@ -8,7 +8,7 @@ import com.example.myapplication.utility.defaultTimeMsg
 data class TaskTime (
     var hour: Int = 0,
     var min: Int = 0,
-    var timeOfDay: TimeOfDay = TimeOfDay.PM,
+    var timeOfDay: TimeOfDay = TimeOfDay.AM,
     var duration: Int = 0
 )
 
@@ -37,7 +37,7 @@ fun TaskTime.getOppositeTimeOfDay(): TimeOfDay {
 fun TaskTime.resetValues() {
     hour = 12
     min = 0
-    timeOfDay = TimeOfDay.PM
+    timeOfDay = TimeOfDay.AM
     duration = 0
 }
 fun TaskTime.clear(applyToView: TextView? = null) {
@@ -46,7 +46,7 @@ fun TaskTime.clear(applyToView: TextView? = null) {
 
     hour = -1
     min = 0
-    timeOfDay = TimeOfDay.PM
+    timeOfDay = TimeOfDay.AM
     duration = 0
 }
 

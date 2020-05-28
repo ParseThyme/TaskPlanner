@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var saveData: SaveData
     private lateinit var taskGroupAdapter: TaskGroupAdapter
 
+    // Modified tasks
+    private var selectModeDate: TaskDate = today()
+
     // ########## Main ##########
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,12 +172,11 @@ class MainActivity : AppCompatActivity() {
             // 2. Create window, user selects new date
             // 3. Override date for selected tasks in adapter
 
-            val newDate = TaskDate(-1)
-            val window: PopupWindow = PopupManager.dateEdit(selectMode, null, this, newDate)
+            val window: PopupWindow = PopupManager.dateEdit(selectMode, null, this, selectModeDate)
             window.setOnDismissListener {
                 // Apply changes to selected date when window closed. If -1 then no date was selected
-                if (newDate.id != -1) {
-                    taskGroupAdapter.selectedSetDate(newDate)
+                if (selectModeDate.id != -1) {
+                    taskGroupAdapter.selectedSetDate(selectModeDate)
                     setMode(Mode.ADD)
                     updateSave()
                 }

@@ -19,7 +19,7 @@
     <!-- Labels -->
     <string name="label_task">Tap to enter a new task</string>
     <string name="label_select_date">Select Date</string>
-    <string name="label_select_time">Select Time + Duration</string>
+    <string name="label_select_time">Select Task Time + Length</string>
     <string name="label_select_tag">Select Tag</string>
 
     <!-- Buttons -->

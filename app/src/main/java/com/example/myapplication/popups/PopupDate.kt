@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.utility.debugMessagePrint
 import kotlinx.android.synthetic.main.popup_date.view.*
 
 class PopupDate : Popup() {
@@ -34,10 +35,11 @@ class PopupDate : Popup() {
         val view:View = window.contentView
 
         // 1. Get tracked variables
-        today = today()                    // Today's date
-        chosenDate = edited.copy()         // Most recently selected date
-        currMonth = chosenDate.month       // Match month to currently chosen month
-        currWeek = chosenDateView.week     // Match week to currently chosen week
+        today = today()                        // Today's date
+        chosenDate = edited.copy()             // Most recently selected date
+        currMonth = chosenDate.month           // Match month to currently chosen month
+        currWeek = chosenDate.getWeekNum()     // Match week to currently chosen date
+        chosenDateView.week = currWeek
 
         // Refresh in case 12:00 midnight
         if (chosenDate.id < today.id) { chosenDate = today() }
