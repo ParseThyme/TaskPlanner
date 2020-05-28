@@ -5,8 +5,9 @@ object DataTracker {
     var taskCount: Int = 0
     var numFoldedIn: Int = 0
 
-    fun allSelected(): Boolean { return numSelected == taskCount }
     fun selectAll() { numSelected = taskCount }
-
+    fun allSelected(): Boolean { return numSelected == taskCount }
     fun allCollapsed() : Boolean { return numFoldedIn == taskCount }
+
+    fun numSelectedMsg() : String { return "Modify Selected: $numSelected / $taskCount" }
 }

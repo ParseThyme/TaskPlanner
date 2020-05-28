@@ -37,7 +37,6 @@
         android:drawableLeft="@drawable/ic_time"
         android:drawablePadding="2dp"
         android:gravity="center"
-        android:maxEms="10"
         android:minEms="6"
         android:paddingLeft="5dp"
         android:paddingTop="2dp"

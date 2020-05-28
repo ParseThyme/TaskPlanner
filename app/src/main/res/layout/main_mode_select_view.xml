@@ -2,12 +2,58 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/selectViewLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/selectModeContainer"
+        android:id="@+id/selectViewInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnSelectNone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:tint="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/arrow_left" />
+
+        <TextView
+            android:id="@+id/txtSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:text="Selected: 0/10"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnSelectNone"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="5dp"
+            android:tint="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_select_all_on" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/selectViewOptionsContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
@@ -15,7 +61,7 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/selectViewInfo">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardBtnToDate"
@@ -33,7 +79,8 @@
                 android:ems="4"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Set Date" />
+                android:text="Date"
+                android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -53,7 +100,8 @@
                 android:ems="4"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Set Time" />
+                android:text="Time"
+                android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -73,7 +121,8 @@
                 android:ems="4"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Set Tag"
+                android:text="Tag"
+                android:textSize="12sp"
                 app:drawableTint="@color/iconTint" />
         </androidx.cardview.widget.CardView>
 
@@ -94,7 +143,8 @@
                 android:ems="4"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Clear" />
+                android:text="Clear"
+                android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -114,7 +164,8 @@
                 android:ems="4"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Delete" />
+                android:text="Delete"
+                android:textSize="12sp" />
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

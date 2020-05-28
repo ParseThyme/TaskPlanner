@@ -74,13 +74,14 @@ class MainActivity : AppCompatActivity() {
         // Apply starting date to be today's date at bottom bar
         addMode.txtSetDate.text = Settings.today.asStringShort()
         // Set time to be blank
-        // newTask.time.clear(addMode.txtSetTime)
-
         newTask.time.unset()
         addMode.txtSetTime.text = defaultTimeMsg
 
         // Buttons (topBar and bottomBar)
         setupButtons()
+
+        // Main App name
+        titleBar.title.text = mainTitle
     }
 
     // ########## Buttons ##########
@@ -88,27 +89,6 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         // TopBar
         // ##############################
-        titleBar.btnSelectAll.setOnClickListener {
-            // If not all selected, select all
-            if (!DataTracker.allSelected()) {
-                // Change icon to opposite icon (deselect all)
-                titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
-
-                // Toggle all to selected state
-                taskGroupAdapter.toggleSelectAll()
-                DataTracker.selectAll()
-                updateSelectedCountDisplay()
-
-                // Switch to select mode if in add mode
-                setMode(Mode.SELECTION)
-            }
-            // All selected, deselect all and return to add mode
-            else {
-                // Toggle all to off state and return to add mode
-                taskGroupAdapter.toggleSelectAll(false)
-                setMode(Mode.ADD)
-            }
-        }
         titleBar.btnCollapseExpand.setOnClickListener {
             // Expand all when all are collapsed, switch icon to collapse all icon
             if (DataTracker.allCollapsed()) {
@@ -174,6 +154,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 2. Select Mode
+        selectMode.btnSelectAll.setOnClickListener {
+            when (DataTracker.allSelected()) {
+                // Not all selected, select all
+                false -> {
+                    taskGroupAdapter.toggleSelectAll()
+                    DataTracker.selectAll()
+                    updateSelectedCountDisplay()
+                }
+
+                // Deselect all except for initially selected task
+                true -> {
+
+                }
+            }
+        }
+        selectMode.btnSelectNone.setOnClickListener {
+            // Toggle all to off state and return to add mode
+            taskGroupAdapter.toggleSelectAll(false)
+            setMode(Mode.ADD)
+        }
+
         selectMode.btnToDate.setOnClickListener {
             // 1. Create temporary Task to hold new date
             // 2. Create window, user selects new date
@@ -211,7 +212,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
         selectMode.btnClearParams.setOnClickListener {
             taskGroupAdapter.selectedClearAll()
             setMode(Mode.ADD)
@@ -245,28 +245,21 @@ class MainActivity : AppCompatActivity() {
     }
     private fun taskClicked (task: Task) {
         // Update counts based on whether task selected/deselected
-        if (task.selected) {
-            DataTracker.numSelected++
-            // Selected 0 -> 1, change to selection mode. Otherwise update as usual
-            if (DataTracker.numSelected == 1)
-                setMode(Mode.SELECTION)
-            else {
-                updateSelectedCountDisplay()
-                // If all selected, change topBar icon (selectAll to off)
-                if (DataTracker.allSelected())
-                    titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_off)
+        when (task.selected) {
+            true -> {
+                DataTracker.numSelected++
+                when (DataTracker.numSelected) {
+                    1 -> setMode(Mode.SELECTION)            // 0 -> 1. Enter selectionMode
+                    else -> updateSelectedCountDisplay()    // Update count display
+                }
             }
-        }
-        else {
-            DataTracker.numSelected--
-            // Selected tasks 1 -> 0, return to add mode. Otherwise update as usual
-            if (DataTracker.numSelected == 0)
-                setMode(Mode.ADD)
-            else {
-                updateSelectedCountDisplay()
-                // If went from max to max - 1, change topBar icon (selectAll to on)
-                if (DataTracker.numSelected == DataTracker.taskCount - 1)
-                    titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
+
+            false -> {
+                DataTracker.numSelected--
+                when (DataTracker.numSelected) {
+                    0 -> setMode(Mode.ADD)                  // 1 -> 0. Return to addMode
+                    else -> updateSelectedCountDisplay()    // Update count display
+                }
             }
         }
     }
@@ -274,22 +267,17 @@ class MainActivity : AppCompatActivity() {
     // ########## Change values/display ##########
     private fun setMode(newMode: Mode) {
         // Do nothing if called on same mode
-        if (mode == newMode)
-            return
+        if (mode == newMode) return
 
         mode = newMode
         when (newMode) {
             Mode.ADD -> {
                 // Set none selected and show main title
                 DataTracker.numSelected = 0
-                updateTopBar(mainTitle)
 
                 // Switch display of bottomBar
                 addMode.visibility = View.VISIBLE
                 selectMode.visibility = View.GONE
-
-                // Reset icon: Select all
-                titleBar.btnSelectAll.setImageResource(R.drawable.ic_select_all_on)
             }
             Mode.SELECTION -> {
                 updateSelectedCountDisplay()
@@ -301,9 +289,7 @@ class MainActivity : AppCompatActivity() {
             else -> return
         }
     }
-
-    private fun updateTopBar(newTitle: String) { titleBar.title.text = newTitle }
-    private fun updateSelectedCountDisplay() { updateTopBar("Selected: ${DataTracker.numSelected}") }
+    private fun updateSelectedCountDisplay() { selectMode.txtSelected.text = DataTracker.numSelectedMsg() }
 
     // ########## Toggle ##########
     private fun toggleFoldIcon(state: Fold) {
@@ -353,12 +339,6 @@ class MainActivity : AppCompatActivity() {
         Settings.mainLayout = saveData.loadLayout()
     }
     private fun updateSave() { saveData.saveTaskGroupList(taskGroupList) }
-
-    /*
-    private fun deleteSave() {
-        saveLoad.clearAllData()
-    }
-    */
 
     // ########## Utility ##########
     // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)
