@@ -3,13 +3,14 @@ package com.example.myapplication.utility
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.GroupType
 import com.example.myapplication.data_classes.TaskDate
 import com.example.myapplication.data_classes.today
 import com.example.myapplication.data_classes.firstDayOfWeek
-import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
 import com.example.myapplication.recyclerviewdecoration.GridLayoutDecoration
+import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
 
 // ########## App settings ##########
 object Settings {
@@ -39,14 +40,14 @@ object Settings {
     // Layout
     private lateinit var parentRV: RecyclerView
     private lateinit var linearLayout: LinearLayoutManager
-    private lateinit var gridLayout: GridLayoutManager
+    private lateinit var gridLayout: StaggeredGridLayoutManager
 
-    private const val gridSpacing = 15          // In dp
-    private const val linearSpacing = 15
     private const val gridSpanSize = 2
+    private const val gridSpacing = 10          // In dp
+    private const val linearSpacing = 15
 
     private val linearDecoration = LinearLayoutDecoration(linearSpacing)
-    private val gridLayoutDecoration = GridLayoutDecoration(gridSpacing, gridSpanSize)
+    private val gridDecoration = GridLayoutDecoration(gridSpacing, gridSpanSize)
 
     var mainLayout = ViewLayout.LINEAR
 
@@ -90,7 +91,7 @@ object Settings {
                 parentRV.apply {
                     layoutManager = gridLayout
                     if (itemDecorationCount > 0) removeItemDecorationAt(0)
-                    addItemDecoration(gridLayoutDecoration)
+                    addItemDecoration(gridDecoration)
                 }
             }
         }
@@ -98,21 +99,8 @@ object Settings {
     fun initMainLayout(recyclerView: RecyclerView, taskGroupAdapter: TaskGroupAdapter) {
         // Initialize grid/linear layout here (so then its not remade every time it's toggled)
         parentRV = recyclerView
-
-        // A. Linear layout
-        linearLayout = LinearLayoutManager(parentRV.context)
-
-        // B. Grid layout
-        gridLayout = GridLayoutManager(parentRV.context, gridSpanSize, GridLayoutManager.VERTICAL, false)
-        gridLayout.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return when (taskGroupAdapter.getItemViewType(position)) {
-                    GroupType.HEADER.ordinal -> gridSpanSize
-                    GroupType.GROUP.ordinal -> 1
-                    else -> -1
-                }
-            }
-        }
+        linearLayout = LinearLayoutManager(parentRV.context)                                // A. Linear layout
+        gridLayout = StaggeredGridLayoutManager(gridSpanSize, GridLayoutManager.VERTICAL)   // B. Grid layout
 
         // Apply starting layout
         parentRV.apply {

@@ -171,10 +171,10 @@ class MainActivity : AppCompatActivity() {
             // 1. Create temporary Task to hold new date
             // 2. Create window, user selects new date
             // 3. Override date for selected tasks in adapter
-
+            selectModeDate.id = -1
             val window: PopupWindow = PopupManager.dateEdit(selectMode, null, this, selectModeDate)
             window.setOnDismissListener {
-                // Apply changes to selected date when window closed. If -1 then no date was selected
+                // Apply changes to selected date when window closed. If -1 then apply tick wasn't pressed
                 if (selectModeDate.id != -1) {
                     taskGroupAdapter.selectedSetDate(selectModeDate)
                     setMode(Mode.ADD)
@@ -351,14 +351,12 @@ class MainActivity : AppCompatActivity() {
     // ########## Utility ##########
     // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)
     private fun scrollTo(position: Int) {
-        dateGroupRV.scrollToPosition(position)
+        if (Settings.usingGridLayout()) return
 
+        dateGroupRV.scrollToPosition(position)
         // Scroll bit extra for last position
         if (position == taskGroupList.lastIndex) {
-            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-                position,
-                20
-            )
+            (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
         }
     }
 }

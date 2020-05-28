@@ -5,8 +5,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    android:orientation="vertical">
+    android:background="@android:color/transparent">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/contentCard"
@@ -43,7 +42,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
-                android:ems="9"
+                android:minEms="8"
                 android:text="@string/placeholderTime"
                 android:textAllCaps="false"
                 android:textSize="12sp"

@@ -5,14 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.*
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.sign
+
 
 class TaskGroupAdapter(
      private val taskGroupList: ArrayList<GroupEntry>,
@@ -97,7 +98,12 @@ class TaskGroupAdapter(
     // Number of items in table view
     override fun getItemCount(): Int { return taskGroupList.size }
     // When group made, apply updates to UI based on internal values
-    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(taskGroupList[pos]) }
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+        when (taskGroupList[pos].type) {
+            GroupType.HEADER -> holder.bindHeader(taskGroupList[pos].header!!)
+            GroupType.GROUP -> holder.bindGroup(taskGroupList[pos].taskGroup!!)
+        }
+    }
     // Creating cell (date group entry)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Determine view to inflate: header or standard row
@@ -111,26 +117,18 @@ class TaskGroupAdapter(
     override fun getItemViewType(position: Int): Int { return taskGroupList[position].type.ordinal }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        // Bind content based on view passed in
-        fun bind(entry: GroupEntry) {
-            when (entry.type) {
-                GroupType.HEADER -> bindHeader(entry.header!!)
-                GroupType.GROUP  -> bindGroup(entry.taskGroup!!)
-            }
-        }
-
         // ####################
         // Header
         // ####################
-        private fun bindHeader(header: GroupHeader) {
+        fun bindHeader(header: GroupHeader) {
+            // Assign Text
             itemView.txtHeader.text = header.label
-            itemView.tag = "header"
         }
 
         // ####################
         // Group entry
         // ####################
-        private fun bindGroup(group: TaskGroup) {
+        fun bindGroup(group: TaskGroup) {
             // Assign date label
             itemView.labelDate.text = group.date.asString()         // Day number + Month: 1st May
             itemView.labelDay.apply {                               // Day of week: Mo...Su
@@ -191,10 +189,12 @@ class TaskGroupAdapter(
             // Toggling arrow icon highlighting when group collapsed
             if (group.state == Fold.IN) {
                 // If a task has been selected, highlight background to indicate
-                if (group.numSelected != 0)
-                    itemView.btnFold.applyBackgroundColor(Settings.highlightColor)
-                else // Clear highlights (via selectAll toggle when collapsed)
-                    itemView.btnFold.applyBackgroundColor(Color.TRANSPARENT)
+                when (group.numSelected) {
+                    0 -> itemView.btnFold.applyBackgroundColor(Color.TRANSPARENT)
+                    // Clear highlights (via selectAll toggle when collapsed)
+                    else -> itemView.btnFold.applyBackgroundColor(Settings.highlightColor)
+                }
+
             }
         }
     }
@@ -361,56 +361,58 @@ class TaskGroupAdapter(
 
     // ########## Modifying selected entries ##########
     fun delete() {
-        // A. All selected, delete everything
-        if (DataTracker.allSelected()) {
-            clearAll()
-            DataTracker.taskCount = 0
-        }
-        // B. Otherwise delete individual tasks
-        else {
-            // Delete tasks
-            var groupDeleted = false
-            for (groupNum: Int in taskGroupList.lastIndex downTo 0) {
-                val entry: GroupEntry = taskGroupList[groupNum]
-                when (entry.type) {
-                    GroupType.HEADER -> {
-                        var deleteHeader = false
-                        // Check header's index
-                        when (groupNum) {
-                            // A. Last in list (No task group below)
-                            taskGroupList.lastIndex -> deleteHeader = true
-                            // B. Not last in list (Has group below). Check if below is header
-                            else -> if (taskGroupList[groupNum+1].isHeader()) deleteHeader = true
-                        }
-                        // Check if header needs to be deleted (empty header)
-                        if (deleteHeader) {
-                            removeHeader(taskGroupList[groupNum].header!!.week)
-                            taskGroupList.removeAt(groupNum)
-                            notifyItemRemoved(groupNum)
-                        }
-                    }
-                    GroupType.GROUP -> {
-                        val group: TaskGroup = entry.taskGroup!!
-                        // I. If group has children selected, perform deletion
-                        if (group.numSelected != 0) {
-                            group.selectedDelete()
-                            notifyItemChanged(groupNum)
-
-                            // II. Check if group needs to be deleted (all children have been deleted)
-                            if (group.taskList.size == 0) {
+        when (DataTracker.allSelected()) {
+            // A. All selected, delete everything
+            true -> {
+                clearAll()
+                DataTracker.taskCount = 0
+            }
+            // B. Otherwise delete individual tasks
+            false -> {
+                // Delete tasks
+                var groupDeleted = false
+                for (groupNum: Int in taskGroupList.lastIndex downTo 0) {
+                    val entry: GroupEntry = taskGroupList[groupNum]
+                    when (entry.type) {
+                        GroupType.HEADER -> {
+                            var deleteHeader = false
+                            // Check header's index
+                            when (groupNum) {
+                                // A. Last in list (No task group below)
+                                taskGroupList.lastIndex -> deleteHeader = true
+                                // B. Not last in list (Has group below). Check if below is header
+                                else -> if (taskGroupList[groupNum+1].isHeader()) deleteHeader = true
+                            }
+                            // Check if header needs to be deleted (empty header)
+                            if (deleteHeader) {
+                                removeHeader(taskGroupList[groupNum].header!!.week)
                                 taskGroupList.removeAt(groupNum)
                                 notifyItemRemoved(groupNum)
-                                groupDeleted = true
+                            }
+                        }
+                        GroupType.GROUP -> {
+                            val group: TaskGroup = entry.taskGroup!!
+                            // I. If group has children selected, perform deletion
+                            if (group.numSelected != 0) {
+                                group.selectedDelete()
+                                notifyItemChanged(groupNum)
+
+                                // II. Check if group needs to be deleted (all children have been deleted)
+                                if (group.taskList.size == 0) {
+                                    taskGroupList.removeAt(groupNum)
+                                    notifyItemRemoved(groupNum)
+                                    groupDeleted = true
+                                }
                             }
                         }
                     }
+                    // If above is a group and numSelected = 0, exit as we are done.
+                    // Otherwise continue one more time to see if header needs to be deleted
+                    if (DataTracker.numSelected == 0 && above(groupNum).isGroup()) break
                 }
-                // If above is a group and numSelected = 0, exit as we are done.
-                // Otherwise continue one more time to see if header needs to be deleted
-                if (DataTracker.numSelected == 0 && above(groupNum).isGroup()) break
+                // If any group has been deleted, expand/collapse icon needs to be updated
+                if (groupDeleted) updateExpandCollapseIcon()
             }
-            // If any group has been deleted, expand/collapse icon needs to be updated
-            if (groupDeleted) updateExpandCollapseIcon()
         }
     }
 
@@ -535,8 +537,6 @@ class TaskGroupAdapter(
             DataTracker.taskCount - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
             DataTracker.taskCount     -> changeCollapseExpandIcon(Fold.IN)   // All collapsed
         }
-        // Ensure area occupied by grid is resized when row closed
-        if (Settings.usingGridLayout()) notifyDataSetChanged()
     }
 
     // ########## Other ##########
