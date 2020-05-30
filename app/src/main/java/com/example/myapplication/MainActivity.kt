@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
     private var mode: Mode = Mode.START
 
     // Selection
-    private var initialSelectedGroup: Int = 0
-    private var initialSelectedTask: Int = 0
+    private var recentlyClickedGroup: Int = 0
+    private var recentlyClickedTask: Int = 0
 
     // Created task
     private var newTask: Task = Task()
@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                 // Deselect all except for initially selected task
                 true -> {
                     taskGroupAdapter.toggleSelectAll(false)
-                    taskGroupAdapter.select(initialSelectedGroup, initialSelectedTask)
+                    taskGroupAdapter.select(recentlyClickedGroup, recentlyClickedTask)
                     updateSelectedCountDisplay()
                 }
             }
@@ -235,28 +235,27 @@ class MainActivity : AppCompatActivity() {
         DataTracker.numSelected += difference
 
         when {
-            // [1]. From 0 -> x selected. Enter select mode
-            selectedPreClick == 0 -> {
-                initialSelectedGroup = groupNum
-                initialSelectedTask = 0
-                setMode(Mode.SELECTION)
+            selectedPreClick == 0 -> setMode(Mode.SELECTION)    // [1]. From 0 -> x selected. Enter select mode
+            DataTracker.numSelected == 0 -> {                   // [2]. From x -> 0 selected. Return to add mode
+                setMode(Mode.ADD)
+                return
             }
-            // [2]. From x -> 0 selected. Return to add mode
-            DataTracker.numSelected == 0 -> setMode(Mode.ADD)
-            // [3]. From x -> x + y OR x -> x - y. Update value display
-            else -> updateSelectedCountDisplay()
         }
+
+        // [3]. Between 1-numTasks: Update display & track most recently selected group/task
+        updateSelectedCountDisplay()
+        recentlyClickedGroup = groupNum
+        recentlyClickedTask = 0
     }
     private fun taskClicked (selected: Boolean, groupIndex: Int, taskIndex: Int) {
         // Update counts based on whether task selected/deselected
         when (selected) {
             // Check if 0 -> 1. Going from Add -> SelectMode
             true -> {
-                if (DataTracker.numSelected == 1) {
-                    setMode(Mode.SELECTION)
-                    initialSelectedGroup = groupIndex
-                    initialSelectedTask = taskIndex
-                }
+                if (DataTracker.numSelected == 1) setMode(Mode.SELECTION)
+                // Track most recently selected group/task
+                recentlyClickedGroup = groupIndex
+                recentlyClickedTask = taskIndex
             }
             // 1 -> 0. Return to addMode
             false -> {
