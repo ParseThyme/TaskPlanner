@@ -16,7 +16,7 @@ import kotlin.math.sign
 
 class TaskGroupAdapter(
      private val taskGroupList: ArrayList<GroupEntry>,
-     private val taskClicked: (Task) -> Unit,
+     private val taskClicked: (Boolean, Int, Int) -> Unit,
      private val dateClicked: (Int) -> Unit,
      private val scrollTo: (Int) -> Unit,
      private val changeCollapseExpandIcon: (Fold) -> Unit,
@@ -158,7 +158,7 @@ class TaskGroupAdapter(
             // Assign layout manager + adapter
             itemView.rvTaskGroup.apply {
                 layoutManager = LinearLayoutManager(itemView.rvTaskGroup.context, RecyclerView.VERTICAL, false)
-                adapter = TasksAdapter(group, taskClicked, updateSave)
+                adapter = TasksAdapter(group, adapterPosition, taskClicked, updateSave)
             }
         }
         private fun setFold(group: TaskGroup) {
@@ -516,13 +516,19 @@ class TaskGroupAdapter(
         return difference
     }
 
-    fun toggleSelectAll(selectAll : Boolean = true) {
+    fun select(groupIndex: Int, taskIndex: Int) {
+        DataTracker.numSelected = 1
+        taskGroupList[groupIndex].taskGroup!!.numSelected = 1
+        taskGroupList[groupIndex].taskGroup!!.taskList[taskIndex].selected = true
+        notifyItemChanged(groupIndex)
+    }
+    fun toggleSelectAll(allSelected : Boolean = true) {
         val end: Int = taskGroupList.size - 1
         for (groupNum: Int in end downTo 0) {
             if (taskGroupList[groupNum].isGroup())
-                taskGroupList[groupNum].taskGroup!!.setSelected(selectAll)
+                taskGroupList[groupNum].taskGroup!!.setSelected(allSelected)
         }
-
+        DataTracker.selectAll(allSelected)
         notifyDataSetChanged()
     }
     fun toggleFoldAll(newState: Fold = Fold.OUT) {

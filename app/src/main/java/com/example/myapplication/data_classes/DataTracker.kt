@@ -5,7 +5,12 @@ object DataTracker {
     var taskCount: Int = 0
     var numFoldedIn: Int = 0
 
-    fun selectAll() { numSelected = taskCount }
+    fun selectAll(allSelected: Boolean) {
+        numSelected = when (allSelected) {
+            true  -> taskCount
+            false -> 0
+        }
+    }
     fun allSelected(): Boolean { return numSelected == taskCount }
     fun allCollapsed() : Boolean { return numFoldedIn == taskCount }
 

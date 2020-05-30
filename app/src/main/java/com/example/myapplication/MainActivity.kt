@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     // private val settings: Settings = Settings()
 
     // TaskList (Center Area)
-    private val clickTaskFn = { task : Task -> taskClicked(task) }
+    private val clickTaskFn = { state: Boolean, group: Int, task: Int -> taskClicked(state, group, task) }
     private val clickDateFn = { group: Int -> groupClicked(group) }
     private val toTopFn = { group: Int -> scrollTo(group) }
     private val updateFoldIconFn = { state: Fold -> toggleFoldIcon(state)}
@@ -29,9 +29,15 @@ class MainActivity : AppCompatActivity() {
     // Toggled
     private var mode: Mode = Mode.START
 
+    // Selection
+    private var initialSelectedGroup: Int = 0
+    private var initialSelectedTask: Int = 0
+
     // Created task
     private var newTask: Task = Task()
     private var newDate: TaskDate = today()
+    // Modified tasks
+    private var selectModeDate: TaskDate = today()
 
     // Data
     private var taskGroupList: ArrayList<GroupEntry> = ArrayList()
@@ -40,9 +46,6 @@ class MainActivity : AppCompatActivity() {
     // Late initialized variables
     private lateinit var saveData: SaveData
     private lateinit var taskGroupAdapter: TaskGroupAdapter
-
-    // Modified tasks
-    private var selectModeDate: TaskDate = today()
 
     // ########## Main ##########
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,13 +162,14 @@ class MainActivity : AppCompatActivity() {
                 // Not all selected, select all
                 false -> {
                     taskGroupAdapter.toggleSelectAll()
-                    DataTracker.selectAll()
                     updateSelectedCountDisplay()
                 }
 
                 // Deselect all except for initially selected task
                 true -> {
-
+                    taskGroupAdapter.toggleSelectAll(false)
+                    taskGroupAdapter.select(initialSelectedGroup, initialSelectedTask)
+                    updateSelectedCountDisplay()
                 }
             }
         }
@@ -227,41 +231,43 @@ class MainActivity : AppCompatActivity() {
     // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
         val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
-        val selectedPreClick = DataTracker.numSelected
+        val selectedPreClick: Int = DataTracker.numSelected
         DataTracker.numSelected += difference
 
         when {
             // [1]. From 0 -> x selected. Enter select mode
             selectedPreClick == 0 -> {
+                initialSelectedGroup = groupNum
+                initialSelectedTask = 0
                 setMode(Mode.SELECTION)
             }
             // [2]. From x -> 0 selected. Return to add mode
-            DataTracker.numSelected == 0 -> {
-                setMode(Mode.ADD)
-            }
+            DataTracker.numSelected == 0 -> setMode(Mode.ADD)
             // [3]. From x -> x + y OR x -> x - y. Update value display
-            else -> { updateSelectedCountDisplay() }
+            else -> updateSelectedCountDisplay()
         }
     }
-    private fun taskClicked (task: Task) {
+    private fun taskClicked (selected: Boolean, groupIndex: Int, taskIndex: Int) {
         // Update counts based on whether task selected/deselected
-        when (task.selected) {
+        when (selected) {
+            // Check if 0 -> 1. Going from Add -> SelectMode
             true -> {
-                DataTracker.numSelected++
-                when (DataTracker.numSelected) {
-                    1 -> setMode(Mode.SELECTION)            // 0 -> 1. Enter selectionMode
-                    else -> updateSelectedCountDisplay()    // Update count display
+                if (DataTracker.numSelected == 1) {
+                    setMode(Mode.SELECTION)
+                    initialSelectedGroup = groupIndex
+                    initialSelectedTask = taskIndex
                 }
             }
-
+            // 1 -> 0. Return to addMode
             false -> {
-                DataTracker.numSelected--
-                when (DataTracker.numSelected) {
-                    0 -> setMode(Mode.ADD)                  // 1 -> 0. Return to addMode
-                    else -> updateSelectedCountDisplay()    // Update count display
+                if (DataTracker.numSelected == 0) {
+                    setMode(Mode.ADD)
+                    return
                 }
             }
         }
+        // Otherwise update count display for any other condition
+        updateSelectedCountDisplay()
     }
 
     // ########## Change values/display ##########
@@ -272,21 +278,17 @@ class MainActivity : AppCompatActivity() {
         mode = newMode
         when (newMode) {
             Mode.ADD -> {
-                // Set none selected and show main title
-                DataTracker.numSelected = 0
-
                 // Switch display of bottomBar
                 addMode.visibility = View.VISIBLE
                 selectMode.visibility = View.GONE
             }
             Mode.SELECTION -> {
+                // Show numSelected
                 updateSelectedCountDisplay()
-
                 // Switch display of bottomBar
                 addMode.visibility = View.GONE
                 selectMode.visibility = View.VISIBLE
             }
-            else -> return
         }
     }
     private fun updateSelectedCountDisplay() { selectMode.txtSelected.text = DataTracker.numSelectedMsg() }
@@ -300,8 +302,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun toggleLayoutButton() {
         when (Settings.mainLayout) {
-            ViewLayout.LINEAR -> { titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_linear) }
-            ViewLayout.GRID -> { titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_grid) }
+            ViewLayout.LINEAR -> titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_linear)
+            ViewLayout.GRID ->   titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_grid)
         }
     }
 

@@ -16,7 +16,8 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 // Unit == no return type (same as void)
 
 class TasksAdapter(private val group: TaskGroup,
-                   private val taskClicked: (Task) -> Unit,
+                   private val groupIndex: Int,
+                   private val taskClicked: (Boolean, Int, Int) -> Unit,
                    private val updateSave: () -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
@@ -53,11 +54,19 @@ class TasksAdapter(private val group: TaskGroup,
                 notifyItemChanged(adapterPosition)
 
                 // If update count in group to notify number selected
-                if (task.selected) group.numSelected++
-                else group.numSelected--
+                when (task.selected) {
+                    true -> {
+                        group.numSelected++
+                        DataTracker.numSelected++
+                    }
+                    false -> {
+                        group.numSelected--
+                        DataTracker.numSelected--
+                    }
+                }
 
                 // Call main click listener function (implemented in main activity)
-                taskClicked(task)
+                taskClicked(task.selected, groupIndex, adapterPosition)
             }
         }
 
