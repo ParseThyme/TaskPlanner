@@ -39,7 +39,8 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
             }
         }
         // Dismiss window
-        view.tagDismissBackground.setOnClickListener { window.dismiss() }
+        view.tagDismissLeft.setOnClickListener { window.dismiss() }
+        view.tagDismissRight.setOnClickListener { window.dismiss() }
 
         window.show(attachTo)
         return window

@@ -11,6 +11,7 @@ object DataTracker {
             false -> 0
         }
     }
+    fun noneSelected(): Boolean { return numSelected == 0 }
     fun allSelected(): Boolean { return numSelected == taskCount }
     fun allCollapsed() : Boolean { return numFoldedIn == taskCount }
 

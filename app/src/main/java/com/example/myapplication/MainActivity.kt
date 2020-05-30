@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     // TaskList (Center Area)
     private val clickTaskFn = { state: Boolean, group: Int, task: Int -> taskClicked(state, group, task) }
     private val clickDateFn = { group: Int -> groupClicked(group) }
-    private val toTopFn = { group: Int -> scrollTo(group) }
+    private val scrollToFn = { group: Int -> scrollToGroup(group) }
     private val updateFoldIconFn = { state: Fold -> toggleFoldIcon(state)}
     private val updateSaveFn = { updateSave() }
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         // Create adapter from loaded groupList (or create new one)
         loadSave()
-        taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, toTopFn,
+        taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, scrollToFn,
                                             updateFoldIconFn, updateSaveFn)
 
         // Assign layout manager and adapter to recycler view and set initial button resource to show
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         setMode(Mode.ADD)
     }
 
-    // ########## Setup related ##########
+    // ########## Setup, Buttons, OnClick ##########
     private fun runSetup() {
         // Setup singletons
         Keyboard.setup(this, addMode.txtTaskDesc)
@@ -87,7 +87,6 @@ class MainActivity : AppCompatActivity() {
         titleBar.title.text = mainTitle
     }
 
-    // ########## Buttons ##########
     private fun setupButtons() {
         // ##############################
         // TopBar
@@ -129,8 +128,7 @@ class MainActivity : AppCompatActivity() {
 
             // Reset text entry and time
             addMode.txtTaskDesc.setText("")
-            addMode.txtTaskDesc.clearFocus()
-            // newTask.time.clear(addMode.txtSetTime)
+            // addMode.txtTaskDesc.clearFocus()
             newTask.time.unset()
             addMode.txtSetTime.text = defaultTimeMsg
 
@@ -180,9 +178,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         selectMode.btnToDate.setOnClickListener {
-            // 1. Create temporary Task to hold new date
-            // 2. Create window, user selects new date
-            // 3. Override date for selected tasks in adapter
+            // 1. Create window, user selects new date
+            // 2. Override date for selected tasks in adapter
             selectModeDate.id = -1
             val window: PopupWindow = PopupManager.dateEdit(selectMode, null, this, selectModeDate)
             window.setOnDismissListener {
@@ -200,7 +197,7 @@ class MainActivity : AppCompatActivity() {
             window.setOnDismissListener {
                 if (newTime.hour != 0 || newTime.duration != 0) {
                     taskGroupAdapter.selectedSetTime(newTime)
-                    setMode(Mode.ADD)
+                    // setMode(Mode.ADD)
                     updateSave()
                 }
             }
@@ -211,7 +208,7 @@ class MainActivity : AppCompatActivity() {
             window.setOnDismissListener {
                 if (newTag.tag != -1) {
                     taskGroupAdapter.selectedSetTag(newTag.tag)
-                    setMode(Mode.ADD)
+                    // setMode(Mode.ADD)
                     updateSave()
                 }
             }
@@ -228,7 +225,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ########## OnClick ##########
     private fun groupClicked(groupNum: Int) {
         val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
         val selectedPreClick: Int = DataTracker.numSelected
@@ -247,7 +243,7 @@ class MainActivity : AppCompatActivity() {
         recentlyClickedGroup = groupNum
         recentlyClickedTask = 0
     }
-    private fun taskClicked (selected: Boolean, groupIndex: Int, taskIndex: Int) {
+    private fun taskClicked(selected: Boolean, groupIndex: Int, taskIndex: Int) {
         // Update counts based on whether task selected/deselected
         when (selected) {
             // Check if 0 -> 1. Going from Add -> SelectMode
@@ -267,6 +263,15 @@ class MainActivity : AppCompatActivity() {
         }
         // Otherwise update count display for any other condition
         updateSelectedCountDisplay()
+    }
+
+    override fun onBackPressed() {
+        // Override what system back key does
+        if (mode == Mode.SELECTION) { // Return to AddMode
+            taskGroupAdapter.toggleSelectAll(false)
+            setMode(Mode.ADD)
+        }
+        else super.onBackPressed()
     }
 
     // ########## Change values/display ##########
@@ -292,7 +297,6 @@ class MainActivity : AppCompatActivity() {
     }
     private fun updateSelectedCountDisplay() { selectMode.txtSelected.text = DataTracker.numSelectedMsg() }
 
-    // ########## Toggle ##########
     private fun toggleFoldIcon(state: Fold) {
         when(state) {
             Fold.OUT -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
@@ -343,13 +347,12 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Utility ##########
     // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)
-    private fun scrollTo(position: Int) {
+    private fun scrollToGroup(position: Int) {
         if (Settings.usingGridLayout()) return
 
         dateGroupRV.scrollToPosition(position)
         // Scroll bit extra for last position
-        if (position == taskGroupList.lastIndex) {
+        if (position == taskGroupList.lastIndex)
             (dateGroupRV.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
-        }
     }
 }

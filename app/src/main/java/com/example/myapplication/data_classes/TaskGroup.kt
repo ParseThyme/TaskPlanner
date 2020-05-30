@@ -73,29 +73,26 @@ fun TaskGroup.selectedDelete() {
     }
 }
 fun TaskGroup.selectedSetTag(newTag: Int = R.drawable.tag_base) {
-    // See above for logic
+    var count: Int = numSelected  // Store counter for number of tasks selected
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
         if (task.selected) {
-            numSelected--
-            DataTracker.numSelected--
-            task.selected = false
+            count--
             task.tag = newTag
         }
-        if (numSelected == 0) return
+        if (count == 0) return    // Once all selected tasks handled, exit
     }
 }
 fun TaskGroup.selectedSetTime(newTime: TaskTime = unsetTime()) {
     // See above for logic
+    var count: Int = numSelected
     for (index: Int in taskList.size - 1 downTo 0) {
         val task: Task = taskList[index]
         if (task.selected) {
-            numSelected--
-            DataTracker.numSelected--
-            task.selected = false
+            count--
             task.time = newTime
         }
-        if (numSelected == 0) return
+        if (count == 0) return
     }
 }
 fun TaskGroup.selectedClear() {

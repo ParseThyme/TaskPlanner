@@ -254,8 +254,8 @@ class TaskGroupAdapter(
     }
     private fun addFromBottom(date: TaskDate, tasks: ArrayList<Task>, direction: Int) {
         when (direction) {
-            0 -> { addToTaskGroup(taskGroupList.lastIndex, tasks) }      // Matching date, append to bottom
-            1 -> { addNewTaskGroup(taskGroupList.size, date, tasks) }    // Future date, add new bottom
+            0 -> addToTaskGroup(taskGroupList.lastIndex, tasks)     // Matching date, append to bottom
+            1 -> addNewTaskGroup(taskGroupList.size, date, tasks)   // Future date, add new bottom
 
             // Past date, iterate and move upwards
             -1 -> {
@@ -281,7 +281,7 @@ class TaskGroupAdapter(
     private fun addFromTop(date: TaskDate, tasks: ArrayList<Task>, direction: Int) {
         when (direction) {
             // Matching date, append to first pos
-            0 -> { addToTaskGroup(1, tasks) }
+            0 -> addToTaskGroup(1, tasks)
             // Earlier date, add new group at top
             -1 -> {
                 // Given first pos == header, check if matches same week of new task
@@ -341,11 +341,13 @@ class TaskGroupAdapter(
 
         // Update collapse/expand icon to enable collapsing as new entry will always be expanded
         changeCollapseExpandIcon(Fold.OUT)
+        scrollTo(pos)
     }
     private fun addToTaskGroup(pos: Int, tasks: ArrayList<Task>) {
         // Appending an existing group
         taskGroupList[pos].taskGroup!!.taskList.addAll(tasks)
         notifyItemChanged(pos)
+        scrollTo(pos)
     }
 
     private fun above(pos:Int): GroupEntry {
@@ -452,29 +454,29 @@ class TaskGroupAdapter(
         }
     }
     fun selectedSetTime(newTime: TaskTime) {
+        var count: Int = DataTracker.numSelected    // Track numSelected
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val entry: GroupEntry = taskGroupList[groupNum]
-            if (entry.isGroup()) {
+            if (entry.isGroup() && entry.taskGroup!!.numSelected != 0) {    // Ignore headers
                 val group: TaskGroup = entry.taskGroup!!
-                if (group.numSelected != 0) {
-                    group.selectedSetTime(newTime)
-                    notifyItemChanged(groupNum)
-                    if (DataTracker.numSelected == 0) break
-                }
+                group.selectedSetTime(newTime)
+                notifyItemChanged(groupNum)
+                count -= group.numSelected
+                if (count == 0) return           // Once all selected accounted for, exit early
             }
         }
     }
     fun selectedSetTag(newTag: Int) {
-        // Uses same logic as delete(). We don't track group size in this case.
+        // Uses same logic as above
+        var count: Int = DataTracker.numSelected
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val entry: GroupEntry = taskGroupList[groupNum]
-            if (entry.isGroup()) {
+            if (entry.isGroup() && entry.taskGroup!!.numSelected != 0) {
                 val group: TaskGroup = entry.taskGroup!!
-                if (group.numSelected != 0) {
-                    group.selectedSetTag(newTag)
-                    notifyItemChanged(groupNum)
-                    if (DataTracker.numSelected == 0) break
-                }
+                group.selectedSetTag(newTag)
+                notifyItemChanged(groupNum)
+                count -= group.numSelected
+                if (count == 0) return
             }
         }
     }

@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.debugMessagePrint
 import com.example.myapplication.utility.defaultTimeMsg
 import kotlinx.android.synthetic.main.popup_time.view.*
 
@@ -112,7 +113,9 @@ class PopupTime : Popup() {
             modify?.text = chosenTime.startAndEndTimeLabel()
             window.dismiss()
         }
-        view.timeDismissBackground.setOnClickListener { window.dismiss() }
+
+        view.timeDismissLeft.setOnClickListener {window.dismiss() }
+        view.timeDismissRight.setOnClickListener { window.dismiss() }
 
         window.show(attachTo)
         return window

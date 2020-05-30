@@ -42,7 +42,7 @@ class PopupDate : Popup() {
         chosenDateView.week = currWeek
 
         // Refresh in case 12:00 midnight
-        if (chosenDate.id < today.id) { chosenDate = today() }
+        if (chosenDate.isPastDate()) { chosenDate = today() }
 
         // 2. Setup Arrays
         // [A]. Cell underneath, text updated
@@ -144,17 +144,20 @@ class PopupDate : Popup() {
         view.btnApplyDate.setOnClickListener {
             // Store current week selected cell is in
             chosenDateView.week = currWeek
+            // Update id if -1 (Need to assign correct id)
+            if (chosenDate.id == -1) chosenDate.createID()
             // Update passed in date
             edited.replace(chosenDate)
             modify?.text = chosenDate.asStringShort()
             window.dismiss()
         }
-        view.dateDismissBackground.setOnClickListener { window.dismiss() }
+        view.dateDismissLeft.setOnClickListener { window.dismiss() }
+        view.dateDismissRight.setOnClickListener { window.dismiss() }
 
         // [E]. Reset button, selected date jump
         view.btnResetDate.setOnClickListener {
             // Do nothing if today is chosen, otherwise
-            if (chosenDate.id != today.id) {
+            if (!chosenDate.same(today)) {
                 // Set chosenDate to today
                 chosenDate = today()
                 view.txtChosenDate.text = chosenDate.asStringShort()
@@ -234,7 +237,7 @@ class PopupDate : Popup() {
             // Two cases where nothing is done:
             // [A]. Not selectable, label == "-".
             // [B]. Already selected, highlighted and displayed above
-            if (clickedDay.label != "-" && (clickedDay.taskDate.id != chosenDate.id)) {
+            if (clickedDay.label != "-" && !clickedDay.taskDate.same(chosenDate)) {
                 // Update label and selected date
                 chosenDate = clickedDay.taskDate
                 selectedTextView.text = clickedDay.taskDate.asStringShort()
@@ -252,7 +255,7 @@ class PopupDate : Popup() {
             // Set string attached to each day label
             textViews[index].text = dayData[index].label
             // Highlight date yellow if selected
-            if (dayData[index].taskDate.id == chosenDate.id) {
+            if (dayData[index].taskDate.same(chosenDate)) {
                 chosenDateView.view = textViews[index]
                 chosenDateView.applyBackgroundColor(Settings.highlightColor)
             }

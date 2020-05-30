@@ -50,7 +50,11 @@ fun TaskDate.replace(newDate: TaskDate) {
     month = newDate.month
     year = newDate.year
 }
-
+fun TaskDate.createID() {
+    val cal: Calendar = getInstance()
+    cal.set(year, month, day)
+    this.id = idFormat.format(cal.timeInMillis).toInt()
+}
 // ####################
 // Date Ranges, Weeks, Months
 // ####################
@@ -91,8 +95,6 @@ fun Week.next(loop: Boolean = false) : Week {
     }
 }
 
-fun TaskDate.monthNext() : Int { return (month + 1) % 12 }
-fun TaskDate.monthPrev() : Int { return (month - 1) % 12 }
 fun Int.monthAsString(): String {
     return when (this) {
         0 -> "Jan"      1 -> "Feb"      2 -> "Mar"      3 -> "Apr"
@@ -102,6 +104,8 @@ fun Int.monthAsString(): String {
     }
 }
 
+fun TaskDate.same(date: TaskDate) : Boolean { return (day == date.day && month == date.month && year == date.year) }
+fun TaskDate.isPastDate() : Boolean { return dateDiff(today(), this) < 0 }
 fun dateDiff(from: TaskDate, to: TaskDate) : Int {
     val cal: Calendar = getInstance()
 
@@ -152,7 +156,7 @@ fun TaskDate.dayNameShort(): String {
 // ####################
 // Date addition
 // ####################
-fun TaskDate.addMonths(months: Int): TaskDate { return this.addPeriod(false, months) }
+// fun TaskDate.addMonths(months: Int): TaskDate { return this.addPeriod(false, months) }
 fun TaskDate.addDays(days: Int): TaskDate {
     // Test adding days together, if < 28, update id and day variable. Year and Month untouched
     return when (day + days < 28) {
