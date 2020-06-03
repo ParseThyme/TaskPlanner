@@ -59,6 +59,9 @@ class TaskGroupAdapter(
         // Remove older entries, requires setting toggled on
         // if (Settings.deleteOldDates) { deleteOldTasks() }
 
+        // Check if group list needs to be refreshed (User didn't close app before new day)
+        if (AppData.today != today()) AppData.reset()
+
         // Clear previous selections of loaded list if not empty. Perform sorting/counting only on app start
         if (taskGroupList.isNotEmpty()) {
             // List of tasks to rearrange
@@ -70,21 +73,27 @@ class TaskGroupAdapter(
                         val group: TaskGroup = entry.taskGroup!!
                         group.setSelected(false)
 
-                        // 1. Go through each group to get taskCount and numCollapsed
-                        AppData.taskCount += group.taskList.size
-                        if (!group.isFoldedOut()) AppData.numFoldedIn++
+                        // Do sorting && counting only on app start
+                        if (!AppData.sorted) {
+                            // 1. Go through each group to get taskCount and numCollapsed
+                            AppData.taskCount += group.taskList.size
+                            if (!group.isFoldedOut()) AppData.numFoldedIn++
 
-                        // Sorting: Check if header has been added yet, if not add header
-                        if (group.checkAddHeader()) sortedList.add(headerEntry(group.date.getWeek()))
-                        // Sorting: Add copy of task
-                        sortedList.add(entry)
+                            // Sorting: Check if header has been added yet, if not add header
+                            if (group.checkAddHeader()) sortedList.add(headerEntry(group.date.getWeek()))
+                            // Sorting: Add copy of task
+                            sortedList.add(entry)
+                        }
                     }
                     GroupType.HEADER -> { }
                 }
             }
             // Sorting: Override current list with correctly sorted headers
-            taskGroupList.clear()
-            taskGroupList.addAll(sortedList)
+            if (!AppData.sorted) {
+                taskGroupList.clear()
+                taskGroupList.addAll(sortedList)
+                AppData.sorted = true
+            }
             // Check if expand collapse icon needs updating
             updateExpandCollapseIcon()
         }

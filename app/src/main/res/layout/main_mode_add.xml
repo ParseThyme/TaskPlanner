@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
-            android:background="@android:color/transparent"
+            android:background="@drawable/clickable_bg"
             android:button="@drawable/ic_star_toggle"
             android:minWidth="0dp"
             android:minHeight="0dp"
@@ -177,6 +177,8 @@
             android:tint="#818181"
             app:layout_constraintBottom_toBottomOf="@+id/txtTaskDesc"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/txtTaskDesc"
+            app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/ic_add_box" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
