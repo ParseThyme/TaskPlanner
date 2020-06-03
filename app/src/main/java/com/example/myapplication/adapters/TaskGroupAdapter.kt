@@ -55,12 +55,14 @@ class TaskGroupAdapter(
         headers[week] = false
     }
 
-    // Initialization
     init {
         // Remove older entries, requires setting toggled on
         // if (Settings.deleteOldDates) { deleteOldTasks() }
 
-        // Override default values based on loaded list if not empty
+        // Check if group list needs to be refreshed (User didn't close app before new day)
+        if (AppData.today != today()) AppData.reset()
+
+        // Clear previous selections of loaded list if not empty. Perform sorting/counting only on app start
         if (taskGroupList.isNotEmpty()) {
             // List of tasks to rearrange
             val sortedList: ArrayList<GroupEntry> = arrayListOf()
@@ -69,23 +71,29 @@ class TaskGroupAdapter(
                 when (entry.type) {
                     GroupType.GROUP -> {
                         val group: TaskGroup = entry.taskGroup!!
-
-                        // 1. Go through each group to get taskCount and numCollapsed. Clear prev selections
-                        DataTracker.taskCount += group.taskList.size
-                        if (!group.isFoldedOut()) DataTracker.numFoldedIn++
                         group.setSelected(false)
 
-                        // 2A. Check if header has been added yet, if not add header
-                        if (group.checkAddHeader()) { sortedList.add(headerEntry(group.date.getWeek())) }
-                        // 2B. Add copy of task
-                        sortedList.add(entry)
+                        // Do sorting && counting only on app start
+                        if (!AppData.sorted) {
+                            // 1. Go through each group to get taskCount and numCollapsed
+                            AppData.taskCount += group.taskList.size
+                            if (!group.isFoldedOut()) AppData.numFoldedIn++
+
+                            // Sorting: Check if header has been added yet, if not add header
+                            if (group.checkAddHeader()) sortedList.add(headerEntry(group.date.getWeek()))
+                            // Sorting: Add copy of task
+                            sortedList.add(entry)
+                        }
                     }
                     GroupType.HEADER -> { }
                 }
             }
-            // Override current list with correctly sorted headers
-            taskGroupList.clear()
-            taskGroupList.addAll(sortedList)
+            // Sorting: Override current list with correctly sorted headers
+            if (!AppData.sorted) {
+                taskGroupList.clear()
+                taskGroupList.addAll(sortedList)
+                AppData.sorted = true
+            }
             // Check if expand collapse icon needs updating
             updateExpandCollapseIcon()
         }
@@ -144,9 +152,9 @@ class TaskGroupAdapter(
                 when (newState) {
                     Fold.OUT -> {
                         scrollTo(adapterPosition)
-                        DataTracker.numFoldedIn--
+                        AppData.numFoldedIn--
                     }
-                    Fold.IN -> DataTracker.numFoldedIn++
+                    Fold.IN -> AppData.numFoldedIn++
                 }
                 notifyItemChanged(adapterPosition)
                 updateExpandCollapseIcon()
@@ -202,7 +210,7 @@ class TaskGroupAdapter(
     // ########## Group related functionality ##########
     fun addTask(date: TaskDate, task: Task) { addTask(date, arrayListOf(task)) }    // Singular Task
     private fun addTask(date: TaskDate, tasks: ArrayList<Task>) {
-        DataTracker.taskCount += tasks.size
+        AppData.taskCount += tasks.size
 
         // Bug fix. Clearing selection for newly added tasks
         for (task: Task in tasks) task.selected = false
@@ -359,11 +367,11 @@ class TaskGroupAdapter(
 
     // ########## Modifying selected entries ##########
     fun delete() {
-        when (DataTracker.allSelected()) {
+        when (AppData.allSelected()) {
             // A. All selected, delete everything
             true -> {
                 deleteAll()
-                DataTracker.taskCount = 0
+                AppData.taskCount = 0
             }
             // B. Otherwise delete individual tasks
             false -> {
@@ -406,7 +414,7 @@ class TaskGroupAdapter(
                     }
                     // If above is a group and numSelected = 0, exit as we are done.
                     // Otherwise continue one more time to see if header needs to be deleted
-                    if (DataTracker.numSelected == 0 && above(groupNum).isGroup()) break
+                    if (AppData.numSelected == 0 && above(groupNum).isGroup()) break
                 }
                 // If any group has been deleted, expand/collapse icon needs to be updated
                 if (groupDeleted) updateExpandCollapseIcon()
@@ -418,7 +426,7 @@ class TaskGroupAdapter(
         // Store list of tasks to be changed
         val movedTasks: ArrayList<Task> = arrayListOf()
         // Check number of tasks selected
-        when (DataTracker.allSelected()) {
+        when (AppData.allSelected()) {
             // 1. All tasks selected
             true -> {
                 // 1. Copy over every task, clearing selections
@@ -454,7 +462,7 @@ class TaskGroupAdapter(
         }
     }
     fun selectedSetTime(newTime: TaskTime) {
-        var count: Int = DataTracker.numSelected    // Track numSelected
+        var count: Int = AppData.numSelected    // Track numSelected
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val entry: GroupEntry = taskGroupList[groupNum]
             if (entry.isGroup() && entry.taskGroup!!.numSelected != 0) {    // Ignore headers
@@ -468,7 +476,7 @@ class TaskGroupAdapter(
     }
     fun selectedSetTag(newTag: Int) {
         // Uses same logic as above
-        var count: Int = DataTracker.numSelected
+        var count: Int = AppData.numSelected
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val entry: GroupEntry = taskGroupList[groupNum]
             if (entry.isGroup() && entry.taskGroup!!.numSelected != 0) {
@@ -488,7 +496,7 @@ class TaskGroupAdapter(
                 if (group.numSelected != 0) {
                     group.selectedClear()
                     notifyItemChanged(groupNum)
-                    if (DataTracker.numSelected == 0) break
+                    if (AppData.numSelected == 0) break
                 }
             }
         }
@@ -497,7 +505,7 @@ class TaskGroupAdapter(
     private fun deleteAll() {
         // Empty everything and reset values
         taskGroupList.clear()                   // Clear entire group list
-        DataTracker.numSelected = 0             // Reset selected count
+        AppData.numSelected = 0             // Reset selected count
 
         // Reset header parameters
         for (week: Week in headers.keys) headers[week] = false
@@ -519,7 +527,7 @@ class TaskGroupAdapter(
     }
 
     fun select(groupIndex: Int, taskIndex: Int) {
-        DataTracker.numSelected = 1
+        AppData.numSelected = 1
         taskGroupList[groupIndex].taskGroup!!.numSelected = 1
         taskGroupList[groupIndex].taskGroup!!.taskList[taskIndex].selected = true
         notifyItemChanged(groupIndex)
@@ -530,7 +538,7 @@ class TaskGroupAdapter(
             if (taskGroupList[groupNum].isGroup())
                 taskGroupList[groupNum].taskGroup!!.setSelected(allSelected)
         }
-        DataTracker.selectAll(allSelected)
+        AppData.selectAll(allSelected)
         notifyDataSetChanged()
     }
     fun toggleFoldAll(newState: Fold = Fold.OUT) {
@@ -542,17 +550,17 @@ class TaskGroupAdapter(
             }
         }
         // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
-        DataTracker.numFoldedIn = when (newState) {
+        AppData.numFoldedIn = when (newState) {
             Fold.OUT -> 0
-            Fold.IN -> DataTracker.taskCount
+            Fold.IN -> AppData.taskCount
         }
     }
 
     private fun updateExpandCollapseIcon() {
         // Update icon accordingly based on number collapsed
-        when (DataTracker.numFoldedIn) {
-            DataTracker.taskCount - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
-            DataTracker.taskCount     -> changeCollapseExpandIcon(Fold.IN)   // All collapsed
+        when (AppData.numFoldedIn) {
+            AppData.taskCount - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
+            AppData.taskCount     -> changeCollapseExpandIcon(Fold.IN)   // All collapsed
         }
     }
 

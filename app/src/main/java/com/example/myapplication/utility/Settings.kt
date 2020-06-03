@@ -34,8 +34,6 @@ object Settings {
     private const val defMaxDays: Int = defMaxWeeks / 7
     var maxWeeks: Int = defMaxWeeks
     var maxDays: Int = defMaxDays
-    lateinit var today: TaskDate
-    lateinit var firstDayOfWeek: TaskDate
 
     // Layout
     private lateinit var parentRV: RecyclerView
@@ -53,11 +51,6 @@ object Settings {
 
     fun load() {
 
-    }
-
-    fun init() {
-        today = today()
-        firstDayOfWeek = today.firstDayOfWeek()
     }
 
     fun setDefault() {

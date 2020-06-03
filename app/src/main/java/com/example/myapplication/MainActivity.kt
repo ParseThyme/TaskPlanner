@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_view)
 
-        Settings.init()
-
         // Create adapter from loaded groupList (or create new one)
         loadSave()
         taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, scrollToFn,
@@ -75,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize variable references
         // Apply starting date to be today's date at bottom bar
-        addMode.txtSetDate.text = Settings.today.asStringShort()
+        addMode.txtSetDate.text = today().asStringShort()
         // Set time to be blank
         newTask.time.unset()
         addMode.txtSetTime.text = defaultTimeMsg
@@ -93,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         titleBar.btnCollapseExpand.setOnClickListener {
             // Expand all when all are collapsed, switch icon to collapse all icon
-            if (DataTracker.allCollapsed()) {
+            if (AppData.allCollapsed()) {
                 taskGroupAdapter.toggleFoldAll()
                 toggleFoldIcon(Fold.OUT)
             }
@@ -156,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
         // 2. Select Mode
         selectMode.btnSelectAll.setOnClickListener {
-            when (DataTracker.allSelected()) {
+            when (AppData.allSelected()) {
                 // Not all selected, select all
                 false -> {
                     taskGroupAdapter.toggleSelectAll()
@@ -227,12 +225,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun groupClicked(groupNum: Int) {
         val difference: Int = taskGroupAdapter.toggleGroupSelected(groupNum)
-        val selectedPreClick: Int = DataTracker.numSelected
-        DataTracker.numSelected += difference
+        val selectedPreClick: Int = AppData.numSelected
+        AppData.numSelected += difference
 
         when {
             selectedPreClick == 0 -> setMode(Mode.SELECTION)    // [1]. From 0 -> x selected. Enter select mode
-            DataTracker.numSelected == 0 -> {                   // [2]. From x -> 0 selected. Return to add mode
+            AppData.numSelected == 0 -> {                   // [2]. From x -> 0 selected. Return to add mode
                 setMode(Mode.ADD)
                 return
             }
@@ -248,14 +246,14 @@ class MainActivity : AppCompatActivity() {
         when (selected) {
             // Check if 0 -> 1. Going from Add -> SelectMode
             true -> {
-                if (DataTracker.numSelected == 1) setMode(Mode.SELECTION)
+                if (AppData.numSelected == 1) setMode(Mode.SELECTION)
                 // Track most recently selected group/task
                 recentlyClickedGroup = groupIndex
                 recentlyClickedTask = taskIndex
             }
             // 1 -> 0. Return to addMode
             false -> {
-                if (DataTracker.numSelected == 0) {
+                if (AppData.numSelected == 0) {
                     setMode(Mode.ADD)
                     return
                 }
@@ -295,7 +293,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private fun updateSelectedCountDisplay() { selectMode.txtSelected.text = DataTracker.numSelectedMsg() }
+    private fun updateSelectedCountDisplay() { selectMode.txtSelected.text = AppData.numSelectedMsg() }
 
     private fun toggleFoldIcon(state: Fold) {
         when(state) {

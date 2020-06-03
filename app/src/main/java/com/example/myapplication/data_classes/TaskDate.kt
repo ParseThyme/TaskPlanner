@@ -60,9 +60,9 @@ fun TaskDate.createID() {
 // ####################
 enum class Week { PAST, THIS, NEXT, FORTNIGHT, FUTURE }
 
-fun TaskDate.getWeekNum() : Int { return (dateDiff(Settings.firstDayOfWeek, this)) / 7 }
+fun TaskDate.getWeekNum() : Int { return (dateDiff(AppData.firstDayOfWeek, this)) / 7 }
 fun TaskDate.getWeek() : Week {
-    val diff: Int = dateDiff(Settings.firstDayOfWeek, this)
+    val diff: Int = dateDiff(AppData.firstDayOfWeek, this)
     return when {
         diff < 0 -> Week.PAST
         diff in 0..6 -> Week.THIS

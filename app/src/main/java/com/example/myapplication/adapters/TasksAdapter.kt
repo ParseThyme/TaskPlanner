@@ -57,11 +57,11 @@ class TasksAdapter(private val group: TaskGroup,
                 when (task.selected) {
                     true -> {
                         group.numSelected++
-                        DataTracker.numSelected++
+                        AppData.numSelected++
                     }
                     false -> {
                         group.numSelected--
-                        DataTracker.numSelected--
+                        AppData.numSelected--
                     }
                 }
 

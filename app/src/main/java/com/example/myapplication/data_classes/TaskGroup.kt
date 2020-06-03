@@ -52,8 +52,8 @@ fun TaskGroup.selectedDelete() {
     // Deleting entire group
     if (numSelected == taskList.size) {
         taskList.clear()
-        DataTracker.taskCount -= numSelected
-        DataTracker.numSelected -= numSelected
+        AppData.taskCount -= numSelected
+        AppData.numSelected -= numSelected
         numSelected = 0
         return
     }
@@ -65,8 +65,8 @@ fun TaskGroup.selectedDelete() {
             task.selected = false
             numSelected--
             taskList.removeAt(index)
-            DataTracker.numSelected--
-            DataTracker.taskCount--
+            AppData.numSelected--
+            AppData.taskCount--
         }
         // Exit early when all selected have been deleted (No point continuing onwards)
         if (numSelected == 0) return
@@ -100,7 +100,7 @@ fun TaskGroup.selectedClear() {
         val task: Task = taskList[index]
         if (task.selected) {
             numSelected--
-            DataTracker.numSelected--
+            AppData.numSelected--
             task.selected = false
             task.time.unset()
             task.tag = R.drawable.tag_base
