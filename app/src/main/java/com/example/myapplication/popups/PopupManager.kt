@@ -2,6 +2,7 @@ package com.example.myapplication.popups
 
 import android.content.Context
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -23,7 +24,7 @@ object PopupManager {
         return time.create(attachTo, modify, context, edited)
     }
 
-    fun tagEdit(attachTo: View, modify: ImageView?, context: Context, edited: Task) : PopupWindow {
+    fun tagEdit(attachTo: View, modify: Button?, context: Context, edited: Task) : PopupWindow {
         return tag.create(attachTo, modify, context, edited)
     }
 

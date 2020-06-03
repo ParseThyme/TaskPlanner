@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/titleBar"
-        layout="@layout/main_layout_top_view"
+        layout="@layout/main_layout_topbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
 
         <include
             android:id="@+id/addMode"
-            layout="@layout/main_mode_add_view"
+            layout="@layout/main_mode_add"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="visible"
@@ -49,7 +49,7 @@
 
         <include
             android:id="@+id/selectMode"
-            layout="@layout/main_mode_select_view"
+            layout="@layout/main_mode_select"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="gone"

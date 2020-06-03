@@ -10,9 +10,9 @@ import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.PopupManager
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.main_activity_view.*
-import kotlinx.android.synthetic.main.main_layout_top_view.view.*
-import kotlinx.android.synthetic.main.main_mode_add_view.view.*
-import kotlinx.android.synthetic.main.main_mode_select_view.view.*
+import kotlinx.android.synthetic.main.main_layout_topbar.view.*
+import kotlinx.android.synthetic.main.main_mode_add.view.*
+import kotlinx.android.synthetic.main.main_mode_select.view.*
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
@@ -67,22 +67,34 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Setup, Buttons, OnClick ##########
     private fun runSetup() {
+        // Create tagslist
+        tagsList = arrayListOf(
+            R.drawable.tag_booking, R.drawable.tag_assignment, R.drawable.tag_mail, R.drawable.tag_file,
+            R.drawable.tag_scan, R.drawable.tag_print, R.drawable.tag_bug, R.drawable.tag_build,
+
+            R.drawable.tag_tv ,R.drawable.tag_read, R.drawable.tag_music_note, R.drawable.tag_game,
+            R.drawable.tag_photo, R.drawable.tag_movie, R.drawable.tag_food, R.drawable.tag_event,
+
+            R.drawable.tag_buy, R.drawable.tag_pet, R.drawable.tag_workout, R.drawable.tag_medicine,
+            R.drawable.tag_delivery, R.drawable.tag_flight, R.drawable.tag_train, R.drawable.tag_car,
+
+            R.drawable.tag_important, R.drawable.tag_flag, R.drawable.tag_1, R.drawable.tag_2,
+            R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
+        )
+        PopupManager.setup(tagsList)
+
         // Setup singletons
         Keyboard.setup(this, addMode.txtTaskDesc)
         Keyboard.addInputValidation(addMode.btnNewTask)
 
         // Initialize variable references
-        // Apply starting date to be today's date at bottom bar
-        addMode.txtSetDate.text = today().asStringShort()
+        setupButtons()                                      // Buttons (topBar and bottomBar)
+        titleBar.title.text = mainTitle                     // Main App name
+        addMode.txtSetDate.text = today().asStringShort()   // Starting date to be today at bottom bar
+
         // Set time to be blank
         newTask.time.unset()
         addMode.txtSetTime.text = defaultTimeMsg
-
-        // Buttons (topBar and bottomBar)
-        setupButtons()
-
-        // Main App name
-        titleBar.title.text = mainTitle
     }
 
     private fun setupButtons() {
@@ -137,8 +149,9 @@ class MainActivity : AppCompatActivity() {
         addMode.txtSetDate.setOnClickListener { PopupManager.dateEdit(addMode, addMode.txtSetDate, this, newDate) }
         addMode.txtSetTime.setOnClickListener { PopupManager.timeEdit(addMode, addMode.txtSetTime, this, newTask.time) }
         addMode.btnSetTag.setOnClickListener  { PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
+        // addMode.labelTag.setOnClickListener   { PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
 
-        addMode.btnReset.setOnClickListener {
+        addMode.btnResetParams.setOnClickListener {
             // Reset all values (exclude text entry)
             newTask.tag = R.drawable.tag_base
             newDate = today()
@@ -147,7 +160,7 @@ class MainActivity : AppCompatActivity() {
             addMode.txtSetTime.text = defaultTimeMsg
 
             // Update views
-            addMode.btnSetTag.setImageResource(newTask.tag)
+            addMode.btnSetTag.updateDrawableTop(newTask.tag)
             addMode.txtSetTime.text = defaultTimeMsg
             addMode.txtSetDate.text = newDate.asStringShort()
         }
@@ -269,7 +282,7 @@ class MainActivity : AppCompatActivity() {
             taskGroupAdapter.toggleSelectAll(false)
             setMode(Mode.ADD)
         }
-        else super.onBackPressed()
+        else moveTaskToBack(true)
     }
 
     // ########## Change values/display ##########
@@ -284,7 +297,7 @@ class MainActivity : AppCompatActivity() {
                 addMode.visibility = View.VISIBLE
                 selectMode.visibility = View.GONE
             }
-            Mode.SELECTION -> {
+            else -> {   // MODE.SELECTION
                 // Show numSelected
                 updateSelectedCountDisplay()
                 // Switch display of bottomBar
@@ -314,26 +327,6 @@ class MainActivity : AppCompatActivity() {
 
         // Uncomment for broken data
         // saveLoad.clearAllData()
-
-        // Load tagsList. If not present, create new list
-        tagsList = saveData.loadTagsList()
-        if (tagsList.isEmpty()) {
-            tagsList = arrayListOf(
-                R.drawable.tag_booking, R.drawable.tag_assignment, R.drawable.tag_mail, R.drawable.tag_file,
-                R.drawable.tag_scan, R.drawable.tag_print, R.drawable.tag_bug, R.drawable.tag_build,
-
-                R.drawable.tag_tv ,R.drawable.tag_read, R.drawable.tag_music_note, R.drawable.tag_game,
-                R.drawable.tag_photo, R.drawable.tag_movie, R.drawable.tag_food, R.drawable.tag_event,
-
-                R.drawable.tag_buy, R.drawable.tag_pet, R.drawable.tag_workout, R.drawable.tag_medicine,
-                R.drawable.tag_delivery, R.drawable.tag_flight, R.drawable.tag_train, R.drawable.tag_car,
-
-                R.drawable.tag_important, R.drawable.tag_flag, R.drawable.tag_1, R.drawable.tag_2,
-                R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
-            )
-            saveData.saveTagsList(tagsList)
-        }
-        PopupManager.setup(tagsList)
 
         // Load data
         taskGroupList = saveData.loadTaskGroupList()

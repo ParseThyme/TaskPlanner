@@ -13,8 +13,6 @@ import com.example.myapplication.utility.debugMessagePrint
 import kotlinx.android.synthetic.main.popup_date.view.*
 
 class PopupDate : Popup() {
-    // Today's date
-    private lateinit var today: TaskDate
     // Most recently chosen date
     private var chosenDate: TaskDate = TaskDate()
     // Highlighted cell
@@ -35,14 +33,20 @@ class PopupDate : Popup() {
         val view:View = window.contentView
 
         // 1. Get tracked variables
-        today = today()                        // Today's date
         chosenDate = edited.copy()             // Most recently selected date
-        currMonth = chosenDate.month           // Match month to currently chosen month
         currWeek = chosenDate.getWeekNum()     // Match week to currently chosen date
-        chosenDateView.week = currWeek
 
-        // Refresh in case 12:00 midnight
-        if (chosenDate.isPastDate()) { chosenDate = today() }
+        // Refresh in case of 12:00 midnight (today's date now next day)
+        if (chosenDate.isPastDate()) {
+            data.refreshEntries()
+            AppData.firstDayOfWeek = today().firstDayOfWeek()
+            chosenDate = today()
+            currWeek = 0
+        }
+
+        // Match month to currently chosen month, copy over currWeek
+        currMonth = chosenDate.month
+        chosenDateView.week = currWeek
 
         // 2. Setup Arrays
         // [A]. Cell underneath, text updated
@@ -157,7 +161,7 @@ class PopupDate : Popup() {
         // [E]. Reset button, selected date jump
         view.btnResetDate.setOnClickListener {
             // Do nothing if today is chosen, otherwise
-            if (!chosenDate.same(today)) {
+            if (!chosenDate.same(today())) {
                 // Set chosenDate to today
                 chosenDate = today()
                 view.txtChosenDate.text = chosenDate.asStringShort()

@@ -4,11 +4,10 @@ import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.utility.Keyboard
-import kotlinx.android.synthetic.main.task_edit_view.view.*
+import kotlinx.android.synthetic.main.task_edit.view.*
 
 
 class DialogEdit(
@@ -24,7 +23,7 @@ class DialogEdit(
         // ########## Create dialog ##########
         // https://demonuts.com/android-custom-dialog-with-transparent-background/
         val dialog = Dialog(context, R.style.EditDialog)
-        val view: View = LayoutInflater.from(context).inflate(R.layout.task_edit_view, null)
+        val view: View = LayoutInflater.from(context).inflate(R.layout.task_edit, null)
         dialog.apply {
             setCancelable(false)
             setContentView(view)

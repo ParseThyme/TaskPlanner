@@ -13,7 +13,6 @@ class SaveData(context: Context) {
 
     // Saved keys with corresponding values
     private val keyTaskGroupList: String = "taskGroupList"
-    private val keyTagsList: String = "tagsList"
     private val keyViewLayout: String = "mainLayout"
 
     // ####################
@@ -24,11 +23,6 @@ class SaveData(context: Context) {
         val json: String = Gson().toJson(taskGroupList)
         // Place data in editor then apply
         editor.putString(keyTaskGroupList, json)
-        editor.apply()
-    }
-    fun saveTagsList(tagsList: ArrayList<Int>) {
-        val json: String = Gson().toJson(tagsList)
-        editor.putString(keyTagsList, json)
         editor.apply()
     }
     fun saveLayout() { save(keyViewLayout, Settings.mainLayout.ordinal) }   // index(ordinal) of mainLayout
@@ -50,14 +44,6 @@ class SaveData(context: Context) {
         return when (savedData.isNullOrEmpty()) {
             true -> arrayListOf<GroupEntry>()               // No data exists, return new list
             false -> savedData                              // Previous data found, return saved data
-        }
-    }
-    fun loadTagsList() : ArrayList<Int> {
-        val json: String? = sharedPref.getString(keyTagsList, null)
-        val savedData: ArrayList<Int> = Gson().fromJson(json)
-        return when (savedData.isNullOrEmpty()) {
-            true -> arrayListOf<Int>()
-            false -> savedData
         }
     }
     // When loading mainLayout, convert ordinal to appropriate layout enum value

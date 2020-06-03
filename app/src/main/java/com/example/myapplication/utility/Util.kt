@@ -2,13 +2,17 @@ package com.example.myapplication.utility
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.example.myapplication.R
 import kotlinx.android.synthetic.main.main_activity_view.view.*
 
 // ########## Hardcoded values (unmodified by app) ##########
@@ -38,6 +42,12 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 // ########## Other ##########
 fun View.applyBackgroundColor(color: String) { setBackgroundColor(Color.parseColor(color)) }
 fun View.applyBackgroundColor(color: Int) { setBackgroundColor(color) }
+
+fun Button.updateDrawableTop(resource: Int, tint: Int = R.color.iconTint) {
+ val drawable: Drawable? = ContextCompat.getDrawable(context, resource)
+ DrawableCompat.setTint(drawable!!, ContextCompat.getColor(context, tint))
+ setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null)
+}
 
 fun debugMessagePrint(message: String) { Log.d("Test", message) }
 

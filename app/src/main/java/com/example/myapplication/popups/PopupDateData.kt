@@ -32,6 +32,11 @@ class PopupDateData {
 
     private fun PopupDateWeek.lastDay() : PopupDateDay { return days[6] }
 
+    fun refreshEntries() {
+        weeks.clear()
+        months.clear()
+        createEntries()
+    }
     private fun createEntries() {
         // Start date
         var currDate: TaskDate = today().firstDayOfWeek()

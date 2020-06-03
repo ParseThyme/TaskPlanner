@@ -8,10 +8,15 @@
 
     <color name="btnEnabled">#57FF5E</color>
     <color name="btnDisabled">#818181</color>
+    <color name="btnPressed">#AFB1B3</color>
+    <color name="btnPrimary">#FFFFFF</color>
 
     <color name="taskBGDefault">#00FFFFFF</color>
     <color name="taskTextDefault">#000000</color>
 
     <color name="iconTint">#555656</color>
     <color name="bottomBarText">#6B6B6B</color>
+
+    <color name="textColorOnWhiteBG">#757575</color>
+    <color name="textColorOnColoredBG">#FFFFFF</color>
 </resources>

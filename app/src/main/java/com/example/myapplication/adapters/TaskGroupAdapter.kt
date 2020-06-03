@@ -59,9 +59,6 @@ class TaskGroupAdapter(
         // Remove older entries, requires setting toggled on
         // if (Settings.deleteOldDates) { deleteOldTasks() }
 
-        // Check if group list needs to be refreshed (User didn't close app before new day)
-        if (AppData.today != today()) AppData.reset()
-
         // Clear previous selections of loaded list if not empty. Perform sorting/counting only on app start
         if (taskGroupList.isNotEmpty()) {
             // List of tasks to rearrange
@@ -73,27 +70,21 @@ class TaskGroupAdapter(
                         val group: TaskGroup = entry.taskGroup!!
                         group.setSelected(false)
 
-                        // Do sorting && counting only on app start
-                        if (!AppData.sorted) {
-                            // 1. Go through each group to get taskCount and numCollapsed
-                            AppData.taskCount += group.taskList.size
-                            if (!group.isFoldedOut()) AppData.numFoldedIn++
+                        // 1. Go through each group to get taskCount and numCollapsed
+                        AppData.taskCount += group.taskList.size
+                        if (!group.isFoldedOut()) AppData.numFoldedIn++
 
-                            // Sorting: Check if header has been added yet, if not add header
-                            if (group.checkAddHeader()) sortedList.add(headerEntry(group.date.getWeek()))
-                            // Sorting: Add copy of task
-                            sortedList.add(entry)
-                        }
+                        // Sorting: Check if header has been added yet, if not add header
+                        if (group.checkAddHeader()) sortedList.add(headerEntry(group.date.getWeek()))
+                        // Sorting: Add copy of task
+                        sortedList.add(entry)
                     }
                     GroupType.HEADER -> { }
                 }
             }
             // Sorting: Override current list with correctly sorted headers
-            if (!AppData.sorted) {
-                taskGroupList.clear()
-                taskGroupList.addAll(sortedList)
-                AppData.sorted = true
-            }
+            taskGroupList.clear()
+            taskGroupList.addAll(sortedList)
             // Check if expand collapse icon needs updating
             updateExpandCollapseIcon()
         }
@@ -466,10 +457,9 @@ class TaskGroupAdapter(
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val entry: GroupEntry = taskGroupList[groupNum]
             if (entry.isGroup() && entry.taskGroup!!.numSelected != 0) {    // Ignore headers
-                val group: TaskGroup = entry.taskGroup!!
-                group.selectedSetTime(newTime)
+                entry.taskGroup.selectedSetTime(newTime)
                 notifyItemChanged(groupNum)
-                count -= group.numSelected
+                count -= entry.taskGroup.numSelected
                 if (count == 0) return           // Once all selected accounted for, exit early
             }
         }
@@ -480,10 +470,9 @@ class TaskGroupAdapter(
         for (groupNum: Int in taskGroupList.size - 1 downTo 0) {
             val entry: GroupEntry = taskGroupList[groupNum]
             if (entry.isGroup() && entry.taskGroup!!.numSelected != 0) {
-                val group: TaskGroup = entry.taskGroup!!
-                group.selectedSetTag(newTag)
+                entry.taskGroup.selectedSetTag(newTag)
                 notifyItemChanged(groupNum)
-                count -= group.numSelected
+                count -= entry.taskGroup.numSelected
                 if (count == 0) return
             }
         }
