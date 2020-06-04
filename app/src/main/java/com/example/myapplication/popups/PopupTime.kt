@@ -7,7 +7,6 @@ import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.debugMessagePrint
 import com.example.myapplication.utility.defaultTimeMsg
 import kotlinx.android.synthetic.main.popup_time.view.*
 
@@ -18,17 +17,14 @@ class PopupTime : Popup() {
         val window:PopupWindow = create(context, R.layout.popup_time)
         val view:View = window.contentView
 
-        // Copy over most recent time
+        // Copy over most recent time. If time unset, set default values
         chosenTime = edited.copy()
-
-        // Set text display
-        // If time unset, set default values
         if (!chosenTime.isValid()) chosenTime.setDefault()
 
         // Check duration, prevent decrement/increment if at end caps
         when (chosenTime.duration ) {
-            0 -> view.btnDurationDown.visibility = View.INVISIBLE                    // Prevent decrement
-            Settings.durationMax -> view.btnDurationUp.visibility = View.INVISIBLE   // Prevent increment
+            0 -> view.btnLengthDown.visibility = View.INVISIBLE                    // Prevent decrement
+            Settings.durationMax -> view.btnLengthUp.visibility = View.INVISIBLE   // Prevent increment
         }
 
         // Set text display based on current time values
@@ -36,67 +32,72 @@ class PopupTime : Popup() {
 
         // Click behaviour
         // Time - Hour
-        view.btnTimeHourUp.setOnClickListener { view.txtTimeHour.updateHour(view.txtTimeOfDay, view.txtTimeEnd) }
-        view.btnTimeHourDown.setOnClickListener { view.txtTimeHour.updateHour(view.txtTimeOfDay, view.txtTimeEnd, false) }
-        view.btnTimeHour6.setOnClickListener { view.txtTimeHour.setHour(6, view.txtTimeEnd) }
-        view.btnTimeHour12.setOnClickListener { view.txtTimeHour.setHour(12, view.txtTimeEnd) }
+        view.btnTimeHourUp.setOnClickListener { view.txtTime.updateHour(view.txtTimeOverall) }
+        view.btnTimeHourDown.setOnClickListener { view.txtTime.updateHour(view.txtTimeOverall, false) }
         // Time - Min
-        view.btnTimeMinUp.setOnClickListener { view.txtTimeMinute.updateMin(view.txtTimeEnd) }
-        view.btnTimeMinDown.setOnClickListener { view.txtTimeMinute.updateMin(view.txtTimeEnd, false) }
-        view.btnTimeMin0.setOnClickListener { view.txtTimeMinute.setMin(0, view.txtTimeEnd) }
-        view.btnTimeMin30.setOnClickListener { view.txtTimeMinute.setMin(30, view.txtTimeEnd) }
+        view.btnTimeMinUp.setOnClickListener { view.txtTime.updateMin(view.txtTimeOverall) }
+        view.btnTimeMinDown.setOnClickListener { view.txtTime.updateMin(view.txtTimeOverall, false) }
         // Time - TimeOfDay
-        view.txtTimeOfDay.setOnClickListener {
+        view.txtTime.setOnClickListener {
+            // Update time of day display
             chosenTime.timeOfDay = chosenTime.getOppositeTimeOfDay()
-            view.txtTimeOfDay.text = chosenTime.timeOfDay.asString()
-            if (chosenTime.duration > 0) view.txtTimeEnd.text = chosenTime.endTimeLabel()   // Update time end display if duration set
+            view.txtTime.text = chosenTime.startTimeLabel()
+            view.txtTimeOverall.text = chosenTime.overallTimeLabel()
         }
 
         // Duration
-        view.btnDurationUp.setOnClickListener {
+        view.btnLengthUp.setOnClickListener {
             // 1. Re-enable decrements if at 0
-            if (chosenTime.duration == 0) view.btnDurationDown.visibility = View.VISIBLE
+            if (chosenTime.duration == 0) view.btnLengthDown.visibility = View.VISIBLE
             // Increment duration
-            view.txtDuration.updateDuration(view.txtTimeEnd)
+            view.txtLength.updateDuration(view.txtTimeOverall)
             // 2. Disable further increments if at max duration
-            if (chosenTime.duration == Settings.durationMax) view.btnDurationUp.visibility = View.INVISIBLE
+            if (chosenTime.duration == Settings.durationMax) view.btnLengthUp.visibility = View.INVISIBLE
         }
-        view.btnDurationDown.setOnClickListener {
+        view.btnLengthDown.setOnClickListener {
             // 1. Re-enable increments if at max
-            if (chosenTime.duration == Settings.durationMax) view.btnDurationUp.visibility = View.VISIBLE
+            if (chosenTime.duration == Settings.durationMax) view.btnLengthUp.visibility = View.VISIBLE
             // Decrement duration
-            view.txtDuration.updateDuration(view.txtTimeEnd,false)
+            view.txtLength.updateDuration(view.txtTimeOverall,false)
             // 2. Disable further decrements if at 0
-            if (chosenTime.duration == 0) view.btnDurationDown.visibility = View.INVISIBLE
-        }
-        view.btnDuration0.setOnClickListener {
-            // Was max, enable duration increase
-            if (chosenTime.duration == Settings.durationMax) view.btnDurationUp.visibility = View.VISIBLE
-            // Set duration to 0
-            view.txtDuration.setDuration(0, view.txtTimeEnd)
-            view.btnDurationDown.visibility = View.INVISIBLE  // Disable duration decrease
-        }
-        view.btnDuration1h.setOnClickListener {
-            // Check previous duration
-            when (chosenTime.duration) {
-                // Was max, enable duration increase
-                Settings.durationMax -> view.btnDurationUp.visibility = View.VISIBLE
-                // Was 0, enable duration decrease
-                0 -> view.btnDurationDown.visibility = View.VISIBLE
-            }
-            // Set duration to 60
-            view.txtDuration.setDuration(60, view.txtTimeEnd)
+            if (chosenTime.duration == 0) view.btnLengthDown.visibility = View.INVISIBLE
         }
 
         // Delta value
         view.btnDeltaUp.setOnClickListener { view.txtDelta.updateDelta() }
         view.btnDeltaDown.setOnClickListener { view.txtDelta.updateDelta(false) }
 
-        // Reset, Clear Time & Confirm
-        view.btnResetTime.setOnClickListener {
+        // Reset params
+        view.btnResetTimeAll.setOnClickListener {
             chosenTime.setDefault()
+            Settings.timeDelta = 5
             view.updateDisplay()
+            view.btnLengthDown.visibility = View.INVISIBLE
         }
+        view.iconTime.setOnClickListener {
+            // Reset time to default
+            chosenTime.hour = 12
+            chosenTime.min = 0
+            chosenTime.timeOfDay = TimeOfDay.AM
+            view.txtTime.text = chosenTime.startTimeLabel()
+            view.txtTimeOverall.updateTimeOverallLabel()
+        }
+        view.iconLength.setOnClickListener {
+            // If duration was at max, re-enable increments
+            if (chosenTime.duration == Settings.durationMax) view.btnLengthUp.visibility = View.VISIBLE
+            // Set duration to 0, update text displays
+            chosenTime.duration = 0
+            view.txtLength.text = chosenTime.durationAsString()
+            view.txtTimeOverall.updateTimeOverallLabel()
+            // Disable decrements
+            view.btnLengthDown.visibility = View.INVISIBLE
+        }
+        view.iconDelta.setOnClickListener {
+            Settings.timeDelta = 5
+            view.txtDelta.text = Settings.timeDeltaAsString()
+        }
+
+        // Clear Time & Confirm
         view.btnClearTime.setOnClickListener {
             // edited.clear()
             edited.unset()
@@ -110,70 +111,52 @@ class PopupTime : Popup() {
                 duration = chosenTime.duration
                 timeOfDay = chosenTime.timeOfDay
             }
-            modify?.text = chosenTime.startAndEndTimeLabel()
+            modify?.text = chosenTime.overallTimeLabel()
             window.dismiss()
         }
 
-        view.timeDismissLeft.setOnClickListener {window.dismiss() }
+        view.timeDismissLeft.setOnClickListener { window.dismiss() }
         view.timeDismissRight.setOnClickListener { window.dismiss() }
 
         window.show(attachTo)
         return window
     }
 
-    private fun TextView.updateHour(timeOfDayView: TextView, timeEndView: TextView, increment: Boolean = true) {
-        // Update hour text
+    private fun TextView.updateTimeOverallLabel() {
+        text = when (chosenTime.duration > 0) {
+            true  -> chosenTime.overallTimeLabel()
+            false -> "Set time & Length"
+        }
+    }
+
+    private fun TextView.updateHour(timeOverallView: TextView, increment: Boolean = true) {
+        // Update hour then overall time display
         chosenTime.updateHour(increment)
-        text = chosenTime.hour.toString()
-        // Update time of day text
-        timeOfDayView.text = chosenTime.timeOfDay.asString()
-        // If duration set, update time end display
-        if (chosenTime.duration > 0) timeEndView.text = chosenTime.endTimeLabel()
+        text = chosenTime.startTimeLabel()
+        timeOverallView.updateTimeOverallLabel()
     }
-    private fun TextView.setHour(hour: Int, timeEndView: TextView) {
-        chosenTime.hour = hour
-        this.text = hour.toString()
-        // If duration set, update time end display
-        if (chosenTime.duration > 0) timeEndView.text = chosenTime.endTimeLabel()
-    }
-
-    private fun TextView.updateMin(timeEndView: TextView, increment: Boolean = true) {
+    private fun TextView.updateMin(timeOverallView: TextView, increment: Boolean = true) {
+        // Update min then overall time display
         chosenTime.updateMin(increment)
-        text = chosenTime.min.minutesAsString()
-        // If duration set, update time end label
-        if (chosenTime.duration > 0) timeEndView.text = chosenTime.endTimeLabel()
+        text = chosenTime.startTimeLabel()
+        timeOverallView.updateTimeOverallLabel()
     }
-    private fun TextView.setMin(minutes: Int, timeEndView: TextView) {
-        chosenTime.min = minutes
-        this.text = minutes.minutesAsString()
-        // If duration set, update time end label
-        if (chosenTime.duration > 0) timeEndView.text = chosenTime.endTimeLabel()
-    }
-
-    private fun TextView.updateDuration(endTimeLabel: TextView, increment: Boolean = true) {
+    private fun TextView.updateDuration(timeOverallView: TextView, increment: Boolean = true) {
         chosenTime.updateDuration(increment)
-        this.text = chosenTime.durationAsString()
-        endTimeLabel.text = chosenTime.endTimeLabel()
+        text = chosenTime.durationAsString()
+        timeOverallView.updateTimeOverallLabel()
     }
-    private fun TextView.setDuration(duration: Int, endTimeLabel: TextView) {
-        chosenTime.duration = duration
-        this.text = chosenTime.durationAsString()
-        endTimeLabel.text = chosenTime.endTimeLabel()
-    }
-
     private fun TextView.updateDelta(increment: Boolean = true) {
         Settings.updateTimeDelta(increment)
-        this.text = Settings.timeDeltaAsString()
+        text = Settings.timeDeltaAsString()
     }
 
     private fun View.updateDisplay() {
         // Time
-        txtTimeHour.text = chosenTime.hour.toString()
-        txtTimeMinute.text = chosenTime.min.minutesAsString()
-        txtTimeOfDay.text = chosenTime.timeOfDay.asString()
-        txtTimeEnd.text = chosenTime.endTimeLabel()
+        txtTime.text = chosenTime.startTimeLabel()
+        txtTimeOverall.updateTimeOverallLabel()
         // Duration
-        txtDuration.text = chosenTime.durationAsString()
+        txtLength.text = chosenTime.durationAsString()
         // TimeDelta
         txtDelta.text = Settings.timeDeltaAsString()
     }

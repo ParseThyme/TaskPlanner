@@ -104,7 +104,7 @@ class TasksAdapter(private val group: TaskGroup,
             }
 
             // Otherwise set time and show
-            itemView.taskTime.text = time.startAndEndTimeLabel()
+            itemView.taskTime.text = time.overallTimeLabel()
             itemView.taskTime.visibility = View.VISIBLE
         }
     }

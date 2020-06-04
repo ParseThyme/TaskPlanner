@@ -207,7 +207,7 @@ fun TaskTime.endTimeLabel(): String {
     // Append end time to currently displayed time
     return "$endHrs:${endMin.minutesAsString()}$endTimeOfDay"
 }
-fun TaskTime.startAndEndTimeLabel(): String {
+fun TaskTime.overallTimeLabel(): String {
     // If no duration, return just start time. Otherwise create end time label and return both combined
     return if (duration <= 0)
         startTimeLabel()
@@ -218,8 +218,8 @@ fun TaskTime.startAndEndTimeLabel(): String {
 fun TaskTime.durationAsString(): String {
     // [1]. Duration as Int from 0 to 59 minutes.
     when (duration) {
-        in 0..9   -> return ":${duration.minutesAsString()}"
-        in 10..59 -> return ":$duration"
+        in 0..9   -> return "00:${duration.minutesAsString()}"
+        in 10..59 -> return "00:$duration"
     }
 
     // [2]. Duration 60m+. Return with hour and minutes format

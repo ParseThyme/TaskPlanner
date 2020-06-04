@@ -149,7 +149,6 @@ class MainActivity : AppCompatActivity() {
         addMode.txtSetDate.setOnClickListener { PopupManager.dateEdit(addMode, addMode.txtSetDate, this, newDate) }
         addMode.txtSetTime.setOnClickListener { PopupManager.timeEdit(addMode, addMode.txtSetTime, this, newTask.time) }
         addMode.btnSetTag.setOnClickListener  { PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
-        // addMode.labelTag.setOnClickListener   { PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
 
         addMode.btnResetParams.setOnClickListener {
             // Reset all values (exclude text entry)
