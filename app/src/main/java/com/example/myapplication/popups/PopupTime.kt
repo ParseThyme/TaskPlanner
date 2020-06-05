@@ -42,7 +42,7 @@ class PopupTime : Popup() {
             // Update time of day display
             chosenTime.timeOfDay = chosenTime.getOppositeTimeOfDay()
             view.txtTime.text = chosenTime.startTimeLabel()
-            view.txtTimeOverall.text = chosenTime.overallTimeLabel()
+            view.txtTimeOverall.updateTimeOverallLabel()
         }
 
         // Duration
@@ -67,37 +67,63 @@ class PopupTime : Popup() {
         view.btnDeltaUp.setOnClickListener { view.txtDelta.updateDelta() }
         view.btnDeltaDown.setOnClickListener { view.txtDelta.updateDelta(false) }
 
-        // Reset params
+        // Icon pressing
+        view.iconTime.setOnClickListener {
+            // Toggle between [12, 6]. If at 12:00, set to 6:00am, otherwise set to 12:00am
+            when (chosenTime.hour) {
+                // 1. hour == 12, set hour to 6pm
+                12 -> {
+                    chosenTime.hour = 6
+                    chosenTime.timeOfDay = TimeOfDay.PM
+                }
+                // 2. hour != 12, set hour to 12am
+                else -> {
+                    chosenTime.hour = 12
+                    chosenTime.timeOfDay = TimeOfDay.AM
+                }
+            }
+            // Set min to 0, then update labels
+            chosenTime.min = 0
+            view.txtTime.text = chosenTime.startTimeLabel()
+            view.txtTimeOverall.updateTimeOverallLabel()
+        }
+        view.iconLength.setOnClickListener {
+            // Toggle between [00:00, 1:00]. If not 0, set to 0. Otherwise set to 1 hour
+            when (chosenTime.duration) {
+                0 -> {
+                    chosenTime.duration = 60    // 1 hour
+                }
+                // If duration was at max, re-enable increments
+                Settings.durationMax -> {
+                    chosenTime.duration = 0
+                    view.btnLengthUp.visibility = View.VISIBLE
+                }
+                else -> chosenTime.duration = 0
+            }
+
+            // When duration == 0, disable decrements
+            if (chosenTime.duration == 0) view.btnLengthDown.visibility = View.INVISIBLE
+
+            // Update text displays
+            view.txtLength.text = chosenTime.durationAsString()
+            view.txtTimeOverall.updateTimeOverallLabel()
+        }
+        view.iconDelta.setOnClickListener {
+            // Toggle between [5, 30]. Set to 5. If at 5, set to 30
+            Settings.timeDelta = when (Settings.timeDelta) {
+                5 -> 30
+                else -> 5
+            }
+            view.txtDelta.text = Settings.timeDeltaAsString()
+        }
+
+        // Reset all, Clear Time & Confirm
         view.btnResetTimeAll.setOnClickListener {
             chosenTime.setDefault()
             Settings.timeDelta = 5
             view.updateDisplay()
             view.btnLengthDown.visibility = View.INVISIBLE
         }
-        view.iconTime.setOnClickListener {
-            // Reset time to default
-            chosenTime.hour = 12
-            chosenTime.min = 0
-            chosenTime.timeOfDay = TimeOfDay.AM
-            view.txtTime.text = chosenTime.startTimeLabel()
-            view.txtTimeOverall.updateTimeOverallLabel()
-        }
-        view.iconLength.setOnClickListener {
-            // If duration was at max, re-enable increments
-            if (chosenTime.duration == Settings.durationMax) view.btnLengthUp.visibility = View.VISIBLE
-            // Set duration to 0, update text displays
-            chosenTime.duration = 0
-            view.txtLength.text = chosenTime.durationAsString()
-            view.txtTimeOverall.updateTimeOverallLabel()
-            // Disable decrements
-            view.btnLengthDown.visibility = View.INVISIBLE
-        }
-        view.iconDelta.setOnClickListener {
-            Settings.timeDelta = 5
-            view.txtDelta.text = Settings.timeDeltaAsString()
-        }
-
-        // Clear Time & Confirm
         view.btnClearTime.setOnClickListener {
             // edited.clear()
             edited.unset()
