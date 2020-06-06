@@ -163,7 +163,7 @@ class PopupDate : Popup() {
         // [E]. Reset button, selected date jump
         view.btnResetDate.setOnClickListener {
             // Do nothing if today is chosen, otherwise
-            if (!chosenDate.same(today())) {
+            if (!(chosenDate.same(today()) && currWeek == 0)) {
                 // Set chosenDate to today
                 chosenDate = today()
                 view.txtChosenDate.text = chosenDate.asStringShort()
@@ -179,11 +179,15 @@ class PopupDate : Popup() {
                         currMonth = weeks[0].month
                         chosenDateView.week = 0
 
-                        // Update week and month label displays and disable back buttons
+                        // Update week and month label displays
                         view.txtWeek.updateWeekLabel()
                         view.txtCurrMonth.text = currMonth.monthAsString()
+
+                        // Disable back buttons & re-enable forward
                         view.btnWeekPrev.visibility = View.INVISIBLE
                         view.btnMonthPrev.visibility = View.INVISIBLE
+                        view.btnWeekNext.visibility = View.VISIBLE
+                        view.btnMonthNext.visibility = View.VISIBLE
                     }
                 }
 

@@ -184,7 +184,7 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/timeHourLayout"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -194,6 +194,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/clickable_bg"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
                                 android:tint="@color/iconTint"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
@@ -204,9 +206,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/clickable_bg"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
                                 android:tint="@color/iconTint"
+                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/btnTimeHourUp"
                                 app:srcCompat="@drawable/arrow_down" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -214,7 +218,7 @@
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/timeMinLayout"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/txtTime"
                             app:layout_constraintTop_toTopOf="parent">
@@ -224,6 +228,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/clickable_bg"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
                                 android:tint="@color/iconTint"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
@@ -234,9 +240,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/clickable_bg"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
                                 android:tint="@color/iconTint"
+                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/btnTimeMinUp"
                                 app:srcCompat="@drawable/arrow_down" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -276,6 +284,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:background="@drawable/clickable_bg"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
                             android:tint="@color/iconTint"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -287,6 +297,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:background="@drawable/clickable_bg"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
                             android:tint="@color/iconTint"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/txtLength"
@@ -328,6 +340,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:background="@drawable/clickable_bg"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
                             android:tint="@color/iconTint"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/txtDelta"
@@ -339,6 +353,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:background="@drawable/clickable_bg"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
                             android:tint="@color/iconTint"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
