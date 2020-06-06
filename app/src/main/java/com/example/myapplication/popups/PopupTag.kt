@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.popup_tag.view.*
 
 
 class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
-    fun create(attachTo: View, modify: Button?, context: Context, edited: Task): PopupWindow {
+    fun create(attachTo: View, modify: TextView?, context: Context, edited: Task): PopupWindow {
         // Calculate number of icons per row. Ideally max is 10 per row.
         var spanCount: Int = Settings.tagRowSize
         if (tagsList.size < spanCount)

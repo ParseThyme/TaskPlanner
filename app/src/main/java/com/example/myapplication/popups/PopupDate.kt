@@ -41,6 +41,8 @@ class PopupDate : Popup() {
             data.refreshEntries()
             AppData.firstDayOfWeek = today().firstDayOfWeek()
             chosenDate = today()
+            edited.replace(chosenDate)
+            modify?.text = today().asStringShort()
             currWeek = 0
         }
 
@@ -70,13 +72,13 @@ class PopupDate : Popup() {
 
         // 5. Setup onClick behaviours
         // [A]. Mo - Su cells
-        view.sun.setupDayClickListener(0, view.txtSun, view.txtChosenDate)
-        view.mon.setupDayClickListener(1, view.txtMon, view.txtChosenDate)
-        view.tue.setupDayClickListener(2, view.txtTue, view.txtChosenDate)
-        view.wed.setupDayClickListener(3, view.txtWed, view.txtChosenDate)
-        view.thu.setupDayClickListener(4, view.txtThu, view.txtChosenDate)
-        view.fri.setupDayClickListener(5, view.txtFri, view.txtChosenDate)
-        view.sat.setupDayClickListener(6, view.txtSat, view.txtChosenDate)
+        view.layoutSun.setupDayClickListener(0, view.txtSun, view.txtChosenDate)
+        view.layoutMon.setupDayClickListener(1, view.txtMon, view.txtChosenDate)
+        view.layoutTue.setupDayClickListener(2, view.txtTue, view.txtChosenDate)
+        view.layoutWed.setupDayClickListener(3, view.txtWed, view.txtChosenDate)
+        view.layoutThu.setupDayClickListener(4, view.txtThu, view.txtChosenDate)
+        view.layoutFri.setupDayClickListener(5, view.txtFri, view.txtChosenDate)
+        view.layoutSat.setupDayClickListener(6, view.txtSat, view.txtChosenDate)
 
         // [B]. Week
         view.btnWeekNext.setOnClickListener {
@@ -188,7 +190,7 @@ class PopupDate : Popup() {
                 setDayLabels(updatedTextViews, weeks[currWeek].days)    // Apply highlight
             }
         }
-        view.btnChosenDate.setOnClickListener {
+        view.txtChosenDate.setOnClickListener {
             // Perform jump when not at currently selected week
             if (currWeek != chosenDateView.week) {
                 // Move week and month to currently selected date

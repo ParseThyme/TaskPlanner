@@ -24,7 +24,7 @@ object PopupManager {
         return time.create(attachTo, modify, context, edited)
     }
 
-    fun tagEdit(attachTo: View, modify: Button?, context: Context, edited: Task) : PopupWindow {
+    fun tagEdit(attachTo: View, modify: TextView?, context: Context, edited: Task) : PopupWindow {
         return tag.create(attachTo, modify, context, edited)
     }
 

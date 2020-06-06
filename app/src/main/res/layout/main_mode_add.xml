@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/clickable_bg"
                 android:drawableTop="@drawable/ic_date"
-                android:ems="5"
+                android:ems="6"
                 android:gravity="center"
                 android:padding="5dp"
                 android:text="@string/placeholderDate"
@@ -71,17 +71,17 @@
             app:layout_constraintStart_toEndOf="@+id/cardBtnSetTime"
             app:layout_constraintTop_toTopOf="parent">
 
-            <Button
+            <TextView
                 android:id="@+id/btnSetTag"
-                style="@style/WhiteBGButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/clickable_bg"
                 android:drawableTop="@drawable/tag_base"
                 android:ems="4"
+                android:gravity="center"
                 android:padding="5dp"
                 android:text="Tag"
-                android:textCursorDrawable="@color/iconTint" />
+                android:textSize="12sp" />
 
         </androidx.cardview.widget.CardView>
 

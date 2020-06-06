@@ -37,45 +37,69 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tagTitle"
-            android:layout_width="0dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardBtnClearTag"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnClearTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/clickable_bg"
+                android:padding="5dp"
+                android:tint="@color/iconTint"
+                app:srcCompat="@drawable/ic_minus" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardTagTitle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="@string/label_select_tag"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/btnClearTag"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="@+id/cardBtnClearTag"
+            app:layout_constraintEnd_toStartOf="@+id/cardBtnClearTag"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnClearTag"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@android:color/white"
-            android:tint="@color/iconTint"
-            app:layout_constraintBottom_toBottomOf="@+id/tagTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_minus" />
+            <TextView
+                android:id="@+id/tagTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/label_select_tag"
+                android:textColor="@android:color/white" />
+        </androidx.cardview.widget.CardView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tagsRv"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/tagPopupCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:background="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tagTitle"
-            tools:itemCount="3"
-            tools:listitem="@layout/popup_tag_entry" />
+            app:layout_constraintTop_toBottomOf="@+id/cardTagTitle">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tagPopupCardLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tagsRv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/popup_tag_entry" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
