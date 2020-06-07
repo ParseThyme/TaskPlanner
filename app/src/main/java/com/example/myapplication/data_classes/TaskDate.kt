@@ -71,6 +71,7 @@ fun TaskDate.getWeek() : Week {
         else -> Week.FUTURE
     }
 }
+fun TaskDate.weekAsString() : String { return getWeek().asString() }
 fun Week.asString() : String {
     return when (this) {
         Week.PAST -> "Past Dates"
@@ -103,6 +104,7 @@ fun Int.monthAsString(): String {
         else -> "$this: invalid month"
     }
 }
+fun TaskDate.monthAsString(): String { return month.monthAsString() }
 
 fun TaskDate.same(date: TaskDate) : Boolean { return (day == date.day && month == date.month && year == date.year) }
 fun TaskDate.isPastDate() : Boolean { return dateDiff(today(), this) < 0 }

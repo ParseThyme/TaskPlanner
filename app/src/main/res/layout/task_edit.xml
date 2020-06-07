@@ -20,6 +20,34 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/taskEditDescLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleLayout">
+
+            <EditText
+                android:id="@+id/txtEditDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:drawablePadding="5dp"
+                android:gravity="top"
+                android:maxLines="4"
+                android:padding="5dp"
+                android:scrollbars="vertical"
+                android:text="@string/placeholderTextLong"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/titleLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,100 +59,153 @@
             <TextView
                 android:id="@+id/topBarTitle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginRight="5dp"
                 android:background="@color/colorPrimary"
                 android:drawablePadding="5dp"
                 android:gravity="center_vertical"
                 android:padding="5dp"
-                android:text="Edit Task"
-                android:textColor="@color/colorForeground"
-                android:textSize="14sp"
+                android:text="@string/label_edit_desc"
+                android:textColor="@android:color/white"
                 app:drawableTint="@android:color/white"
-                app:layout_constraintEnd_toStartOf="@+id/btnClose"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cardClose"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"></TextView>
 
-            <ImageButton
-                android:id="@+id/btnClose"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardClose"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnApply"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_close" />
-
-            <ImageButton
-                android:id="@+id/btnApply"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:background="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_check" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/btnClose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/clickable_bg"
+                    android:padding="5dp"
+                    app:srcCompat="@drawable/ic_close" />
+            </androidx.cardview.widget.CardView>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/taskEditDescLayout"
-            android:layout_width="match_parent"
+            android:id="@+id/taskEditFunctionsLayout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:background="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleLayout">
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            app:layout_constraintEnd_toStartOf="@+id/cardReset"
+            app:layout_constraintTop_toBottomOf="@+id/taskEditDescLayout">
 
-            <ImageView
-                android:id="@+id/btnDescription"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardTxtEnd"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/clickable_bg"
-                android:padding="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/txtEditDesc"
-                app:layout_constraintVertical_bias="1.0"
-                app:srcCompat="@drawable/ic_description" />
-
-            <EditText
-                android:id="@+id/txtEditDesc"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@android:color/white"
-                android:drawablePadding="5dp"
-                android:gravity="top"
-                android:maxLines="4"
-                android:padding="5dp"
-                android:scrollbars="vertical"
-                android:text="@string/placeholderTextLong"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnReset"
-                app:layout_constraintStart_toEndOf="@+id/btnDescription"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/cardTxtStart"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/btnReset"
+                <TextView
+                    android:id="@+id/btnTxtEnd"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/clickable_bg"
+                    android:drawableStart="@drawable/arrow_last"
+                    android:ems="4"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="End"
+                    app:drawableTint="@color/iconTint" />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardTxtStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/clickable_bg"
-                android:padding="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/txtEditDesc"
-                app:layout_constraintVertical_bias="1.0"
-                app:srcCompat="@drawable/ic_reset_parameters" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/btnTxtStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/clickable_bg"
+                    android:drawableStart="@drawable/arrow_first"
+                    android:ems="4"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Start"
+                    app:drawableTint="@color/iconTint" />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardClear"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintStart_toEndOf="@+id/cardTxtEnd"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/btnClear"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/clickable_bg"
+                    android:drawableStart="@drawable/ic_minus"
+                    android:ems="4"
+                    android:gravity="center"
+                    android:text="Clear"
+                    app:drawableTint="@color/iconTint" />
+
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            app:layout_constraintEnd_toStartOf="@+id/cardApply"
+            app:layout_constraintTop_toTopOf="@+id/cardApply">
+
+            <ImageView
+                android:id="@+id/btnReset"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/clickable_bg"
+                android:padding="5dp"
+                app:srcCompat="@drawable/ic_reset_parameters" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardApply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/taskEditDescLayout">
+
+            <ImageView
+                android:id="@+id/btnApply"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/clickable_bg"
+                android:padding="5dp"
+                app:srcCompat="@drawable/ic_check" />
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

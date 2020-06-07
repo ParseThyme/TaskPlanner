@@ -9,7 +9,6 @@ import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.debugMessagePrint
 import kotlinx.android.synthetic.main.popup_date.view.*
 
 class PopupDate : Popup() {
@@ -56,10 +55,10 @@ class PopupDate : Popup() {
             view.txtSun, view.txtMon, view.txtTue, view.txtWed, view.txtThu, view.txtFri, view.txtSat)
 
         // 3. Setup text displays, based on current parameters
-        view.txtChosenDate.text = chosenDate.asStringShort()         // Date
-        view.txtWeek.text = chosenDate.getWeek().asString()          // Week
-        view.txtCurrMonth.text = chosenDate.month.monthAsString()    // Month
-        setDayLabels(updatedTextViews, weeks[currWeek].days)         // Days in week
+        view.txtChosenDate.text = chosenDate.asStringShort()   // Date
+        view.txtWeek.text = chosenDate.weekAsString()          // Week
+        view.txtMonth.text = chosenDate.monthAsString()        // Month
+        setDayLabels(updatedTextViews, weeks[currWeek].days)   // Days in week
 
         // 4. Check whether we need to hide forward/backward buttons for both weeks/months
         when (currWeek) {
@@ -94,9 +93,9 @@ class PopupDate : Popup() {
                 // Week: secondLast -> last (disable forward button)
                 endWeek -> view.btnWeekNext.visibility = View.INVISIBLE
             }
+
             // Check if month needs to be updated
-            if (weeks[currWeek].month > currMonth)
-                view.txtCurrMonth.monthNext(view.btnMonthPrev, view.btnMonthNext)
+            if (weeks[currWeek].month > currMonth) view.txtMonth.monthNext(view.btnMonthPrev, view.btnMonthNext)
         }
         view.btnWeekPrev.setOnClickListener {
             // Decrement week and update labels
@@ -113,12 +112,12 @@ class PopupDate : Popup() {
             }
             // Check if month needs to be updated
             if (weeks[currWeek].month < currMonth)
-                view.txtCurrMonth.monthPrev(view.btnMonthPrev, view.btnMonthNext)
+                view.txtMonth.monthPrev(view.btnMonthPrev, view.btnMonthNext)
         }
 
         // [C]. Month
         view.btnMonthNext.setOnClickListener {
-            view.txtCurrMonth.monthNext(view.btnMonthPrev, view.btnMonthNext)
+            view.txtMonth.monthNext(view.btnMonthPrev, view.btnMonthNext)
 
             // If moving from starting week 0 -> x. Enable week prev button
             if (currWeek == 0) view.btnWeekPrev.visibility = View.VISIBLE
@@ -132,7 +131,7 @@ class PopupDate : Popup() {
             if (currWeek == endWeek) view.btnWeekNext.visibility = View.INVISIBLE
         }
         view.btnMonthPrev.setOnClickListener {
-            view.txtCurrMonth.monthPrev(view.btnMonthPrev, view.btnMonthNext)
+            view.txtMonth.monthPrev(view.btnMonthPrev, view.btnMonthNext)
 
             // If current week was endWeek, re-enable forward button
             if (currWeek == endWeek) view.btnWeekNext.visibility = View.VISIBLE
@@ -146,7 +145,7 @@ class PopupDate : Popup() {
             if (currWeek == 0) view.btnWeekPrev.visibility = View.INVISIBLE
         }
 
-        // [D]. Apply changes / Dismiss window
+        // [D]. Apply changes, Dismiss window, Reset Button
         view.btnApplyDate.setOnClickListener {
             // Store current week selected cell is in
             chosenDateView.week = currWeek
@@ -159,41 +158,24 @@ class PopupDate : Popup() {
         }
         view.dateDismissLeft.setOnClickListener { window.dismiss() }
         view.dateDismissRight.setOnClickListener { window.dismiss() }
-
-        // [E]. Reset button, selected date jump
         view.btnResetDate.setOnClickListener {
             // Do nothing if today is chosen, otherwise
             if (!(chosenDate.same(today()) && currWeek == 0)) {
                 // Set chosenDate to today
                 chosenDate = today()
+                chosenDateView.week = 0
                 view.txtChosenDate.text = chosenDate.asStringShort()
 
-                // If not at first week, jump to it
+                // If at week 0, simply clear highlight of previously selected date otherwise jump to 0
                 when (currWeek) {
-                    // Clear highlight of previously chosenDate
-                    0 -> chosenDateView.applyBackgroundColor(Color.WHITE)
-                    // Move to week 0
-                    else -> {
-                        // Set current week, month to first entries respectively
-                        currWeek = 0
-                        currMonth = weeks[0].month
-                        chosenDateView.week = 0
-
-                        // Update week and month label displays
-                        view.txtWeek.updateWeekLabel()
-                        view.txtCurrMonth.text = currMonth.monthAsString()
-
-                        // Disable back buttons & re-enable forward
-                        view.btnWeekPrev.visibility = View.INVISIBLE
-                        view.btnMonthPrev.visibility = View.INVISIBLE
-                        view.btnWeekNext.visibility = View.VISIBLE
-                        view.btnMonthNext.visibility = View.VISIBLE
-                    }
+                       0 -> chosenDateView.applyBackgroundColor(Color.WHITE)    // Clear highlight
+                    else -> view.toFirstWeek(updatedTextViews, weeks[0].days)   // Move to week 0
                 }
-
                 setDayLabels(updatedTextViews, weeks[currWeek].days)    // Apply highlight
             }
         }
+
+        // Shortcuts
         view.txtChosenDate.setOnClickListener {
             // Perform jump when not at currently selected week
             if (currWeek != chosenDateView.week) {
@@ -203,7 +185,7 @@ class PopupDate : Popup() {
                 // Update view labels
                 view.txtWeek.updateWeekLabel()
                 setDayLabels(updatedTextViews, weeks[currWeek].days)
-                view.txtCurrMonth.text = currMonth.monthAsString()
+                view.txtMonth.text = currMonth.monthAsString()
                 // Update back/forward buttons accordingly
                 // [A]. Week
                 when (currWeek) {
@@ -235,6 +217,28 @@ class PopupDate : Popup() {
                         view.btnMonthPrev.visibility = View.VISIBLE
                     }
                 }
+            }
+        }
+        view.txtWeek.setOnClickListener {
+            // Jump to week 0, if at 0, then jump to last week
+            when (currWeek) {
+                0 -> { // To last week
+                    // Set current week, month to first respectively
+                    currWeek = endWeek
+                    currMonth = weeks[endWeek].month
+
+                    // Update week and month label displays
+                    view.txtWeek.updateWeekLabel()
+                    setDayLabels(updatedTextViews, weeks[currWeek].days)
+                    view.txtMonth.text = currMonth.monthAsString()
+
+                    // Disable forward buttons & re-enable backward
+                    view.btnWeekPrev.visibility = View.VISIBLE
+                    view.btnMonthPrev.visibility = View.VISIBLE
+                    view.btnWeekNext.visibility = View.INVISIBLE
+                    view.btnMonthNext.visibility = View.INVISIBLE
+                }
+                else -> view.toFirstWeek(updatedTextViews, weeks[0].days)
             }
         }
 
@@ -272,8 +276,24 @@ class PopupDate : Popup() {
         }
     }
 
+    private fun View.toFirstWeek(textViews: ArrayList<TextView>, dayData: ArrayList<PopupDateDay>) {
+        // Set current week, month to first respectively
+        currWeek = 0
+        currMonth = weeks[0].month
+
+        // Update week and month label displays
+        txtWeek.updateWeekLabel()
+        setDayLabels(textViews, dayData)
+        txtMonth.text = currMonth.monthAsString()
+
+        // Disable back buttons & re-enable forward
+        btnWeekPrev.visibility = View.INVISIBLE
+        btnMonthPrev.visibility = View.INVISIBLE
+        btnWeekNext.visibility = View.VISIBLE
+        btnMonthNext.visibility = View.VISIBLE
+    }
     private fun TextView.updateWeekLabel() {
-        this.text = weeks[currWeek].week.asString()      // Update text display
+        this.text = weeks[currWeek].week.asString()        // Update text display
         chosenDateView.applyBackgroundColor(Color.WHITE)   // Unhighlight selectedCell
     }
 

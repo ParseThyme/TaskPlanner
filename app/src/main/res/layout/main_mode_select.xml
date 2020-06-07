@@ -5,14 +5,57 @@
     android:id="@+id/selectViewLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimaryDark"
+    android:padding="5dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/selectViewInfo"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSelected"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/cardSelectNone"
+        app:layout_constraintEnd_toStartOf="@+id/cardSelectAll"
+        app:layout_constraintStart_toEndOf="@+id/cardSelectNone"
+        app:layout_constraintTop_toTopOf="@+id/cardSelectNone">
+
+        <TextView
+            android:id="@+id/txtSelected"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/clickable_bg"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Modify Selected: 0/10"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:drawableTint="@color/iconTint" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSelectAll"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/clickable_bg"
+            android:padding="5dp"
+            android:tint="@color/iconTint"
+            app:srcCompat="@drawable/ic_select_all_on" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSelectNone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,53 +63,22 @@
             android:id="@+id/btnSelectNone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/clickable_bg"
             android:padding="5dp"
-            android:tint="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:tint="@color/iconTint"
             app:srcCompat="@drawable/arrow_left" />
-
-        <TextView
-            android:id="@+id/txtSelected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:padding="5dp"
-            android:text="Modify Selected: 0/10"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnSelectNone"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/btnSelectAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
-            android:padding="5dp"
-            android:tint="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_select_all_on" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/selectViewOptionsContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:background="@color/colorPrimaryDark"
-        android:padding="5dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectViewInfo">
+        app:layout_constraintTop_toBottomOf="@+id/cardSelected">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardBtnToDate"

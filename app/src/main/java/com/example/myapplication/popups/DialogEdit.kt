@@ -10,10 +10,7 @@ import com.example.myapplication.utility.Keyboard
 import kotlinx.android.synthetic.main.task_edit.view.*
 
 
-class DialogEdit(
-    private val context: Context,
-    private val updateSave: () -> Unit
-) {
+class DialogEdit(private val context: Context, private val updateSave: () -> Unit) {
     var updated: Boolean = false
         private set
 
@@ -32,23 +29,21 @@ class DialogEdit(
 
         // ########## Fill values: ##########
         // Description
-        // Create keyboard reference
-        Keyboard.attachTo(view.txtEditDesc)
-        // Set text and hint text to description
-        view.txtEditDesc.setText(task.desc)
-        // Open keyboard
-        Keyboard.open()
+        Keyboard.attachTo(view.txtEditDesc)     // Create keyboard reference
+        view.txtEditDesc.setText(task.desc)     // Set text and hint text to description
+        Keyboard.open()                         // Open keyboard
 
-        // Reset settings, place cursor at bottom
+        // Reset text, place cursor at bottom
         view.btnReset.setOnClickListener {
             view.txtEditDesc.setText(task.desc)
             view.txtEditDesc.setSelection(view.txtEditDesc.text.length)
         }
 
-        // Place cursor at bottom
-        view.btnDescription.setOnClickListener {
-            view.txtEditDesc.setSelection(view.txtEditDesc.text.length)
-        }
+        // Labelled Buttons
+        // Place cursor at start, place at end, clear text
+        view.btnTxtStart.setOnClickListener { view.txtEditDesc.setSelection(0) }
+        view.btnTxtEnd.setOnClickListener { view.txtEditDesc.setSelection(view.txtEditDesc.text.length) }
+        view.btnClear.setOnClickListener { view.txtEditDesc.setText("") }
 
         // Close Dialog. Cancel changes made to data.
         view.btnClose.setOnClickListener {

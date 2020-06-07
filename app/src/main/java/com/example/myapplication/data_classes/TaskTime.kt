@@ -218,8 +218,8 @@ fun TaskTime.overallTimeLabel(): String {
 fun TaskTime.durationAsString(): String {
     // [1]. Duration as Int from 0 to 59 minutes.
     when (duration) {
-        in 0..9   -> return "00:${duration.minutesAsString()}"
-        in 10..59 -> return "00:$duration"
+        in 0..9   -> return "0:${duration.minutesAsString()}"
+        in 10..59 -> return "0:$duration"
     }
 
     // [2]. Duration 60m+. Return with hour and minutes format

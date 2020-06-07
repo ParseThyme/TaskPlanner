@@ -18,9 +18,10 @@
 
     <!-- Labels -->
     <string name="label_task">Tap to enter a new task</string>
-    <string name="label_select_date">Select Date</string>
-    <string name="label_select_time">Select Task Time + Length</string>
-    <string name="label_select_tag">Select Tag</string>
+    <string name="label_popup_date">Chosen Date:</string>
+    <string name="label_popup_time">Set Time:</string>
+    <string name="label_popup_tag">Select Tag</string>
+    <string name="label_edit_desc">Edit Task Description</string>
 
     <!-- Buttons -->
     <string name="btn_add_task">Add Task</string>

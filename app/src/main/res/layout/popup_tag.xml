@@ -68,11 +68,11 @@
 
             <TextView
                 android:id="@+id/tagTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:padding="5dp"
-                android:text="@string/label_select_tag"
+                android:text="@string/label_popup_tag"
                 android:textColor="@android:color/white" />
         </androidx.cardview.widget.CardView>
 
