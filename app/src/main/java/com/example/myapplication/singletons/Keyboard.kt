@@ -1,4 +1,4 @@
-package com.example.myapplication.utility
+package com.example.myapplication.singletons
 
 import android.content.Context
 import android.graphics.Point
@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
+import com.example.myapplication.utility.updateBtnColor
 
 object Keyboard {
     var visible: Boolean = false
@@ -50,7 +51,9 @@ object Keyboard {
 
         // Focus changed listener. When focus lost on textView, close keyboard
         editText.setOnFocusChangeListener { _, focused ->
-            if (!focused) { close() }
+            if (!focused) {
+                close()
+            }
         }
     }
 
@@ -75,16 +78,19 @@ object Keyboard {
     }
 
     // Manually force close keyboard, assuming it is open. Called when a dialog window itself is closed
-    fun close() { if (visible) hide() }
+    fun close() { if (visible) hide()
+    }
     fun open() {
         visible = true
         editText.requestFocus()
-        imm.toggleSoftInputFromWindow(editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
+        imm.toggleSoftInputFromWindow(
+            editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
     }
 
     // https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
     private fun hide() {
-        imm.hideSoftInputFromWindow(editText.windowToken, 0) }
+        imm.hideSoftInputFromWindow(
+            editText.windowToken, 0) }
 
     private fun ImageButton.toggle(enabled: Boolean) {
         if (enabled) updateBtnColor(R.color.btnEnabled, this.context)

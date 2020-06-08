@@ -1,4 +1,8 @@
-package com.example.myapplication.data_classes
+package com.example.myapplication.singletons
+
+import com.example.myapplication.data_classes.TaskDate
+import com.example.myapplication.data_classes.firstDayOfWeek
+import com.example.myapplication.data_classes.today
 
 object AppData {
     var numSelected: Int = 0
@@ -21,12 +25,12 @@ object AppData {
 
     fun selectAll(allSelected: Boolean) {
         numSelected = when (allSelected) {
-            true  -> taskCount
+            true -> taskCount
             false -> 0
         }
     }
-    fun allSelected(): Boolean { return numSelected == taskCount }
-    fun allCollapsed() : Boolean { return numFoldedIn == taskCount }
 
-    fun numSelectedMsg() : String { return "Modify Selected: $numSelected / $taskCount" }
+    fun allSelected(): Boolean { return numSelected == taskCount }
+    fun allCollapsed(): Boolean { return numFoldedIn == taskCount }
+    fun numSelectedMsg(): String { return "Modify Selected: $numSelected / $taskCount" }
 }

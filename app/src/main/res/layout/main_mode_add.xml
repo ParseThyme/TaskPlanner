@@ -133,20 +133,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ToggleButton
-            android:id="@+id/btnStar"
+        <ImageView
+            android:id="@+id/btnSaveTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/clickable_bg"
-            android:button="@drawable/ic_star_toggle"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:textSize="0sp"
-            app:layout_constraintBottom_toBottomOf="@+id/btnNewTask"
+            android:background="@android:color/transparent"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btnNewTask" />
+            app:srcCompat="@drawable/ic_star_off" />
 
         <EditText
             android:id="@+id/txtTaskDesc"
@@ -162,22 +157,20 @@
             android:padding="5dp"
             android:scrollbars="vertical"
             android:textColor="@android:color/black"
-            android:textSize="14sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/addTaskDescBackground"
             app:layout_constraintEnd_toStartOf="@+id/btnNewTask"
-            app:layout_constraintStart_toEndOf="@+id/btnStar"
+            app:layout_constraintStart_toEndOf="@+id/btnSaveTask"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/btnNewTask"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:tint="#818181"
-            app:layout_constraintBottom_toBottomOf="@+id/txtTaskDesc"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/txtTaskDesc"
-            app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/ic_add_box" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

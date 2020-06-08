@@ -1,12 +1,13 @@
-package com.example.myapplication.popups
+package com.example.myapplication.singletons
 
 import android.content.Context
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.popups.PopupDate
+import com.example.myapplication.popups.PopupTag
+import com.example.myapplication.popups.PopupTime
 
 object PopupManager {
     private lateinit var time: PopupTime
@@ -14,9 +15,12 @@ object PopupManager {
     private lateinit var date: PopupDate
 
     fun setup(tagList: ArrayList<Int>) {
-        time = PopupTime()
-        tag = PopupTag(tagList)
-        date = PopupDate()
+        time =
+            PopupTime()
+        tag =
+            PopupTag(tagList)
+        date =
+            PopupDate()
     }
 
     // Create relevant popups
@@ -24,11 +28,13 @@ object PopupManager {
         return time.create(attachTo, modify, context, edited)
     }
 
-    fun tagEdit(attachTo: View, modify: TextView?, context: Context, edited: Task) : PopupWindow {
+    fun tagEdit(attachTo: View, modify: TextView?, context: Context,
+                edited: Task) : PopupWindow {
         return tag.create(attachTo, modify, context, edited)
     }
 
-    fun dateEdit(attachTo: View, modify: TextView?, context: Context, edited: TaskDate) : PopupWindow {
+    fun dateEdit(attachTo: View, modify: TextView?, context: Context,
+                 edited: TaskDate) : PopupWindow {
         return date.create(attachTo, modify, context, edited)
     }
 }

@@ -22,7 +22,7 @@ object Settings {
     // Tasks
     // Time
     var durationMax: Int = 480   // 8 hours == 480 minutes
-    private const val defTimeDelta: Int = 5
+    const val defTimeDelta: Int = 5
     var timeDelta: Int = defTimeDelta
     // Coloration
     private const val defHighlightColor: String = "#FFFFE600"   // Yellow
@@ -49,14 +49,9 @@ object Settings {
 
     var mainLayout = ViewLayout.LINEAR
 
-    fun load() {
-
-    }
-
-    fun setDefault() {
-        maxWeeks = defMaxWeeks
-        highlightColor = defHighlightColor
-        timeDelta = defTimeDelta
+    fun init(loadedLayout: ViewLayout, loadedDelta: Int) {
+        mainLayout = loadedLayout
+        timeDelta = loadedDelta
     }
 
     // ####################

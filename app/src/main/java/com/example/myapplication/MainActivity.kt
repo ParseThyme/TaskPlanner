@@ -3,12 +3,13 @@ package com.example.myapplication
 import android.os.Bundle
 import android.view.View
 import android.widget.PopupWindow
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.popups.PopupManager
+import com.example.myapplication.singletons.PopupManager
+import com.example.myapplication.singletons.AppData
+import com.example.myapplication.singletons.Keyboard
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlinx.android.synthetic.main.main_layout_topbar.view.*
@@ -25,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private val clickDateFn = { group: Int -> groupClicked(group) }
     private val scrollToFn = { group: Int -> scrollToGroup(group) }
     private val updateFoldIconFn = { state: Fold -> toggleFoldIcon(state)}
-    private val updateSaveFn = { updateSave() }
 
     // Toggled
     private var mode: Mode = Mode.START
@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables
-    private lateinit var saveData: SaveData
     private lateinit var taskGroupAdapter: TaskGroupAdapter
 
     // ########## Main ##########
@@ -56,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         // Create adapter from loaded groupList (or create new one)
         loadSave()
         taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, scrollToFn,
-                                            updateFoldIconFn, updateSaveFn)
+                                            updateFoldIconFn)
 
         // Assign layout manager and adapter to recycler view and set initial button resource to show
         Settings.initMainLayout(dateGroupRV, taskGroupAdapter)
@@ -113,11 +112,11 @@ class MainActivity : AppCompatActivity() {
                 taskGroupAdapter.toggleFoldAll(Fold.IN)
                 toggleFoldIcon(Fold.IN)
             }
-            updateSave()
+            SaveData.saveTaskGroupList(taskGroupList, applicationContext)
         }
         titleBar.btnToggleLayout.setOnClickListener {
             Settings.setLayout()
-            saveData.saveLayout()
+            SaveData.saveLayout(titleBar.context)
             toggleLayoutButton()
         }
         // btnSettings.setOnClickListener { }
@@ -139,17 +138,19 @@ class MainActivity : AppCompatActivity() {
 
             // Reset text entry and time
             addMode.txtTaskDesc.setText("")
-            // addMode.txtTaskDesc.clearFocus()
             newTask.time.unset()
             addMode.txtSetTime.text = defaultTimeMsg
 
             // Save changes
-            updateSave()
+            SaveData.saveTaskGroupList(taskGroupList, applicationContext)
         }
 
-        addMode.txtSetDate.setOnClickListener { PopupManager.dateEdit(addMode, addMode.txtSetDate, this, newDate) }
-        addMode.txtSetTime.setOnClickListener { PopupManager.timeEdit(addMode, addMode.txtSetTime, this, newTask.time) }
-        addMode.btnSetTag.setOnClickListener  { PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
+        addMode.txtSetDate.setOnClickListener {
+            PopupManager.dateEdit(addMode, addMode.txtSetDate, this, newDate) }
+        addMode.txtSetTime.setOnClickListener {
+            PopupManager.timeEdit(addMode, addMode.txtSetTime, this, newTask.time) }
+        addMode.btnSetTag.setOnClickListener  {
+            PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
 
         addMode.btnResetParams.setOnClickListener {
             // Reset all values (exclude text entry)
@@ -198,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                 if (selectModeDate.id != -1) {
                     taskGroupAdapter.selectedSetDate(selectModeDate)
                     setMode(Mode.ADD)
-                    updateSave()
+                    SaveData.saveTaskGroupList(taskGroupList, window.contentView.context)
                 }
             }
         }
@@ -208,8 +209,7 @@ class MainActivity : AppCompatActivity() {
             window.setOnDismissListener {
                 if (newTime.hour != 0 || newTime.duration != 0) {
                     taskGroupAdapter.selectedSetTime(newTime)
-                    // setMode(Mode.ADD)
-                    updateSave()
+                    SaveData.saveTaskGroupList(taskGroupList, window.contentView.context)
                 }
             }
         }
@@ -219,20 +219,19 @@ class MainActivity : AppCompatActivity() {
             window.setOnDismissListener {
                 if (newTag.tag != -1) {
                     taskGroupAdapter.selectedSetTag(newTag.tag)
-                    // setMode(Mode.ADD)
-                    updateSave()
+                    SaveData.saveTaskGroupList(taskGroupList, window.contentView.context)
                 }
             }
         }
         selectMode.btnClearParams.setOnClickListener {
             taskGroupAdapter.selectedClearAll()
             setMode(Mode.ADD)
-            updateSave()
+            SaveData.saveTaskGroupList(taskGroupList, applicationContext)
         }
         selectMode.btnDelete.setOnClickListener {
             taskGroupAdapter.delete()
             setMode(Mode.ADD)
-            updateSave()
+            SaveData.saveTaskGroupList(taskGroupList, applicationContext)
         }
     }
 
@@ -323,18 +322,16 @@ class MainActivity : AppCompatActivity() {
 
     // ########## Save/Load ##########
     private fun loadSave() {
-        saveData = SaveData(this)
-
         // Uncomment for broken data
         // saveLoad.clearAllData()
 
         // Load data
-        taskGroupList = saveData.loadTaskGroupList()
+        taskGroupList = SaveData.loadTaskGroupList(applicationContext)
 
         // Load settings
-        Settings.mainLayout = saveData.loadLayout()
+        Settings.init(SaveData.loadLayout(applicationContext),
+                      SaveData.loadTimeDelta(applicationContext))
     }
-    private fun updateSave() { saveData.saveTaskGroupList(taskGroupList) }
 
     // ########## Utility ##########
     // Scroll to position when group opened/closed (accounts for opening/closing top/bottom)

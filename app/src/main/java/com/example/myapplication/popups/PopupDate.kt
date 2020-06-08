@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.utility.Settings
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.singletons.AppData
 import kotlinx.android.synthetic.main.popup_date.view.*
 
 class PopupDate : Popup() {
@@ -27,8 +28,8 @@ class PopupDate : Popup() {
     private var currWeek: Int = 0
     private var currMonth: Int = 0
 
-    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskDate, anchor: Anchor = Anchor.Above) : PopupWindow {
-        val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo, anchor)
+    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskDate) : PopupWindow {
+        val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo)
         val view:View = window.contentView
 
         // 1. Get tracked variables

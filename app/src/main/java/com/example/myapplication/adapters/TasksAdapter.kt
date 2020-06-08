@@ -1,6 +1,7 @@
 package com.example.myapplication.adapters
 
 import android.app.Dialog
+import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.DialogEdit
+import com.example.myapplication.singletons.AppData
+import com.example.myapplication.singletons.Keyboard
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
@@ -18,11 +21,11 @@ import kotlinx.android.synthetic.main.task_entry_rv.view.*
 class TasksAdapter(private val group: TaskGroup,
                    private val groupIndex: Int,
                    private val taskClicked: (Boolean, Int, Int) -> Unit,
-                   private val updateSave: () -> Unit)
+                   private val updateSave: (Context) -> Unit)
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v =  parent.inflate(R.layout.task_entry_rv, false)
+        val v: View = parent.inflate(R.layout.task_entry_rv, false)
         return ViewHolder(v)
     }
     override fun getItemCount(): Int { return group.taskList.size }

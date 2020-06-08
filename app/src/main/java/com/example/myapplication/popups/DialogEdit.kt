@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
-import com.example.myapplication.utility.Keyboard
+import com.example.myapplication.singletons.Keyboard
 import kotlinx.android.synthetic.main.task_edit.view.*
 
-
-class DialogEdit(private val context: Context, private val updateSave: () -> Unit) {
+class DialogEdit(private val context: Context, private val updateSave: (Context) -> Unit) {
     var updated: Boolean = false
         private set
 
@@ -62,7 +61,7 @@ class DialogEdit(private val context: Context, private val updateSave: () -> Uni
 
                 // Save changes made and update recyclerview display
                 notifyItemChanged()
-                updateSave()
+                updateSave(context)
             }
 
             Keyboard.close()

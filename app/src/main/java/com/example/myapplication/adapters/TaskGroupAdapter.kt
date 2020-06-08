@@ -1,5 +1,6 @@
 package com.example.myapplication.adapters
 
+import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.singletons.AppData
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
@@ -19,9 +21,10 @@ class TaskGroupAdapter(
      private val taskClicked: (Boolean, Int, Int) -> Unit,
      private val dateClicked: (Int) -> Unit,
      private val scrollTo: (Int) -> Unit,
-     private val changeCollapseExpandIcon: (Fold) -> Unit,
-     private val updateSave: () -> Unit) : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>()
+     private val changeCollapseExpandIcon: (Fold) -> Unit)
+    : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>()
 {
+    private val saveTaskGroupListFn = { context: Context -> SaveData.saveTaskGroupList(taskGroupList, context) }
     // ##############################
     // Headers
     // ##############################
@@ -160,13 +163,13 @@ class TaskGroupAdapter(
                 updateExpandCollapseIcon()
 
                 // Save change to view state
-                updateSave()
+                SaveData.saveTaskGroupList(taskGroupList, itemView.context)
             }
 
             // Assign layout manager + adapter
             itemView.rvTaskGroup.apply {
                 layoutManager = LinearLayoutManager(itemView.rvTaskGroup.context, RecyclerView.VERTICAL, false)
-                adapter = TasksAdapter(group, adapterPosition, taskClicked, updateSave)
+                adapter = TasksAdapter(group, adapterPosition, taskClicked, saveTaskGroupListFn)
             }
         }
         private fun setFold(group: TaskGroup) {

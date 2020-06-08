@@ -7,28 +7,41 @@ import com.example.myapplication.data_classes.TaskGroup
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SaveData(context: Context) {
-    private val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
-    private val editor: SharedPreferences.Editor = sharedPref.edit()
-
+object SaveData {
+    // SharedPreferences (Saving/Loading data)
+    private const val spName: String = "SavedData"
     // Saved keys with corresponding values
-    private val keyTaskGroupList: String = "taskGroupList"
-    private val keyViewLayout: String = "mainLayout"
+    private const val keyTaskGroupList: String = "taskGroupList"
+    private const val keyViewLayout: String = "mainLayout"
+    private const val keyTimeDelta: String = "timeDelta"
+
+    // Saved preferences editor
+    private fun Context.getEditor() : SharedPreferences.Editor {
+        val sharedPref: SharedPreferences = getSharedPreferences(spName, Context.MODE_PRIVATE)
+        return sharedPref.edit()
+    }
 
     // ####################
     // Save
     // ####################
-    fun saveTaskGroupList(taskGroupList: ArrayList<GroupEntry>) {
-        // Create gson to convert data to json format
+    fun saveTaskGroupList(taskGroupList: ArrayList<GroupEntry>, context: Context) {
+        // Get editor, create gson to convert data to json format
+        val editor: SharedPreferences.Editor = context.getEditor()
         val json: String = Gson().toJson(taskGroupList)
+
         // Place data in editor then apply
         editor.putString(keyTaskGroupList, json)
         editor.apply()
     }
-    fun saveLayout() { save(keyViewLayout, Settings.mainLayout.ordinal) }   // index(ordinal) of mainLayout
+    // index(ordinal) of mainLayout
+    fun saveLayout(context: Context) { save(keyViewLayout, Settings.mainLayout.ordinal, context) }
+    fun saveTimeDelta(context: Context) {
+        save(keyTimeDelta, Settings.timeDelta, context)
+        debugMessagePrint("Saved time delta")
+    }
 
-    private fun save(keyName: String, value: Int) {
-        // val editor: SharedPreferences.Editor = sharedPref.edit()
+    private fun save(keyName: String, value: Int, context: Context) {
+        val editor: SharedPreferences.Editor = context.getEditor()
         editor.putInt(keyName, value)
         editor.apply()
     }
@@ -36,7 +49,8 @@ class SaveData(context: Context) {
     // ####################
     // Load
     // ####################
-    fun loadTaskGroupList() : ArrayList<GroupEntry> {
+    fun loadTaskGroupList(context: Context) : ArrayList<GroupEntry> {
+        val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
         val json: String? = sharedPref.getString(keyTaskGroupList, null)
         // Using util function to convert data to json
         val savedData: ArrayList<GroupEntry> = Gson().fromJson(json)
@@ -47,18 +61,23 @@ class SaveData(context: Context) {
         }
     }
     // When loading mainLayout, convert ordinal to appropriate layout enum value
-    fun loadLayout() : ViewLayout {
+    fun loadLayout(context: Context) : ViewLayout {
         // Values: 0 == ViewLayout.LINEAR, 1 == ViewLayout.GRID. Default to linear
+        val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
         val loadedLayout: Int = sharedPref.getInt(keyViewLayout, 0)
         return ViewLayout.values()[loadedLayout]
     }
+    fun loadTimeDelta(context: Context) : Int {
+        val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
+        return sharedPref.getInt(keyTimeDelta, Settings.defTimeDelta)
+    }
 
+    /*
     fun clearAllData() {
         editor.clear()
         editor.apply()
     }
 
-    /*
     fun deleteData(keyName: String) {
         editor.remove(keyName)
         editor.apply()

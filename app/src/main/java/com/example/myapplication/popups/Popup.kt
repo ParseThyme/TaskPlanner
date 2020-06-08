@@ -9,8 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
-import com.example.myapplication.utility.Keyboard
-import com.example.myapplication.utility.applyBackgroundColor
+import com.example.myapplication.singletons.Keyboard
 
 abstract class Popup {
     // https://stackoverflow.com/questions/23516247/how-change-position-of-popup-menu-on-android-overflow-button

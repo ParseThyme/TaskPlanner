@@ -14,11 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.example.myapplication.R
 
-// ########## Hardcoded values (unmodified by app) ##########
-// SharedPreferences (Saving/Loading data)
-const val spName: String = "SavedData"
-const val spTaskGroupList = "TaskGroupList"
-
 // Activity.main
 const val mainTitle = "Task Planner"
 const val defaultTimeMsg = "Set Time"

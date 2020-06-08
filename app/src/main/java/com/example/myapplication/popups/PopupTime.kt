@@ -7,16 +7,14 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.defaultTimeMsg
-import com.example.myapplication.utility.updateDrawableLeft
-import com.example.myapplication.utility.updateDrawableTop
+import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime : Popup() {
     private var chosenTime: TaskTime = TaskTime(12, 0, TimeOfDay.PM, 0)
 
-    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime, anchor: Anchor = Anchor.Above) : PopupWindow {
+    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime) : PopupWindow
+    {
         val window:PopupWindow = create(context, R.layout.popup_time)
         val view:View = window.contentView
 
@@ -180,12 +178,11 @@ class PopupTime : Popup() {
         chosenTime.updateDuration(increment)
         text = chosenTime.durationAsString()
         txtChosenTime.text = chosenTime.overallTimeLabel()
-
-        // When duration max, disable forward button
     }
     private fun TextView.updateDelta(increment: Boolean = true) {
         Settings.updateTimeDelta(increment)
         text = Settings.timeDeltaAsString()
+        SaveData.saveTimeDelta(this.context)
     }
 
     private fun View.updateDisplay() {

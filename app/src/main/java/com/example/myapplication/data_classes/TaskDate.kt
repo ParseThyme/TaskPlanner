@@ -1,7 +1,6 @@
 package com.example.myapplication.data_classes
 
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.debugMessagePrint
+import com.example.myapplication.singletons.AppData
 import com.example.myapplication.utility.millisecondsToDays
 import java.text.SimpleDateFormat
 import java.util.*
