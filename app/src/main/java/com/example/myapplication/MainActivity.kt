@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlinx.android.synthetic.main.main_layout_topbar.view.*
 import kotlinx.android.synthetic.main.main_mode_add.*
 import kotlinx.android.synthetic.main.main_mode_add.view.*
-import kotlinx.android.synthetic.main.main_mode_add.view.spinnerSavedTasks
 import kotlinx.android.synthetic.main.main_mode_select.view.*
 import kotlin.collections.ArrayList
 
