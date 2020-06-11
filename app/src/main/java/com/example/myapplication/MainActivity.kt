@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,7 +14,9 @@ import com.example.myapplication.singletons.Keyboard
 import com.example.myapplication.utility.*
 import kotlinx.android.synthetic.main.main_activity_view.*
 import kotlinx.android.synthetic.main.main_layout_topbar.view.*
+import kotlinx.android.synthetic.main.main_mode_add.*
 import kotlinx.android.synthetic.main.main_mode_add.view.*
+import kotlinx.android.synthetic.main.main_mode_add.view.spinnerSavedTasks
 import kotlinx.android.synthetic.main.main_mode_select.view.*
 import kotlin.collections.ArrayList
 
@@ -52,51 +55,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_view)
 
-        // Create adapter from loaded groupList (or create new one)
+        // 1. Load data, create adapter from loaded groupList (or create new one)
         loadSave()
-        taskGroupAdapter = TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, scrollToFn,
-                                            updateFoldIconFn)
+        taskGroupAdapter =
+            TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, scrollToFn, updateFoldIconFn)
 
-        // Assign layout manager and adapter to recycler view and set initial button resource to show
+        // 2. Assign layout manager and adapter to recycler view and set initial button resource to show
         Settings.initMainLayout(dateGroupRV, taskGroupAdapter)
         toggleLayoutButton()
 
-        runSetup()
+        // 3. Setup singletons
+        Keyboard.setup(this, addMode.txtTaskDesc)
+        Keyboard.addInputValidation(addMode.btnAddNewTask)
+
+        // 4. Initialize button click listeners
+        setupButtons()                                      // Buttons (topBar and bottomBar)
+
+        // 5. Setup labels
+        newTask.time.unset()
+        titleBar.title.text = mainTitle                     // Main App name
+        addMode.txtSetDate.text = today().asStringShort()   // Starting date to be today at bottom bar
+        addMode.txtSetTime.text = defaultTimeMsg            // Set time to be blank
+
+        // ToDo: Reorganize
+
         setMode(Mode.ADD)
     }
 
     // ########## Setup, Buttons, OnClick ##########
-    private fun runSetup() {
-        // Create tagslist
-        tagsList = arrayListOf(
-            R.drawable.tag_booking, R.drawable.tag_assignment, R.drawable.tag_mail, R.drawable.tag_file,
-            R.drawable.tag_scan, R.drawable.tag_print, R.drawable.tag_bug, R.drawable.tag_build,
-
-            R.drawable.tag_tv ,R.drawable.tag_read, R.drawable.tag_music_note, R.drawable.tag_game,
-            R.drawable.tag_photo, R.drawable.tag_movie, R.drawable.tag_food, R.drawable.tag_event,
-
-            R.drawable.tag_buy, R.drawable.tag_pet, R.drawable.tag_workout, R.drawable.tag_medicine,
-            R.drawable.tag_delivery, R.drawable.tag_flight, R.drawable.tag_train, R.drawable.tag_car,
-
-            R.drawable.tag_important, R.drawable.tag_flag, R.drawable.tag_1, R.drawable.tag_2,
-            R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
-        )
-        PopupManager.setup(tagsList)
-
-        // Setup singletons
-        Keyboard.setup(this, addMode.txtTaskDesc)
-        Keyboard.addInputValidation(addMode.btnNewTask)
-
-        // Initialize variable references
-        setupButtons()                                      // Buttons (topBar and bottomBar)
-        titleBar.title.text = mainTitle                     // Main App name
-        addMode.txtSetDate.text = today().asStringShort()   // Starting date to be today at bottom bar
-
-        // Set time to be blank
-        newTask.time.unset()
-        addMode.txtSetTime.text = defaultTimeMsg
-    }
-
     private fun setupButtons() {
         // ##############################
         // TopBar
@@ -125,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         // BottomBar
         // ##############################
         // 1. Add Mode
-        addMode.btnNewTask.setOnClickListener {
+        addMode.btnAddNewTask.setOnClickListener {
             // Get relevant values
             val desc: String = addMode.txtTaskDesc.text.toString().trim()
             val time: TaskTime = newTask.time.copy()

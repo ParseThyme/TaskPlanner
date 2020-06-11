@@ -91,7 +91,9 @@
                 android:layout_marginLeft="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dividerDateTasks" />
+                app:layout_constraintTop_toBottomOf="@+id/dividerDateTasks"
+                tools:itemCount="3"
+                tools:listitem="@layout/task_entry_rv" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

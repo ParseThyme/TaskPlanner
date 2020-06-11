@@ -25,8 +25,7 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
     fun create(attachTo: View, modify: TextView?, context: Context, edited: Task): PopupWindow {
         // Calculate number of icons per row. Ideally max is 10 per row.
         var spanCount: Int = Settings.tagRowSize
-        if (tagsList.size < spanCount)
-            spanCount = tagsList.size
+        if (tagsList.size < spanCount) spanCount = tagsList.size
 
         val window: PopupWindow = create(context, R.layout.popup_tag)
         val view: View = window.contentView

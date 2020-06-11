@@ -13,8 +13,7 @@ import kotlinx.android.synthetic.main.popup_time.view.*
 class PopupTime : Popup() {
     private var chosenTime: TaskTime = TaskTime(12, 0, TimeOfDay.PM, 0)
 
-    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime) : PopupWindow
-    {
+    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime) : PopupWindow {
         val window:PopupWindow = create(context, R.layout.popup_time)
         val view:View = window.contentView
 

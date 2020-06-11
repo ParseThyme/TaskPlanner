@@ -25,7 +25,9 @@
         app:layout_constraintBottom_toTopOf="@+id/footer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleBar">
+        app:layout_constraintTop_toBottomOf="@+id/titleBar"
+        tools:itemCount="3"
+        tools:listitem="@layout/task_group_rv">
 
     </androidx.recyclerview.widget.RecyclerView>
 

@@ -31,14 +31,14 @@ abstract class Popup {
     }
 
     // Create window and immediately show it
-    fun createAndShow(context: Context, layout: Int, parent: View, anchor: Anchor = Anchor.Above) : PopupWindow {
+    fun createAndShow(context: Context, layout: Int, parent: View) : PopupWindow {
         val window:PopupWindow = create(context, layout)
-        window.show(parent, anchor)
+        window.show(parent)
         return window
     }
 
     // Manually show window at desired point in time
-    fun PopupWindow.show(parent: View, anchor: Anchor = Anchor.Above) {
+    fun PopupWindow.show(parent: View) {
         // Link: https://stackoverflow.com/questions/4303525/change-gravity-of-popupwindow
 
         // 1. If keyboard open, then place popup on top of keyboard and stretch to match
@@ -66,15 +66,17 @@ abstract class Popup {
             val yPadding = 10       // Add y spacing between parent and popup
             val xPadding = 5        // By default, positioned a bit right of parent, this should offset it
 
-            // X positioning. Ensure at center of parent
-            val xOffset: Int = (parent.width - viewSize.x) / 2 - xPadding
+            // X & Y positioning
+            val xOffset: Int = (parent.width - viewSize.x) / 2 - xPadding   // Ensure at center of parent
+            val yOffset: Int = -viewSize.y - yPadding - parent.height       // Place above parent
 
             // Determining Y Positioning depending on anchor. Place above or below
+            /*
             val yOffset = when (anchor) {
                 Anchor.Above -> -viewSize.y - yPadding - parent.height
                 Anchor.Below -> 0
             }
-
+            */
             // Show popup with offsets applied
             this.showAsDropDown(parent, xOffset, yOffset)
         }
