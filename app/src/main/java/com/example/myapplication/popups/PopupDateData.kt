@@ -32,11 +32,23 @@ class PopupDateData {
 
     private fun PopupDateWeek.lastDay() : PopupDateDay { return days[6] }
 
+    fun getDay(day:Int, week: Int) : PopupDateDay { return weeks[week].days[day] }
+    fun getWeek(week: Int) : ArrayList<PopupDateDay> { return weeks[week].days }
+    fun getMonth(month: Int) : Int { return months[month]!! }
+
+    fun outdated(): Boolean {
+        // Compare current first day in entries with actual first day of week
+        val firstEntry: TaskDate = weeks[0].days[0].taskDate
+        val firstDayOfWeek: TaskDate = today().firstDayOfWeek()
+
+        return (!firstEntry.same(firstDayOfWeek))
+    }
     fun refreshEntries() {
         weeks.clear()
         months.clear()
         createEntries()
     }
+
     private fun createEntries() {
         // Start date
         var currDate: TaskDate = today().firstDayOfWeek()
