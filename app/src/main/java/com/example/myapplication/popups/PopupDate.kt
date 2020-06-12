@@ -20,8 +20,6 @@ class PopupDate : Popup() {
     // Data/Information pertaining to weeks in popup created
     private val data : PopupDateData = PopupDateData()
     private val endWeek = Settings.maxWeeks - 1
-    private val startMonth = today().month
-    private val endMonth = data.weeks[endWeek].month
     // Trackers
     private var currWeek: Int = 0
     private var currMonth: Int = 0
@@ -69,8 +67,8 @@ class PopupDate : Popup() {
             endWeek -> view.btnWeekNext.visibility = View.INVISIBLE   // Final week, hide forwards
         }
         // If singular month, both prev/forward buttons set invisible
-        if (currMonth == startMonth) view.btnMonthPrev.visibility = View.INVISIBLE
-        if (currMonth == endMonth)   view.btnMonthNext.visibility = View.INVISIBLE
+        if (currMonth == data.startMonth) view.btnMonthPrev.visibility = View.INVISIBLE
+        if (currMonth == data.endMonth)   view.btnMonthNext.visibility = View.INVISIBLE
 
         // 5. Setup onClick behaviours
         // [A]. Mo - Su cells
@@ -208,11 +206,11 @@ class PopupDate : Popup() {
                 }
                 // [B]. Month
                 when (currMonth) {
-                    startMonth -> {
+                    data.startMonth -> {
                         view.btnMonthPrev.visibility = View.INVISIBLE
                         view.btnMonthNext.visibility = View.VISIBLE
                     }
-                    endMonth -> {
+                    data.endMonth -> {
                         view.btnMonthNext.visibility = View.INVISIBLE
                         view.btnMonthPrev.visibility = View.VISIBLE
                     }
@@ -283,7 +281,7 @@ class PopupDate : Popup() {
     private fun View.toFirstWeek(textViews: ArrayList<TextView>, dayData: ArrayList<PopupDateDay>) {
         // Set current week, month to first respectively
         currWeek = 0
-        currMonth = data.getMonth(0)
+        currMonth = data.weeks[currWeek].month
 
         // Update week and month label displays
         txtWeek.updateWeekLabel()
@@ -305,18 +303,22 @@ class PopupDate : Popup() {
         currMonth++
         this.text = currMonth.monthAsString()
 
-        // startMonth -> startMonth + 1. Enable back button
-        if (currMonth == startMonth + 1) btnMonthPrev.visibility = View.VISIBLE
-        // lastMonth - 1 -> lastMonth. Disable forward button
-        if (currMonth == endMonth) btnMonthNext.visibility = View.INVISIBLE
+        when {
+            // startMonth -> startMonth + 1. Enable back button
+            (currMonth == data.startMonth + 1) -> btnMonthPrev.visibility = View.VISIBLE
+            // lastMonth - 1 -> lastMonth. Disable forward button
+            (currMonth == data.endMonth) -> btnMonthNext.visibility = View.INVISIBLE
+        }
     }
     private fun TextView.monthPrev(btnMonthPrev: ImageView, btnMonthNext: ImageView) {
         currMonth--
         this.text = currMonth.monthAsString()
 
-        // startMonth + 1 -> startMonth. Disable back button
-        if (currMonth == startMonth) btnMonthPrev.visibility = View.INVISIBLE
-        // lastMonth -> lastMonth - 1. Enable forward button
-        if (currMonth == endMonth - 1) btnMonthNext.visibility = View.VISIBLE
+        when {
+            // startMonth + 1 -> startMonth. Disable back button
+            (currMonth == data.startMonth) -> btnMonthPrev.visibility = View.INVISIBLE
+            // lastMonth -> lastMonth - 1. Enable forward button
+            (currMonth == data.endMonth - 1) -> btnMonthNext.visibility = View.VISIBLE
+        }
     }
 }

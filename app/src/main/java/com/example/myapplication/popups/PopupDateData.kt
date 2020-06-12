@@ -27,6 +27,8 @@ fun SelectedPopupDateDay.applyBackgroundColor(color: String) { this.view!!.apply
 class PopupDateData {
     var weeks: ArrayList<PopupDateWeek> = arrayListOf()
     var months = hashMapOf<Int, Int>()                      // [Month, Index]
+    var startMonth: Int = 0
+    var endMonth: Int = 0
 
     init { createEntries() }
 
@@ -87,5 +89,8 @@ class PopupDateData {
             currWeek = currWeek.next()
             weeks.add(weekEntry)
         }
+
+        startMonth = today().month
+        endMonth = weeks[weeks.lastIndex].month
     }
 }

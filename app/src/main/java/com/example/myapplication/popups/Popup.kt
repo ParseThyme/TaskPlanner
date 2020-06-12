@@ -21,7 +21,6 @@ abstract class Popup {
         // Apply parameters to window
         window.apply{
             isFocusable = true
-            // width = WindowManager.LayoutParams.WRAP_CONTENT
             width = WindowManager.LayoutParams.MATCH_PARENT
             height = WindowManager.LayoutParams.WRAP_CONTENT
             contentView = view
@@ -67,8 +66,8 @@ abstract class Popup {
             val xPadding = 5        // By default, positioned a bit right of parent, this should offset it
 
             // X & Y positioning
-            val xOffset: Int = (parent.width - viewSize.x) / 2 - xPadding   // Ensure at center of parent
-            val yOffset: Int = -viewSize.y - yPadding - parent.height       // Place above parent
+            val xOffset: Int = (parent.width - viewSize.x) / 2 - xPadding           // Ensure at center of parent
+            val yOffset: Int = -viewSize.y - yPadding - parent.height - (height/2)  // Place above parent
 
             // Determining Y Positioning depending on anchor. Place above or below
             /*
@@ -77,8 +76,13 @@ abstract class Popup {
                 Anchor.Below -> 0
             }
             */
+            val location = IntArray(2)
+            parent.getLocationOnScreen(location)
+            val x = location[0]
+            val y = location[1] - viewSize.y - yPadding
             // Show popup with offsets applied
-            this.showAsDropDown(parent, xOffset, yOffset)
+            // this.showAsDropDown(parent, xOffset, yOffset)
+            this.showAtLocation(parent, Gravity.TOP, x, y)
         }
     }
 

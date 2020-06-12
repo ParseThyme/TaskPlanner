@@ -1,25 +1,19 @@
 package com.example.myapplication.popups
 
-import android.R.attr.button
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
+import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
-import com.example.myapplication.adapters.TaskTagAdapter
 import com.example.myapplication.data_classes.Task
 import com.example.myapplication.utility.Settings
+import com.example.myapplication.utility.inflate
 import com.example.myapplication.utility.updateDrawableTop
 import kotlinx.android.synthetic.main.popup_tag.view.*
-
+import kotlinx.android.synthetic.main.popup_tag_entry.view.*
 
 class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
     fun create(attachTo: View, modify: TextView?, context: Context, edited: Task): PopupWindow {
@@ -39,7 +33,7 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
         // Change tag
         view.tagsRv.apply {
             layoutManager = GridLayoutManager(context, spanCount)
-            adapter = TaskTagAdapter(tagsList)
+            adapter = PopupTagAdapter(tagsList)
             // Select and close function passed into TaskTagAdapter
             { chosenTag: Int ->           // Input Param
                 modify?.updateDrawableTop(chosenTag)
@@ -53,5 +47,24 @@ class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
 
         window.show(attachTo)
         return window
+    }
+}
+
+class PopupTagAdapter(private val tagsList: ArrayList<Int>, private val closeFn: (Int) -> Unit)
+    : RecyclerView.Adapter<PopupTagAdapter.ViewHolder>()
+{
+    override fun getItemCount(): Int { return tagsList.size }
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(tagsList[pos]) }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(parent.inflate(R.layout.popup_tag_entry))
+    }
+
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        fun bind(entry: Int) {
+            itemView.iconTag.apply {
+                setImageResource(entry)                  // Set icon to match taskTag
+                setOnClickListener { closeFn(entry) }    // When tag clicked, close popup window
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.popups.PopupSavedTasks
 import com.example.myapplication.singletons.PopupManager
 import com.example.myapplication.singletons.AppData
 import com.example.myapplication.singletons.Keyboard
@@ -77,7 +78,14 @@ class MainActivity : AppCompatActivity() {
         addMode.txtSetTime.text = defaultTimeMsg            // Set time to be blank
 
         // ToDo: Reorganize
-
+        val tasks: ArrayList<String> = arrayListOf(
+            "Task 1", "Task 2", "Task 3", "Task 4", "Task 5",
+            "Task 6", "Task 7", "Task 8", "Task 9", "Task 10")
+        val popupTasks = PopupSavedTasks(tasks)
+        addMode.btnToggleSavedTasks.setOnClickListener {
+            popupTasks.create(addMode.txtTaskDesc, addMode.btnToggleSavedTasks.context)
+            // PopupManager.dateEdit(addMode.txtTaskDesc, addMode.txtSetDate, this, newDate)
+        }
         setMode(Mode.ADD)
     }
 
