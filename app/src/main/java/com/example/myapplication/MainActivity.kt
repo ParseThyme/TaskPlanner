@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
 
     // Data
     private var taskGroupList: ArrayList<GroupEntry> = ArrayList()
-    private var tagsList: ArrayList<Int> = ArrayList()
 
     // Late initialized variables
     private lateinit var taskGroupAdapter: TaskGroupAdapter
@@ -83,9 +82,18 @@ class MainActivity : AppCompatActivity() {
             "Task 6", "Task 7", "Task 8", "Task 9", "Task 10")
         val popupTasks = PopupSavedTasks(tasks)
         addMode.btnToggleSavedTasks.setOnClickListener {
-            popupTasks.create(addMode.txtTaskDesc, addMode.btnToggleSavedTasks.context)
-            // PopupManager.dateEdit(addMode.txtTaskDesc, addMode.txtSetDate, this, newDate)
+            // Switch icon, indicating popup has been opened
+            btnToggleSavedTasks.setImageResource(R.drawable.arrow_up)
+
+            val window: PopupWindow =
+                popupTasks.create(addMode.txtTaskDesc, addMode.txtTaskDesc, addMode.btnToggleSavedTasks.context, newTask)
+            window.setOnDismissListener {
+                // Switch icon back to default
+                btnToggleSavedTasks.setImageResource(R.drawable.arrow_down)
+            }
         }
+        // ToDo: END
+
         setMode(Mode.ADD)
     }
 
