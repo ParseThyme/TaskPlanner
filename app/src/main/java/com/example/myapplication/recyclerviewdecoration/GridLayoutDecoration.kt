@@ -4,7 +4,6 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.example.myapplication.utility.debugMessagePrint
 
 
 // Grid spacing: https://stackoverflow.com/questions/56775671/get-the-column-number-where-a-view-is-on-a-gridlayoutmanager

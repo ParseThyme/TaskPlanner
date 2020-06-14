@@ -2,20 +2,15 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.PopupSavedTasks
-import com.example.myapplication.singletons.PopupManager
-import com.example.myapplication.singletons.AppData
-import com.example.myapplication.singletons.Keyboard
-import com.example.myapplication.utility.*
+import com.example.myapplication.singletons.*
 import kotlinx.android.synthetic.main.main_activity_view.*
-import kotlinx.android.synthetic.main.main_layout_topbar.view.*
-import kotlinx.android.synthetic.main.main_mode_add.*
+import kotlinx.android.synthetic.main.main_topbar.view.*
 import kotlinx.android.synthetic.main.main_mode_add.view.*
 import kotlinx.android.synthetic.main.main_mode_select.view.*
 import kotlin.collections.ArrayList
@@ -45,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     // Data
     private var taskGroupList: ArrayList<GroupEntry> = ArrayList()
+    private var saveTask: Boolean = false
 
     // Late initialized variables
     private lateinit var taskGroupAdapter: TaskGroupAdapter
@@ -59,9 +55,9 @@ class MainActivity : AppCompatActivity() {
         taskGroupAdapter =
             TaskGroupAdapter(taskGroupList, clickTaskFn, clickDateFn, scrollToFn, updateFoldIconFn)
 
-        // 2. Assign layout manager and adapter to recycler view and set initial button resource to show
+        // 2. Assign layout manager and adapter to recycler view and set initial layout to show
         Settings.initMainLayout(dateGroupRV, taskGroupAdapter)
-        toggleLayoutButton()
+        titleBar.toggleLayout.isChecked = Settings.layoutAsBoolean()
 
         // 3. Setup singletons
         Keyboard.setup(this, addMode.txtTaskDesc)
@@ -77,20 +73,25 @@ class MainActivity : AppCompatActivity() {
         addMode.txtSetTime.text = defaultTimeMsg            // Set time to be blank
 
         // ToDo: Reorganize
+        /*
+        addMode.toggleSaveTask.setOnCheckedChangeListener { _, isChecked ->
+            when (isChecked) {
+                true -> debugMessagePrint("True")
+                else -> debugMessagePrint("False")
+            }
+        }
+        */
         val tasks: ArrayList<String> = arrayListOf(
             "Task 1", "Task 2", "Task 3", "Task 4", "Task 5",
             "Task 6", "Task 7", "Task 8", "Task 9", "Task 10")
         val popupTasks = PopupSavedTasks(tasks)
-        addMode.btnToggleSavedTasks.setOnClickListener {
-            // Switch icon, indicating popup has been opened
-            btnToggleSavedTasks.setImageResource(R.drawable.arrow_up)
-
-            val window: PopupWindow =
-                popupTasks.create(addMode.txtTaskDesc, addMode.txtTaskDesc, addMode.btnToggleSavedTasks.context, newTask)
-            window.setOnDismissListener {
-                // Switch icon back to default
-                btnToggleSavedTasks.setImageResource(R.drawable.arrow_down)
-            }
+        addMode.toggleSavedTasksPopup.setOnClickListener {
+            // Open popup window, update icon as checked
+            addMode.toggleSavedTasksPopup.isChecked = true
+            val window: PopupWindow = popupTasks.create(addMode.txtTaskDesc, addMode.txtTaskDesc,
+                addMode.toggleSavedTasksPopup.context, newTask)
+            // Switch icon back to unchecked when window closed
+            window.setOnDismissListener { addMode.toggleSavedTasksPopup.isChecked = false }
         }
         // ToDo: END
 
@@ -102,24 +103,8 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         // TopBar
         // ##############################
-        titleBar.btnCollapseExpand.setOnClickListener {
-            // Expand all when all are collapsed, switch icon to collapse all icon
-            if (AppData.allCollapsed()) {
-                taskGroupAdapter.toggleFoldAll()
-                toggleFoldIcon(Fold.OUT)
-            }
-            // Otherwise collapse all and switch icon to expand all icon
-            else {
-                taskGroupAdapter.toggleFoldAll(Fold.IN)
-                toggleFoldIcon(Fold.IN)
-            }
-            SaveData.saveTaskGroupList(taskGroupList, applicationContext)
-        }
-        titleBar.btnToggleLayout.setOnClickListener {
-            Settings.setLayout()
-            SaveData.saveLayout(titleBar.context)
-            toggleLayoutButton()
-        }
+        titleBar.toggleFold.setOnClickListener { taskGroupAdapter.toggleFoldAll(titleBar.toggleFold.context) }
+        titleBar.toggleLayout.setOnClickListener { Settings.toggleLayout(titleBar.toggleLayout.context) }
         // btnSettings.setOnClickListener { }
 
         // ##############################
@@ -143,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             addMode.txtSetTime.text = defaultTimeMsg
 
             // Save changes
-            SaveData.saveTaskGroupList(taskGroupList, applicationContext)
+            SaveData.saveTaskGroupList(taskGroupList, addMode.btnAddNewTask.context)
         }
 
         addMode.txtSetDate.setOnClickListener {
@@ -308,18 +293,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun updateSelectedCountDisplay() { selectMode.txtSelected.text = AppData.numSelectedMsg() }
 
-    private fun toggleFoldIcon(state: Fold) {
-        when(state) {
-            Fold.OUT -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_collapse)
-            Fold.IN -> titleBar.btnCollapseExpand.setImageResource(R.drawable.ic_view_expand)
-        }
-    }
-    private fun toggleLayoutButton() {
-        when (Settings.mainLayout) {
-            ViewLayout.LINEAR -> titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_linear)
-            ViewLayout.GRID ->   titleBar.btnToggleLayout.setImageResource(R.drawable.ic_layout_grid)
-        }
-    }
+    private fun toggleFoldIcon(state: Fold) { titleBar.toggleFold.isChecked = state.asBoolean() }
 
     // ########## Save/Load ##########
     private fun loadSave() {
@@ -330,7 +304,8 @@ class MainActivity : AppCompatActivity() {
         taskGroupList = SaveData.loadTaskGroupList(applicationContext)
 
         // Load settings
-        Settings.init(SaveData.loadLayout(applicationContext),
+        Settings.init(
+            SaveData.loadLayout(applicationContext),
                       SaveData.loadTimeDelta(applicationContext))
     }
 

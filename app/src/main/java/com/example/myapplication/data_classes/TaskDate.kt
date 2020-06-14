@@ -1,7 +1,7 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.singletons.AppData
-import com.example.myapplication.utility.millisecondsToDays
+import com.example.myapplication.millisecondsToDays
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.DAY_OF_WEEK

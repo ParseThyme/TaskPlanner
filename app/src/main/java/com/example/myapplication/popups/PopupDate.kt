@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
-import com.example.myapplication.utility.Settings
+import com.example.myapplication.singletons.Settings
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.singletons.AppData
 import kotlinx.android.synthetic.main.popup_date.view.*

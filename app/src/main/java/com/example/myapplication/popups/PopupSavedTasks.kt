@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
-import com.example.myapplication.utility.inflate
+import com.example.myapplication.inflate
 import kotlinx.android.synthetic.main.popup_saved_task_entry.view.*
 import kotlinx.android.synthetic.main.popup_saved_tasks.view.*
 

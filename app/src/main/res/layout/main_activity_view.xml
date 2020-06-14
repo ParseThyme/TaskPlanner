@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/titleBar"
-        layout="@layout/main_layout_topbar"
+        layout="@layout/main_topbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

@@ -146,22 +146,18 @@ fun TaskGroup.toggleSelected() {
 }
 
 // ########## Fold (Group expanded/collapsed) ##########
-fun Fold.isNew(view: View): Boolean {
-    if (view.visibility == View.VISIBLE && this == Fold.OUT)
-        return false
-    if (view.visibility == View.GONE && this == Fold.IN)
-        return false
-
-    return true
+fun TaskGroup.collapsed() : Boolean { return state == Fold.IN }
+fun TaskGroup.expanded() : Boolean { return state == Fold.OUT }
+fun Fold.asBoolean() : Boolean {
+    return when (this) {
+        Fold.IN -> true
+        Fold.OUT -> false
+    }
 }
-fun TaskGroup.isFoldedOut() : Boolean { return state == Fold.OUT }
-fun TaskGroup.toggleFold(): Fold {
-    state =
-        if (state == Fold.OUT)
-            Fold.IN
-        else
-            Fold.OUT
-
-    return state
+fun Boolean.asFold() : Fold {
+    return when (this) {
+        true -> Fold.IN
+        false -> Fold.OUT
+    }
 }
 enum class Fold { OUT, IN }

@@ -28,18 +28,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/btnToggleLayout"
+        <ToggleButton
+            android:id="@+id/toggleLayout"
+            style="@style/ToggleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
-            android:padding="5dp"
-            android:tint="@android:color/white"
+            android:drawableTop="@drawable/toggle_layout"
+            android:drawableTint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/divider"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_layout_linear" />
+            app:srcCompat="@drawable/toggle_layout_linear" />
 
         <View
             android:id="@+id/divider"
@@ -50,20 +49,20 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
             android:background="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="@+id/btnCollapseExpand"
-            app:layout_constraintEnd_toStartOf="@+id/btnCollapseExpand"
-            app:layout_constraintTop_toTopOf="@+id/btnCollapseExpand" />
+            app:layout_constraintBottom_toBottomOf="@+id/toggleFold"
+            app:layout_constraintEnd_toStartOf="@+id/toggleFold"
+            app:layout_constraintTop_toTopOf="@+id/toggleFold" />
 
-        <ImageView
-            android:id="@+id/btnCollapseExpand"
+        <ToggleButton
+            android:id="@+id/toggleFold"
+            style="@style/ToggleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:tint="@android:color/white"
+            android:drawableTop="@drawable/toggle_fold"
+            android:drawableTint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_view_collapse" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

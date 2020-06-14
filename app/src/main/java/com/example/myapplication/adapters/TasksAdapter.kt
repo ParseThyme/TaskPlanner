@@ -11,7 +11,7 @@ import com.example.myapplication.data_classes.*
 import com.example.myapplication.popups.DialogEdit
 import com.example.myapplication.singletons.AppData
 import com.example.myapplication.singletons.Keyboard
-import com.example.myapplication.utility.*
+import com.example.myapplication.singletons.Settings
 import kotlinx.android.synthetic.main.task_entry_rv.view.*
 
 // val itemClickedListener: (Task) -> Unit

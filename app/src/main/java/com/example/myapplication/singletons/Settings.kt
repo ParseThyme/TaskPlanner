@@ -1,16 +1,14 @@
-package com.example.myapplication.utility
+package com.example.myapplication.singletons
 
+import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myapplication.adapters.TaskGroupAdapter
-import com.example.myapplication.data_classes.GroupType
-import com.example.myapplication.data_classes.TaskDate
-import com.example.myapplication.data_classes.today
-import com.example.myapplication.data_classes.firstDayOfWeek
 import com.example.myapplication.recyclerviewdecoration.GridLayoutDecoration
 import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
+import kotlinx.android.synthetic.main.main_activity_view.*
 
 // ########## App settings ##########
 object Settings {
@@ -23,7 +21,8 @@ object Settings {
     // Time
     var durationMax: Int = 480   // 8 hours == 480 minutes
     const val defTimeDelta: Int = 5
-    var timeDelta: Int = defTimeDelta
+    var timeDelta: Int =
+        defTimeDelta
     // Coloration
     private const val defHighlightColor: String = "#FFFFE600"   // Yellow
     var highlightColor: String = "#FFFFE600"
@@ -45,7 +44,10 @@ object Settings {
     private const val linearSpacing = 15
 
     private val linearDecoration = LinearLayoutDecoration(linearSpacing)
-    private val gridDecoration = GridLayoutDecoration(gridSpacing, gridSpanSize)
+    private val gridDecoration = GridLayoutDecoration(
+        gridSpacing,
+        gridSpanSize
+    )
 
     var mainLayout = ViewLayout.LINEAR
 
@@ -57,14 +59,21 @@ object Settings {
     // ####################
     // Layout
     // ####################
-    fun setLayout(toggle: Boolean = true) {
-        if (toggle) {
-            mainLayout = when (mainLayout) {
-                ViewLayout.LINEAR -> ViewLayout.GRID
-                ViewLayout.GRID -> ViewLayout.LINEAR
-            }
+    fun layoutAsBoolean() : Boolean {
+        return when (mainLayout) {
+            ViewLayout.LINEAR -> false
+            ViewLayout.GRID -> true
         }
-
+    }
+    fun toggleLayout(context: Context) {
+        mainLayout = when (mainLayout) {
+            ViewLayout.LINEAR -> ViewLayout.GRID
+            ViewLayout.GRID -> ViewLayout.LINEAR
+        }
+        setLayout()
+        SaveData.saveLayout(context)
+    }
+    private fun setLayout() {
         // Apply specified layout
         when (mainLayout) {
             ViewLayout.LINEAR -> {
@@ -92,7 +101,7 @@ object Settings {
 
         // Apply starting layout
         parentRV.apply {
-            setLayout(false)
+            setLayout()
             adapter = taskGroupAdapter
         }
     }

@@ -1,4 +1,4 @@
-package com.example.myapplication.utility
+package com.example.myapplication
 
 import android.content.Context
 import android.graphics.Color
@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.example.myapplication.R
 
 // Activity.main
 const val mainTitle = "Task Planner"

@@ -1,9 +1,9 @@
-package com.example.myapplication.utility
+package com.example.myapplication.singletons
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.myapplication.data_classes.GroupEntry
-import com.example.myapplication.data_classes.TaskGroup
+import com.example.myapplication.debugMessagePrint
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -34,9 +34,19 @@ object SaveData {
         editor.apply()
     }
     // index(ordinal) of mainLayout
-    fun saveLayout(context: Context) { save(keyViewLayout, Settings.mainLayout.ordinal, context) }
+    fun saveLayout(context: Context) {
+        save(
+            keyViewLayout,
+            Settings.mainLayout.ordinal,
+            context
+        )
+    }
     fun saveTimeDelta(context: Context) {
-        save(keyTimeDelta, Settings.timeDelta, context)
+        save(
+            keyTimeDelta,
+            Settings.timeDelta,
+            context
+        )
         debugMessagePrint("Saved time delta")
     }
 
@@ -69,7 +79,10 @@ object SaveData {
     }
     fun loadTimeDelta(context: Context) : Int {
         val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
-        return sharedPref.getInt(keyTimeDelta, Settings.defTimeDelta)
+        return sharedPref.getInt(
+            keyTimeDelta,
+            Settings.defTimeDelta
+        )
     }
 
     /*

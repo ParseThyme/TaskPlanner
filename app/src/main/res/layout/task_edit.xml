@@ -85,7 +85,7 @@
                     android:id="@+id/btnClose"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/clickable_bg"
+                    android:background="@drawable/bg_clickable"
                     android:padding="5dp"
                     app:srcCompat="@drawable/ic_close" />
             </androidx.cardview.widget.CardView>
@@ -115,7 +115,7 @@
                     android:id="@+id/btnTxtEnd"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/clickable_bg"
+                    android:background="@drawable/bg_clickable"
                     android:drawableStart="@drawable/arrow_last"
                     android:ems="4"
                     android:gravity="center"
@@ -136,7 +136,7 @@
                     android:id="@+id/btnTxtStart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/clickable_bg"
+                    android:background="@drawable/bg_clickable"
                     android:drawableStart="@drawable/arrow_first"
                     android:ems="4"
                     android:gravity="center"
@@ -159,7 +159,7 @@
                     android:id="@+id/btnClear"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/clickable_bg"
+                    android:background="@drawable/bg_clickable"
                     android:drawableStart="@drawable/ic_minus"
                     android:ems="4"
                     android:gravity="center"
@@ -183,7 +183,7 @@
                 android:id="@+id/btnReset"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/clickable_bg"
+                android:background="@drawable/bg_clickable"
                 android:padding="5dp"
                 app:srcCompat="@drawable/ic_reset_parameters" />
 
@@ -201,7 +201,7 @@
                 android:id="@+id/btnApply"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/clickable_bg"
+                android:background="@drawable/bg_clickable"
                 android:padding="5dp"
                 app:srcCompat="@drawable/ic_check" />
 

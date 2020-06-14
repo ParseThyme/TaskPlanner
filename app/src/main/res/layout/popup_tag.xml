@@ -53,7 +53,7 @@
                     android:id="@+id/btnClearTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/clickable_bg"
+                    android:background="@drawable/bg_clickable"
                     android:padding="5dp"
                     android:tint="@color/iconTint"
                     app:srcCompat="@drawable/ic_minus" />

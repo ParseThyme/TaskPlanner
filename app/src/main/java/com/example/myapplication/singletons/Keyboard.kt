@@ -11,7 +11,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
-import com.example.myapplication.utility.updateBtnColor
+import com.example.myapplication.updateBtnColor
 
 object Keyboard {
     var visible: Boolean = false

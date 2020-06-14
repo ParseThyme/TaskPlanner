@@ -7,7 +7,10 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.*
+import com.example.myapplication.defaultTimeMsg
+import com.example.myapplication.singletons.SaveData
+import com.example.myapplication.singletons.Settings
+import com.example.myapplication.updateDrawableLeft
 import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime : Popup() {
@@ -51,7 +54,7 @@ class PopupTime : Popup() {
             // 1. Re-enable decrements if at 0, change timer icon back
             if (chosenTime.duration == 0) {
                 view.btnLengthDown.visibility = View.VISIBLE
-                view.btnLength.updateDrawableLeft(R.drawable.ic_timer)
+                view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_on)
             }
             // Increment duration
             view.btnLength.updateDuration(view.txtChosenTime)
@@ -66,7 +69,7 @@ class PopupTime : Popup() {
             // 2. Disable further decrements if at 0, change timer icon to off
             if (chosenTime.duration == 0) {
                 view.btnLengthDown.visibility = View.INVISIBLE
-                view.btnLength.updateDrawableLeft(R.drawable.ic_timer_off)
+                view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_off)
             }
         }
 
@@ -100,7 +103,7 @@ class PopupTime : Popup() {
                 0 -> {
                     chosenTime.duration = 60    // 1 hour
                     view.btnLengthDown.visibility = View.VISIBLE
-                    view.btnLength.updateDrawableLeft(R.drawable.ic_timer)
+                    view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_on)
                 }
                 // If duration was at max, re-enable increments
                 Settings.durationMax -> {
@@ -113,7 +116,7 @@ class PopupTime : Popup() {
             // When duration == 0, disable decrements
             if (chosenTime.duration == 0) {
                 view.btnLengthDown.visibility = View.INVISIBLE
-                view.btnLength.updateDrawableLeft(R.drawable.ic_timer_off)
+                view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_off)
             }
 
             // Update text displays
@@ -193,8 +196,8 @@ class PopupTime : Popup() {
         // Duration
         btnLength.text = chosenTime.durationAsString()
         when (chosenTime.duration) {
-            0 -> btnLength.updateDrawableLeft(R.drawable.ic_timer_off)
-            else -> btnLength.updateDrawableLeft(R.drawable.ic_timer)
+            0 -> btnLength.updateDrawableLeft(R.drawable.toggle_timer_off)
+            else -> btnLength.updateDrawableLeft(R.drawable.toggle_timer_on)
         }
         // TimeDelta
         btnDelta.text = Settings.timeDeltaAsString()

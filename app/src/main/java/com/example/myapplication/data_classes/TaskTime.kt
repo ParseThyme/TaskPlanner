@@ -1,9 +1,7 @@
 package com.example.myapplication.data_classes
 
-import android.widget.TextView
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.debugMessagePrint
-import com.example.myapplication.utility.defaultTimeMsg
+import com.example.myapplication.singletons.Settings
+import com.example.myapplication.defaultTimeMsg
 
 data class TaskTime (
     var hour: Int = 0,

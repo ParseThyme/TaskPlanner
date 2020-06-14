@@ -7,11 +7,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.applyBackgroundColor
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.inflate
 import com.example.myapplication.singletons.AppData
-import com.example.myapplication.utility.*
+import com.example.myapplication.singletons.SaveData
+import com.example.myapplication.singletons.Settings
+import kotlinx.android.synthetic.main.main_activity_view.*
+import kotlinx.android.synthetic.main.main_topbar.view.*
 import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
+import kotlinx.android.synthetic.main.task_group_rv.view.toggleFold
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -25,6 +31,8 @@ class TaskGroupAdapter(
     : RecyclerView.Adapter<TaskGroupAdapter.ViewHolder>()
 {
     private val saveTaskGroupListFn = { context: Context -> SaveData.saveTaskGroupList(taskGroupList, context) }
+    private fun groupCount() : Int { return taskGroupList.size - headerCount }
+
     // ##############################
     // Headers
     // ##############################
@@ -36,25 +44,25 @@ class TaskGroupAdapter(
         Week.FORTNIGHT to false,
         Week.FUTURE    to false
     )
-    private var headersAssigned = 0
+    private var headerCount = 0
 
     private fun TaskGroup.checkAddHeader() : Boolean{
         // If all headers have been assigned, exit
-        if (headersAssigned == headers.size) return false
+        if (headerCount == headers.size) return false
 
         // 1. Get week group belongs to
         val week: Week = date.getWeek()
         // 2. Check if week assigned yet, if not mark to assign, update counter
         if (headers[week] == false) {
             headers[week] = true
-            headersAssigned++
+            headerCount++
             return true
         }
 
         return false
     }
     private fun removeHeader(week: Week) {
-        headersAssigned--
+        headerCount--
         headers[week] = false
     }
 
@@ -80,7 +88,7 @@ class TaskGroupAdapter(
                         if (!AppData.sorted) {
                             // 1. Go through each group to get taskCount and numCollapsed
                             AppData.taskCount += group.taskList.size
-                            if (!group.isFoldedOut()) AppData.numFoldedIn++
+                            if (group.collapsed()) AppData.numCollapsed++
 
                             // Sorting: Check if header has been added yet, if not add header
                             if (group.checkAddHeader()) sortedList.add(headerEntry(group.date.getWeek()))
@@ -97,8 +105,9 @@ class TaskGroupAdapter(
                 taskGroupList.addAll(sortedList)
                 AppData.sorted = true
             }
-            // Check if expand collapse icon needs updating
-            updateExpandCollapseIcon()
+
+            // If all collapsed, update collapsed icon to reflect it (otherwise leave as default)
+            if (AppData.numCollapsed == groupCount()) changeCollapseExpandIcon(Fold.IN)
         }
     }
 
@@ -141,27 +150,23 @@ class TaskGroupAdapter(
             itemView.labelDay.apply {                               // Day of week: Mo...Su
                 text = group.date.dayNameShort()
                 // When day label clicked, call ActivityMain click listener function (De/Select entire group)
-                setOnClickListener { if (group.isFoldedOut()) dateClicked(adapterPosition) }
+                // setOnClickListener { if (group.isFoldedOut()) dateClicked(adapterPosition) }
+                setOnClickListener { if (group.expanded()) dateClicked(adapterPosition) }
             }
-            // Update view if collapsed/expanded
-            setFold(group)
 
-            // Update view if collapsed/expanded (Clicked)
-            itemView.btnFold.setOnClickListener {
-                val newState: Fold = group.toggleFold()
-                setFold(group)
+            // Update isChecked variable in toggleFold button
+            itemView.toggleFold.isChecked = group.state.asBoolean()
+            group.updateFold()
 
-                // Update collapsed counts, scroll position if expanded, ensure entire group visible
-                when (newState) {
-                    Fold.OUT -> {
-                        scrollTo(adapterPosition)
-                        AppData.numFoldedIn--
-                    }
-                    Fold.IN -> AppData.numFoldedIn++
+            // ToggleFold button clicked, save change made
+            itemView.toggleFold.setOnClickListener {
+                // Update fold state, increase/decrease counter accordingly
+                group.state = itemView.toggleFold.isChecked.asFold()
+                group.updateFold()
+                when (group.state) {
+                     Fold.IN -> AppData.numCollapsed++
+                    Fold.OUT -> AppData.numCollapsed--
                 }
-                notifyItemChanged(adapterPosition)
-                updateExpandCollapseIcon()
-
                 // Save change to view state
                 SaveData.saveTaskGroupList(taskGroupList, itemView.context)
             }
@@ -172,36 +177,23 @@ class TaskGroupAdapter(
                 adapter = TasksAdapter(group, adapterPosition, taskClicked, saveTaskGroupListFn)
             }
         }
-        private fun setFold(group: TaskGroup) {
-            // Only apply if change is being made (e.g. Expand on already expanded date should do nothing)
-            if (group.state.isNew(itemView.rvTaskGroup)) {
-                when (group.state) {
-                    Fold.OUT -> {
-                        // Change background color back to normal (if modified)
-                        itemView.btnFold.setBackgroundColor(Color.TRANSPARENT)
-
-                        // Open group and update icon (only do so if not done already)
-                        itemView.rvTaskGroup.visibility = View.VISIBLE
-                        itemView.btnFold.setImageResource(R.drawable.arrow_down)
-                    }
-
-                    Fold.IN -> {
-                        // Close group, and change icon
-                        itemView.rvTaskGroup.visibility = View.GONE
-                        itemView.btnFold.setImageResource(R.drawable.arrow_up)
+        private fun TaskGroup.updateFold() {
+            when (state) {
+                Fold.IN -> {
+                    // Hide tasks, highlight background yellow if any selected
+                    itemView.rvTaskGroup.visibility = View.GONE
+                    // Check if any selected, update background color accordingly
+                    when (numSelected > 0) {
+                        true -> itemView.toggleFold.applyBackgroundColor(Settings.highlightColor)
+                        false -> itemView.toggleFold.applyBackgroundColor(Color.TRANSPARENT)
                     }
                 }
-            }
 
-            // Toggling arrow icon highlighting when group collapsed
-            if (group.state == Fold.IN) {
-                // If a task has been selected, highlight background to indicate
-                when (group.numSelected) {
-                    0 -> itemView.btnFold.applyBackgroundColor(Color.TRANSPARENT)
-                    // Clear highlights (via selectAll toggle when collapsed)
-                    else -> itemView.btnFold.applyBackgroundColor(Settings.highlightColor)
+                Fold.OUT -> {
+                    // Show tasks, set background to transparent (assuming highlighted yellow before)
+                    itemView.toggleFold.setBackgroundColor(Color.TRANSPARENT)
+                    itemView.rvTaskGroup.visibility = View.VISIBLE
                 }
-
             }
         }
     }
@@ -420,7 +412,7 @@ class TaskGroupAdapter(
                     if (AppData.numSelected == 0 && above(groupNum).isGroup()) break
                 }
                 // If any group has been deleted, expand/collapse icon needs to be updated
-                if (groupDeleted) updateExpandCollapseIcon()
+                if (groupDeleted) changeCollapseExpandIcon(Fold.OUT)
             }
         }
     }
@@ -510,7 +502,7 @@ class TaskGroupAdapter(
 
         // Reset header parameters
         for (week: Week in headers.keys) headers[week] = false
-        headersAssigned = 0
+        headerCount = 0
 
         notifyDataSetChanged()
     }
@@ -542,26 +534,31 @@ class TaskGroupAdapter(
         AppData.selectAll(allSelected)
         notifyDataSetChanged()
     }
-    fun toggleFoldAll(newState: Fold = Fold.OUT) {
+    fun toggleFoldAll(context: Context) {
+        // Toggle to opposite state. Update icon accordingly
+        when (AppData.numCollapsed == groupCount()) {
+            // If all collapsed, expand all (numCollapsed now 0)
+            true -> {
+                setFoldAll(Fold.OUT)
+                AppData.numCollapsed = 0
+                changeCollapseExpandIcon(Fold.OUT)
+            }
+            // Not all collapsed, collapse all (numCollapsed == groupCount)
+            false -> {
+                setFoldAll(Fold.IN)
+                AppData.numCollapsed = groupCount()
+                changeCollapseExpandIcon(Fold.IN)
+            }
+        }
+        SaveData.saveTaskGroupList(taskGroupList, context)
+    }
+    private fun setFoldAll(newState: Fold = Fold.OUT) {
         for (index: Int in taskGroupList.lastIndex downTo 0) {
             val entry: GroupEntry = taskGroupList[index]
             if (entry.isGroup()) {    // Toggle fold state, ignoring headers
                 entry.taskGroup!!.state = newState
                 notifyItemChanged(index)
             }
-        }
-        // Update collapsed count, 0 when all groups expanded, and maximum count when all collapsed
-        AppData.numFoldedIn = when (newState) {
-            Fold.OUT -> 0
-            Fold.IN -> AppData.taskCount
-        }
-    }
-
-    private fun updateExpandCollapseIcon() {
-        // Update icon accordingly based on number collapsed
-        when (AppData.numFoldedIn) {
-            AppData.taskCount - 1 -> changeCollapseExpandIcon(Fold.OUT)  // Expandable
-            AppData.taskCount     -> changeCollapseExpandIcon(Fold.IN)   // All collapsed
         }
     }
 

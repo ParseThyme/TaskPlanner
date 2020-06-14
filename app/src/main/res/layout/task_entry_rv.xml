@@ -78,7 +78,7 @@
                 android:id="@+id/editBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/clickable_bg"
+                android:background="@drawable/bg_clickable"
                 android:padding="5dp"
                 android:tint="#7C7C7C"
                 app:layout_constraintBottom_toBottomOf="parent"

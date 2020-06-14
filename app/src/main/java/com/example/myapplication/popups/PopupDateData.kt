@@ -2,9 +2,8 @@ package com.example.myapplication.popups
 
 import android.widget.TextView
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.applyBackgroundColor
-import com.example.myapplication.utility.debugMessagePrint
+import com.example.myapplication.singletons.Settings
+import com.example.myapplication.applyBackgroundColor
 
 data class PopupDateDay(
     val taskDate: TaskDate,

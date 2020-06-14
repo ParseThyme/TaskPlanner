@@ -7,7 +7,7 @@ import com.example.myapplication.data_classes.today
 object AppData {
     var numSelected: Int = 0
     var taskCount: Int = 0
-    var numFoldedIn: Int = 0
+    var numCollapsed: Int = 0
 
     // Track sorting of taskGroupList. Done only when app started
     var sorted: Boolean = false
@@ -17,7 +17,7 @@ object AppData {
     fun reset() {
         numSelected = 0
         taskCount = 0
-        numFoldedIn = 0
+        numCollapsed = 0
         sorted = false
         today = today()
         firstDayOfWeek = today().firstDayOfWeek()
@@ -31,6 +31,5 @@ object AppData {
     }
 
     fun allSelected(): Boolean { return numSelected == taskCount }
-    fun allCollapsed(): Boolean { return numFoldedIn == taskCount }
     fun numSelectedMsg(): String { return "Modify Selected: $numSelected / $taskCount" }
 }

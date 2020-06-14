@@ -8,7 +8,7 @@
         android:id="@+id/iconTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/clickable_bg"
+        android:background="@drawable/bg_clickable"
         android:padding="5dp"
         android:tint="#555656"
         app:layout_constraintStart_toStartOf="parent"

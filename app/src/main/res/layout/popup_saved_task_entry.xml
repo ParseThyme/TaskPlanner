@@ -8,22 +8,33 @@
 
     <TextView
         android:id="@+id/txtSavedTask"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/clickable_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_clickable"
+        android:gravity="center_vertical"
         android:padding="5dp"
         android:text="@string/placeholderText"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/btnDelete"
+        app:layout_constraintEnd_toStartOf="@+id/btnDelete"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_delete" />
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="@+id/txtSavedTask"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSavedTask" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

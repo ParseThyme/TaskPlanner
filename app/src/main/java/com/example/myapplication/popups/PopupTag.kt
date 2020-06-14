@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.Task
-import com.example.myapplication.utility.Settings
-import com.example.myapplication.utility.inflate
-import com.example.myapplication.utility.updateDrawableTop
+import com.example.myapplication.singletons.Settings
+import com.example.myapplication.inflate
+import com.example.myapplication.updateDrawableTop
 import kotlinx.android.synthetic.main.popup_tag.view.*
 import kotlinx.android.synthetic.main.popup_tag_entry.view.*
 
