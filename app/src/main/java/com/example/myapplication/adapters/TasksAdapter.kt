@@ -25,8 +25,7 @@ class TasksAdapter(private val group: TaskGroup,
     : RecyclerView.Adapter<TasksAdapter.ViewHolder>()
 {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v: View = parent.inflate(R.layout.task_entry_rv, false)
-        return ViewHolder(v)
+        return ViewHolder(parent.inflate(R.layout.task_entry_rv, false))
     }
     override fun getItemCount(): Int { return group.taskList.size }
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(group.taskList[pos]) }
@@ -75,7 +74,6 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun editTask(task: Task) {
             val previousEditText: EditText = Keyboard.editText      // Previous editText attached to Keyboard
-
             // Create new dialog
             val dialog: Dialog = editWindow.create(task)
                                  { notifyItemChanged(adapterPosition) }     // Update display when task updated
@@ -85,30 +83,34 @@ class TasksAdapter(private val group: TaskGroup,
         }
 
         private fun toggleSelected(isSelected: Boolean) {
-            if (isSelected) { taskField.applyBackgroundColor(Settings.highlightColor) }
-            else { taskField.applyBackgroundColor(Settings.taskBaseColor) }
+            when (isSelected) {
+                 true -> taskField.applyBackgroundColor(Settings.highlightColor)
+                false -> taskField.applyBackgroundColor(Settings.taskBaseColor)
+            }
         }
 
         private fun toggleTag(tag: Int) {
-            // No tag, don't display anything
-            if (tag == R.drawable.tag_base) { itemView.taskTag.visibility = View.INVISIBLE }
-            // Get image, set tag accordingly and display
-            else {
-                itemView.taskTag.setImageResource(tag)
-                itemView.taskTag.visibility = View.VISIBLE
+            when (tag == R.drawable.tag_base) {
+                // No tag, don't display anything
+                true -> itemView.taskTag.visibility = View.INVISIBLE
+                // Get image, set tag accordingly and display
+                false -> {
+                    itemView.taskTag.setImageResource(tag)
+                    itemView.taskTag.visibility = View.VISIBLE
+                }
             }
         }
 
         private fun toggleTime(time: TaskTime) {
-            // Time unallocated, hide display
-            if (!time.isUnset()) {
-                itemView.taskTime.visibility = View.GONE
-                return
+            when (time.isUnset()) {
+                // Time unallocated, hide display
+                true -> itemView.taskTime.visibility = View.GONE
+                // Otherwise set time and show
+                false -> {
+                    itemView.taskTime.text = time.overallTimeLabel()
+                    itemView.taskTime.visibility = View.VISIBLE
+                }
             }
-
-            // Otherwise set time and show
-            itemView.taskTime.text = time.overallTimeLabel()
-            itemView.taskTime.visibility = View.VISIBLE
         }
     }
 }

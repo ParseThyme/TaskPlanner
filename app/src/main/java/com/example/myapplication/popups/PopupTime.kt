@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.debugMessagePrint
 import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.singletons.SaveData
 import com.example.myapplication.singletons.Settings
@@ -93,8 +94,7 @@ class PopupTime : Popup() {
                   12 -> chosenTime.hour = 6     // 1. hour == 12, set to 6
                 else -> chosenTime.hour = 12    // 2. hour != 12, set to 12
             }
-            // Update labels
-            view.txtChosenTime.text = chosenTime.startTimeLabel()
+            // Update label
             view.txtChosenTime.text = chosenTime.overallTimeLabel()
         }
         view.btnMin.setOnClickListener {
@@ -103,7 +103,6 @@ class PopupTime : Popup() {
                    0 -> chosenTime.min = 30     // 1. min == 00, set to 30
                 else -> chosenTime.min = 0      // 2. min != 0, set to 0
             }
-            view.txtChosenTime.text = chosenTime.startTimeLabel()
             view.txtChosenTime.text = chosenTime.overallTimeLabel()
         }
         view.toggleLength.setOnClickListener {

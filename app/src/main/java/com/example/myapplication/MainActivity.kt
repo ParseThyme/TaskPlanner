@@ -79,6 +79,10 @@ class MainActivity : AppCompatActivity() {
             "Task 6", "Task 7", "Task 8", "Task 9", "Task 10")
         */
         val tasks: ArrayList<String> = arrayListOf()
+        when (tasks.size) {
+               0 -> addMode.toggleSavedTasksPopup.visibility = View.GONE
+            else -> addMode.toggleSavedTasksPopup.visibility = View.VISIBLE
+        }
         val popupTasks = PopupSavedTasks(tasks)
         addMode.toggleSavedTasksPopup.setOnClickListener {
             // Open popup window, update icon as checked
