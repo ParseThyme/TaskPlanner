@@ -46,15 +46,13 @@
                 android:id="@+id/cardClearTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:layout_constraintStart_toEndOf="@+id/cardSetLength"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/btnClearTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@drawable/bg_clickable"
                     android:padding="5dp"
                     android:tint="@color/iconTint"
@@ -65,14 +63,16 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardResetTime"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:layout_constraintStart_toStartOf="@+id/cardTimeOfDay"
-                app:layout_constraintTop_toBottomOf="@+id/cardTimeOfDay">
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardSetLength"
+                app:layout_constraintStart_toEndOf="@+id/cardSetLength"
+                app:layout_constraintTop_toTopOf="@+id/cardSetLength">
 
                 <ImageView
                     android:id="@+id/btnResetTime"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_clickable"
                     android:padding="5dp"
@@ -83,15 +83,17 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardApplyTime"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:layout_constraintStart_toStartOf="@+id/cardResetTime"
-                app:layout_constraintTop_toBottomOf="@+id/cardResetTime">
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardSetDelta"
+                app:layout_constraintStart_toEndOf="@+id/cardSetDelta"
+                app:layout_constraintTop_toTopOf="@+id/cardSetDelta">
 
                 <ImageView
                     android:id="@+id/btnApplyTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@drawable/bg_clickable"
                     android:padding="5dp"
                     app:srcCompat="@drawable/ic_check" />
@@ -102,17 +104,19 @@
                 android:id="@+id/cardTimeOfDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:layout_constraintStart_toStartOf="@+id/cardClearTime"
-                app:layout_constraintTop_toBottomOf="@+id/cardClearTime">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ToggleButton
                     android:id="@+id/toggleTimeOfDay"
                     style="@style/ToggleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:background="@drawable/bg_clickable"
-                    android:drawableTop="@drawable/toggle_time_of_day" />
+                    android:drawableLeft="@drawable/toggle_time_of_day"
+                    android:padding="5dp"
+                    android:textColor="@color/textColorOnWhiteBG"
+                    android:textSize="14sp" />
 
             </androidx.cardview.widget.CardView>
 
@@ -120,10 +124,14 @@
                 android:id="@+id/cardChosenTime"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
                 app:cardBackgroundColor="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="@+id/cardClearTime"
-                app:layout_constraintEnd_toEndOf="@+id/cardSetLength"
-                app:layout_constraintStart_toStartOf="@+id/cardSetHour"
+                app:layout_constraintEnd_toStartOf="@+id/cardClearTime"
+                app:layout_constraintStart_toEndOf="@+id/cardTimeOfDay"
                 app:layout_constraintTop_toTopOf="@+id/cardClearTime">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -132,12 +140,12 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/txtChosenTimeLabel"
+                        android:id="@+id/labelChosenTime"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:gravity="center"
                         android:padding="5dp"
-                        android:text="Set Time:"
+                        android:text="Time:"
                         android:textColor="@android:color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +163,7 @@
                         android:textColor="@android:color/white"
                         app:drawableTint="@android:color/white"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/txtChosenTimeLabel" />
+                        app:layout_constraintStart_toEndOf="@+id/labelChosenTime" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -179,7 +187,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
                         android:drawableTop="@drawable/ic_time"
-                        android:ems="4"
+                        android:ems="3"
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="Hour"
@@ -193,6 +201,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/btnHour"
@@ -204,6 +213,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -232,7 +242,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
                         android:drawableTop="@drawable/ic_time_overall"
-                        android:ems="4"
+                        android:ems="3"
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="Min"
@@ -246,6 +256,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/btnMin"
@@ -257,6 +268,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -287,9 +299,9 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
                         android:drawableTop="@drawable/toggle_timer"
-                        android:ems="4"
+                        android:ems="3"
                         android:textColor="@color/textColorOnWhiteBG"
-                        android:textOff="Length"
+                        android:textOff="Span"
                         android:textOn="00:00"
                         android:textSize="14sp"
                         app:layout_constraintStart_toEndOf="@+id/btnLengthDown"
@@ -300,10 +312,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
                         app:srcCompat="@drawable/ic_minus" />
 
                     <ImageView
@@ -311,6 +325,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/toggleLength"
@@ -339,7 +354,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
                         android:drawableTop="@drawable/ic_delta"
-                        android:ems="4"
+                        android:ems="3"
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="30m"
@@ -353,10 +368,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/btnDelta"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
                         app:srcCompat="@drawable/arrow_right" />
 
                     <ImageView
@@ -364,6 +381,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:background="@drawable/bg_clickable"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

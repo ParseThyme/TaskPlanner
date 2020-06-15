@@ -153,8 +153,6 @@ class PopupDate : Popup() {
         view.btnApplyDate.setOnClickListener {
             // Store current week selected cell is in
             chosenDateView.week = currWeek
-            // Update id if -1 (Need to assign correct id)
-            // if (chosenDate.id == -1) chosenDate.createID()
             // Update passed in date
             edited.replace(chosenDate)
             modify?.text = chosenDate.asStringShort()
