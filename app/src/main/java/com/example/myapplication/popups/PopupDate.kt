@@ -13,9 +13,8 @@ import com.example.myapplication.singletons.AppData
 import kotlinx.android.synthetic.main.popup_date.view.*
 
 class PopupDate : Popup() {
-    // Most recently chosen date
+    // Most recently chosen date, highlighted cell
     private var chosenDate: TaskDate = TaskDate()
-    // Highlighted cell
     private var chosenDateView: SelectedPopupDateDay = SelectedPopupDateDay()
     // Data/Information pertaining to weeks in popup created
     private val data : PopupDateData = PopupDateData()
@@ -23,22 +22,25 @@ class PopupDate : Popup() {
     // Trackers
     private var currWeek: Int = 0
     private var currMonth: Int = 0
+    var update: Boolean = false
 
-    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskDate) : PopupWindow {
+    fun create(edited: TaskDate, context: Context, attachTo: View, modify: TextView? = null) : PopupWindow {
         val window:PopupWindow = createAndShow(context, R.layout.popup_date, attachTo)
         val view:View = window.contentView
+
+        update = false // Apply changes if apply button pressed. Otherwise counts as exit
 
         // 1. Get tracked variables
         chosenDate = edited.copy()             // Most recently selected date
         currWeek = chosenDate.getWeekNum()     // Match week to currently chosen date
 
-        // Check whether values needs to be refreshed:
-        // Entry list is outdated, refresh entries
+        // 2. Check whether values needs to be refreshed:
+        // [A]. Entry list is outdated, refresh entries
         if (data.outdated()){
             data.refreshEntries()
             AppData.firstDayOfWeek = data.getDay(0, 0).taskDate
         }
-        // Chosen Date is past date = set chosen date to today
+        // [B]. Chosen Date is past date = set chosen date to today
         if (chosenDate.isPastDate()) {
             currWeek = 0
             chosenDate = today()
@@ -50,18 +52,18 @@ class PopupDate : Popup() {
         currMonth = chosenDate.month
         chosenDateView.week = currWeek
 
-        // 2. Setup Arrays
+        // 3. Setup Arrays
         // [A]. Cell underneath, text updated
         val updatedTextViews: ArrayList<TextView> = arrayListOf(
             view.txtSun, view.txtMon, view.txtTue, view.txtWed, view.txtThu, view.txtFri, view.txtSat)
 
-        // 3. Setup text displays, based on current parameters
+        // 4. Setup text displays, based on current parameters
         view.txtChosenDate.text = chosenDate.asStringShort()       // Date
         view.txtWeek.text = chosenDate.weekAsString()              // Week
         view.txtMonth.text = chosenDate.monthAsString()            // Month
         setDayLabels(updatedTextViews, data.getWeek(currWeek))     // Days in week
 
-        // 4. Check whether we need to hide forward/backward buttons for both weeks/months
+        // 5. Check whether we need to hide forward/backward buttons for both weeks/months
         when (currWeek) {
             0 ->       view.btnWeekPrev.visibility = View.INVISIBLE   // This week, hide backwards
             endWeek -> view.btnWeekNext.visibility = View.INVISIBLE   // Final week, hide forwards
@@ -70,7 +72,7 @@ class PopupDate : Popup() {
         if (currMonth == data.startMonth) view.btnMonthPrev.visibility = View.INVISIBLE
         if (currMonth == data.endMonth)   view.btnMonthNext.visibility = View.INVISIBLE
 
-        // 5. Setup onClick behaviours
+        // 6. Setup onClick behaviours
         // [A]. Mo - Su cells
         view.layoutSun.setupDayClickListener(0, view.txtSun, view.txtChosenDate)
         view.layoutMon.setupDayClickListener(1, view.txtMon, view.txtChosenDate)
@@ -152,10 +154,11 @@ class PopupDate : Popup() {
             // Store current week selected cell is in
             chosenDateView.week = currWeek
             // Update id if -1 (Need to assign correct id)
-            if (chosenDate.id == -1) chosenDate.createID()
+            // if (chosenDate.id == -1) chosenDate.createID()
             // Update passed in date
             edited.replace(chosenDate)
             modify?.text = chosenDate.asStringShort()
+            update = true
             window.dismiss()
         }
         view.dateDismissLeft.setOnClickListener { window.dismiss() }
@@ -177,7 +180,7 @@ class PopupDate : Popup() {
             }
         }
 
-        // Shortcuts
+        // [E]. Shortcuts
         view.txtChosenDate.setOnClickListener {
             // Perform jump when not at currently selected week
             if (currWeek != chosenDateView.week) {

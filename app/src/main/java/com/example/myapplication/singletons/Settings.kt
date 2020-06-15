@@ -20,9 +20,8 @@ object Settings {
     // Tasks
     // Time
     var durationMax: Int = 480   // 8 hours == 480 minutes
-    const val defTimeDelta: Int = 5
-    var timeDelta: Int =
-        defTimeDelta
+    const val defTimeDelta: Int = 30
+    var timeDelta: Int = defTimeDelta
     // Coloration
     private const val defHighlightColor: String = "#FFFFE600"   // Yellow
     var highlightColor: String = "#FFFFE600"
@@ -55,6 +54,9 @@ object Settings {
         mainLayout = loadedLayout
         timeDelta = loadedDelta
     }
+
+    // Reset values
+    fun resetTimeDelta() { timeDelta = defTimeDelta }
 
     // ####################
     // Layout

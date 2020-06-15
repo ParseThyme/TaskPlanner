@@ -84,7 +84,7 @@ fun TaskGroup.selectedSetTag(newTag: Int = R.drawable.tag_base) {
         if (count == 0) return    // Once all selected tasks handled, exit
     }
 }
-fun TaskGroup.selectedSetTime(newTime: TaskTime = unsetTime()) {
+fun TaskGroup.selectedSetTime(newTime: TaskTime) {
     // See above for logic
     var count: Int = numSelected
     for (index: Int in taskList.size - 1 downTo 0) {

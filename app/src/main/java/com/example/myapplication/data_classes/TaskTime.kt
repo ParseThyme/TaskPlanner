@@ -4,13 +4,11 @@ import com.example.myapplication.singletons.Settings
 import com.example.myapplication.defaultTimeMsg
 
 data class TaskTime (
-    var hour: Int = 0,
+    var hour: Int = 12,
     var min: Int = 0,
     var timeOfDay: TimeOfDay = TimeOfDay.AM,
     var duration: Int = 0
 )
-
-fun TaskTime.isValid(): Boolean { return hour > 0 }
 
 // ####################
 // Time Of Day
@@ -32,9 +30,10 @@ fun TaskTime.getOppositeTimeOfDay(): TimeOfDay {
 // ####################
 // Set values
 // ####################
-fun unsetTime() : TaskTime { return TaskTime(-1, 0, TimeOfDay.AM, 0)}
+// fun defaultTime() : TaskTime { return TaskTime(12, 0, TimeOfDay.AM, 0)}
+fun TaskTime.isUnset(): Boolean { return hour == 0 }
 fun TaskTime.unset() {
-    hour = -1
+    hour = 0
     min = 0
     timeOfDay = TimeOfDay.AM
     duration = 0

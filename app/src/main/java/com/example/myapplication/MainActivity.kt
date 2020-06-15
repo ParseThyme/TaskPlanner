@@ -74,16 +74,11 @@ class MainActivity : AppCompatActivity() {
 
         // ToDo: Reorganize
         /*
-        addMode.toggleSaveTask.setOnCheckedChangeListener { _, isChecked ->
-            when (isChecked) {
-                true -> debugMessagePrint("True")
-                else -> debugMessagePrint("False")
-            }
-        }
-        */
         val tasks: ArrayList<String> = arrayListOf(
             "Task 1", "Task 2", "Task 3", "Task 4", "Task 5",
             "Task 6", "Task 7", "Task 8", "Task 9", "Task 10")
+        */
+        val tasks: ArrayList<String> = arrayListOf()
         val popupTasks = PopupSavedTasks(tasks)
         addMode.toggleSavedTasksPopup.setOnClickListener {
             // Open popup window, update icon as checked
@@ -132,17 +127,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         addMode.txtSetDate.setOnClickListener {
-            PopupManager.dateEdit(addMode, addMode.txtSetDate, this, newDate) }
+            PopupManager.date.create(newDate, this, addMode, addMode.txtSetDate) }
         addMode.txtSetTime.setOnClickListener {
-            PopupManager.timeEdit(addMode, addMode.txtSetTime, this, newTask.time) }
+            PopupManager.time.create(newTask.time, this, addMode, addMode.txtSetTime) }
         addMode.btnSetTag.setOnClickListener  {
-            PopupManager.tagEdit(addMode, addMode.btnSetTag, this, newTask) }
+            PopupManager.tag.create(newTask, this, addMode, addMode.btnSetTag) }
 
         addMode.btnResetParams.setOnClickListener {
             // Reset all values (exclude text entry)
             newTask.tag = R.drawable.tag_base
             newDate = today()
-            // newTask.time.clear()
             newTask.time.unset()
             addMode.txtSetTime.text = defaultTimeMsg
 
@@ -178,34 +172,33 @@ class MainActivity : AppCompatActivity() {
         selectMode.btnToDate.setOnClickListener {
             // 1. Create window, user selects new date
             // 2. Override date for selected tasks in adapter
-            selectModeDate.id = -1
-            val window: PopupWindow = PopupManager.dateEdit(selectMode, null, this, selectModeDate)
+            val window: PopupWindow = PopupManager.date.create(selectModeDate, this, selectMode)
             window.setOnDismissListener {
-                // Apply changes to selected date when window closed. If -1 then apply tick wasn't pressed
-                if (selectModeDate.id != -1) {
+                // Apply changes to selected date when apply button pressed
+                if (PopupManager.date.update) {
                     taskGroupAdapter.selectedSetDate(selectModeDate)
                     setMode(Mode.ADD)
-                    SaveData.saveTaskGroupList(taskGroupList, window.contentView.context)
+                    SaveData.saveTaskGroupList(taskGroupList, selectMode.btnToDate.context)
                 }
             }
         }
         selectMode.btnToTime.setOnClickListener {
-            val newTime = TaskTime(0)
-            val window: PopupWindow = PopupManager.timeEdit(selectMode, null, this, newTime)
+            val newTime = TaskTime()
+            val window: PopupWindow = PopupManager.time.create(newTime, this, selectMode)
             window.setOnDismissListener {
-                if (newTime.hour != 0 || newTime.duration != 0) {
+                if (PopupManager.time.update) {
                     taskGroupAdapter.selectedSetTime(newTime)
-                    SaveData.saveTaskGroupList(taskGroupList, window.contentView.context)
+                    SaveData.saveTaskGroupList(taskGroupList, selectMode.btnToTime.context)
                 }
             }
         }
         selectMode.btnToTag.setOnClickListener {
-            val newTag = Task("", -1)
-            val window: PopupWindow = PopupManager.tagEdit(selectMode, null, this, newTag)
+            val newTag = Task()
+            val window:PopupWindow = PopupManager.tag.create(newTag, this, selectMode)
             window.setOnDismissListener {
-                if (newTag.tag != -1) {
+                if (PopupManager.tag.update) {
                     taskGroupAdapter.selectedSetTag(newTag.tag)
-                    SaveData.saveTaskGroupList(taskGroupList, window.contentView.context)
+                    SaveData.saveTaskGroupList(taskGroupList, selectMode.btnToTag.context)
                 }
             }
         }

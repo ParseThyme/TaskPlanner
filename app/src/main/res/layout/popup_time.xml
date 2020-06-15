@@ -48,8 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
-                app:layout_constraintStart_toEndOf="@+id/cardChosenTime"
-                app:layout_constraintTop_toTopOf="@+id/cardChosenTime">
+                app:layout_constraintStart_toEndOf="@+id/cardSetLength"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/btnClearTime"
@@ -66,10 +66,9 @@
                 android:id="@+id/cardResetTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:layout_constraintStart_toEndOf="@+id/cardSetMin"
-                app:layout_constraintTop_toTopOf="@+id/cardSetMin">
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/cardTimeOfDay"
+                app:layout_constraintTop_toBottomOf="@+id/cardTimeOfDay">
 
                 <ImageView
                     android:id="@+id/btnResetTime"
@@ -85,10 +84,9 @@
                 android:id="@+id/cardApplyTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardSetDelta">
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/cardResetTime"
+                app:layout_constraintTop_toBottomOf="@+id/cardResetTime">
 
                 <ImageView
                     android:id="@+id/btnApplyTime"
@@ -104,17 +102,17 @@
                 android:id="@+id/cardTimeOfDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/cardClearTime"
+                app:layout_constraintTop_toBottomOf="@+id/cardClearTime">
 
-                <ImageView
-                    android:id="@+id/btnTimeOfDay"
+                <ToggleButton
+                    android:id="@+id/toggleTimeOfDay"
+                    style="@style/ToggleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_clickable"
-                    android:padding="5dp"
-                    android:tint="@color/iconTint"
-                    app:srcCompat="@drawable/ic_time_day" />
+                    android:drawableTop="@drawable/toggle_time_of_day" />
 
             </androidx.cardview.widget.CardView>
 
@@ -122,13 +120,11 @@
                 android:id="@+id/cardChosenTime"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
                 app:cardBackgroundColor="@color/colorPrimary"
-                app:layout_constraintBottom_toBottomOf="@+id/cardTimeOfDay"
-                app:layout_constraintEnd_toEndOf="@+id/cardSetMin"
-                app:layout_constraintStart_toEndOf="@+id/cardTimeOfDay"
-                app:layout_constraintTop_toTopOf="@+id/cardTimeOfDay">
+                app:layout_constraintBottom_toBottomOf="@+id/cardClearTime"
+                app:layout_constraintEnd_toEndOf="@+id/cardSetLength"
+                app:layout_constraintStart_toStartOf="@+id/cardSetHour"
+                app:layout_constraintTop_toTopOf="@+id/cardClearTime">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cardChosenTimeLayout"
@@ -139,10 +135,9 @@
                         android:id="@+id/txtChosenTimeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
                         android:gravity="center"
-                        android:text="Time:"
+                        android:padding="5dp"
+                        android:text="Set Time:"
                         android:textColor="@android:color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -183,11 +178,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
-                        android:drawableStart="@drawable/ic_time"
+                        android:drawableTop="@drawable/ic_time"
                         android:ems="4"
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="Hour"
+                        android:textColor="@color/textColorOnWhiteBG"
                         app:drawableTint="@color/iconTint"
                         app:layout_constraintStart_toEndOf="@+id/btnTimeHourDown"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -221,10 +217,9 @@
                 android:id="@+id/cardSetMin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:layout_constraintStart_toEndOf="@+id/cardSetHour"
-                app:layout_constraintTop_toTopOf="@+id/cardSetHour">
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/cardSetHour"
+                app:layout_constraintTop_toBottomOf="@+id/cardSetHour">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cardSetMinLayout"
@@ -236,11 +231,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
-                        android:drawableStart="@drawable/ic_time"
+                        android:drawableTop="@drawable/ic_time_overall"
                         android:ems="4"
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="Min"
+                        android:textColor="@color/textColorOnWhiteBG"
                         app:drawableTint="@color/iconTint"
                         app:layout_constraintStart_toEndOf="@+id/btnTimeMinDown"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -274,26 +270,28 @@
                 android:id="@+id/cardSetLength"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:layout_constraintStart_toStartOf="@+id/cardSetHour"
-                app:layout_constraintTop_toBottomOf="@+id/cardSetHour">
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintStart_toEndOf="@+id/cardSetHour"
+                app:layout_constraintTop_toTopOf="@+id/cardSetHour">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cardSetLengthLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/btnLength"
+                    <ToggleButton
+                        android:id="@+id/toggleLength"
+                        style="@style/ToggleButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
-                        android:drawableStart="@drawable/toggle_timer_on"
+                        android:drawableTop="@drawable/toggle_timer"
                         android:ems="4"
-                        android:gravity="center"
-                        android:padding="5dp"
-                        android:text="0:00"
-                        app:drawableTint="@color/iconTint"
+                        android:textColor="@color/textColorOnWhiteBG"
+                        android:textOff="Length"
+                        android:textOn="00:00"
+                        android:textSize="14sp"
                         app:layout_constraintStart_toEndOf="@+id/btnLengthDown"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -315,7 +313,7 @@
                         android:background="@drawable/bg_clickable"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/btnLength"
+                        app:layout_constraintStart_toEndOf="@+id/toggleLength"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_plus" />
 
@@ -326,10 +324,9 @@
                 android:id="@+id/cardSetDelta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:layout_constraintStart_toEndOf="@+id/cardSetLength"
-                app:layout_constraintTop_toTopOf="@+id/cardSetLength">
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="@+id/cardSetLength"
+                app:layout_constraintTop_toBottomOf="@+id/cardSetLength">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cardSetDeltaLayout"
@@ -341,11 +338,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
-                        android:drawableStart="@drawable/ic_delta"
+                        android:drawableTop="@drawable/ic_delta"
                         android:ems="4"
                         android:gravity="center"
                         android:padding="5dp"
                         android:text="30m"
+                        android:textColor="@color/textColorOnWhiteBG"
                         app:drawableTint="@color/iconTint"
                         app:layout_constraintStart_toEndOf="@+id/btnDeltaDown"
                         app:layout_constraintTop_toTopOf="parent" />

@@ -5,24 +5,27 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
+import android.widget.ToggleButton
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.singletons.SaveData
 import com.example.myapplication.singletons.Settings
-import com.example.myapplication.updateDrawableLeft
 import kotlinx.android.synthetic.main.popup_time.view.*
 
 class PopupTime : Popup() {
     private var chosenTime: TaskTime = TaskTime(12, 0, TimeOfDay.PM, 0)
+    var update: Boolean = false
 
-    fun create(attachTo: View, modify: TextView?, context: Context, edited: TaskTime) : PopupWindow {
+    fun create(edited: TaskTime, context: Context, attachTo: View, modify: TextView? = null) : PopupWindow {
         val window:PopupWindow = create(context, R.layout.popup_time)
         val view:View = window.contentView
 
+        update = false // Apply changes if apply button pressed or remove time. Otherwise counts as exit
+
         // Copy over most recent time. If time unset, set default values
         chosenTime = edited.copy()
-        if (!chosenTime.isValid()) chosenTime.setDefault()
+        if (chosenTime.isUnset()) chosenTime.setDefault()
 
         // Check duration, prevent decrement/increment if at end caps
         when (chosenTime.duration ) {
@@ -31,33 +34,39 @@ class PopupTime : Popup() {
         }
 
         // Set text display based on current time values
-        view.updateDisplay()
+        // Time, TimeOfDay, Duration & TimeDelta
+        view.txtChosenTime.text = chosenTime.overallTimeLabel()
+        view.toggleTimeOfDay.updateTimeOfDayDisplay()
+        view.toggleLength.updateDurationDisplay()
+        view.btnDelta.text = Settings.timeDeltaAsString()
 
         // Click behaviour
         // Time - Hour
-        view.btnTimeHourUp.setOnClickListener { view.txtChosenTime.updateHour(view.txtChosenTime, view.btnTimeOfDay) }
-        view.btnTimeHourDown.setOnClickListener { view.txtChosenTime.updateHour(view.txtChosenTime, view.btnTimeOfDay, false) }
+        view.btnTimeHourUp.setOnClickListener { view.txtChosenTime.updateHour(view.toggleTimeOfDay) }
+        view.btnTimeHourDown.setOnClickListener { view.txtChosenTime.updateHour(view.toggleTimeOfDay,false) }
         // Time - Min
-        view.btnTimeMinUp.setOnClickListener { view.txtChosenTime.updateMin(view.txtChosenTime) }
-        view.btnTimeMinDown.setOnClickListener { view.txtChosenTime.updateMin(view.txtChosenTime, false) }
+        view.btnTimeMinUp.setOnClickListener { view.txtChosenTime.updateMin() }
+        view.btnTimeMinDown.setOnClickListener { view.txtChosenTime.updateMin(false) }
         // Time - TimeOfDay
-        view.btnTimeOfDay.setOnClickListener {
+        view.toggleTimeOfDay.setOnClickListener {
             // Update time of day display
-            chosenTime.timeOfDay = chosenTime.getOppositeTimeOfDay()
-            view.btnTimeOfDay.updateTimeOfDayDisplay()
-            view.txtChosenTime.text = chosenTime.startTimeLabel()
+            // chosenTime.timeOfDay = chosenTime.getOppositeTimeOfDay()
+            when (view.toggleTimeOfDay.isChecked) {
+                 true -> chosenTime.timeOfDay = TimeOfDay.AM    // Day
+                false -> chosenTime.timeOfDay = TimeOfDay.PM    // Night
+            }
             view.txtChosenTime.text = chosenTime.overallTimeLabel()
         }
 
         // Duration
         view.btnLengthUp.setOnClickListener {
             // 1. Re-enable decrements if at 0, change timer icon back
-            if (chosenTime.duration == 0) {
+            if (!view.toggleLength.isChecked) {
                 view.btnLengthDown.visibility = View.VISIBLE
-                view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_on)
+                view.toggleLength.isChecked = true
             }
             // Increment duration
-            view.btnLength.updateDuration(view.txtChosenTime)
+            view.txtChosenTime.updateLength(view.toggleLength)
             // 2. Disable further increments if at max duration
             if (chosenTime.duration >= Settings.durationMax) view.btnLengthUp.visibility = View.INVISIBLE
         }
@@ -65,11 +74,11 @@ class PopupTime : Popup() {
             // 1. Re-enable increments if at max
             if (chosenTime.duration == Settings.durationMax) view.btnLengthUp.visibility = View.VISIBLE
             // Decrement duration
-            view.btnLength.updateDuration(view.txtChosenTime,false)
+            view.txtChosenTime.updateLength(view.toggleLength, false)
             // 2. Disable further decrements if at 0, change timer icon to off
             if (chosenTime.duration == 0) {
+                view.toggleLength.isChecked = false
                 view.btnLengthDown.visibility = View.INVISIBLE
-                view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_off)
             }
         }
 
@@ -97,30 +106,23 @@ class PopupTime : Popup() {
             view.txtChosenTime.text = chosenTime.startTimeLabel()
             view.txtChosenTime.text = chosenTime.overallTimeLabel()
         }
-        view.btnLength.setOnClickListener {
+        view.toggleLength.setOnClickListener {
             // Toggle between [00:00, 1:00]. If not 0, set to 0. Otherwise set to 1 hour
-            when (chosenTime.duration) {
-                0 -> {
-                    chosenTime.duration = 60    // 1 hour
+            when (view.toggleLength.isChecked) {
+                // Length != 0, set it to 1 hour. Enable back button
+                true -> {
+                    chosenTime.duration = 60
+                    view.toggleLength.text = chosenTime.durationAsString()
                     view.btnLengthDown.visibility = View.VISIBLE
-                    view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_on)
                 }
-                // If duration was at max, re-enable increments
-                Settings.durationMax -> {
+
+                // Length == 0, disable back button, enable forward button (when duration was max)
+                false -> {
                     chosenTime.duration = 0
+                    view.btnLengthDown.visibility = View.INVISIBLE
                     view.btnLengthUp.visibility = View.VISIBLE
                 }
-                else -> chosenTime.duration = 0
             }
-
-            // When duration == 0, disable decrements
-            if (chosenTime.duration == 0) {
-                view.btnLengthDown.visibility = View.INVISIBLE
-                view.btnLength.updateDrawableLeft(R.drawable.toggle_timer_off)
-            }
-
-            // Update text displays
-            view.btnLength.text = chosenTime.durationAsString()
             view.txtChosenTime.text = chosenTime.overallTimeLabel()
         }
         view.btnDelta.setOnClickListener {
@@ -134,15 +136,23 @@ class PopupTime : Popup() {
 
         // Reset all, Clear Time & Confirm
         view.btnResetTime.setOnClickListener {
+            // Time: Set to 12:00AM, duration = 0
             chosenTime.setDefault()
-            Settings.timeDelta = 5
-            view.updateDisplay()
+            view.txtChosenTime.text = chosenTime.startTimeLabel()
+            view.toggleTimeOfDay.isChecked = true
+            view.toggleLength.isChecked = false
+
+            // TimeDelta
+            Settings.resetTimeDelta()
+            view.btnDelta.text = Settings.timeDeltaAsString()
             view.btnLengthDown.visibility = View.INVISIBLE
+            view.btnLengthUp.visibility = View.VISIBLE
         }
         view.btnClearTime.setOnClickListener {
             // edited.clear()
             edited.unset()
             modify?.text = defaultTimeMsg
+            update = true
             window.dismiss()
         }
         view.btnApplyTime.setOnClickListener {
@@ -153,6 +163,7 @@ class PopupTime : Popup() {
                 timeOfDay = chosenTime.timeOfDay
             }
             modify?.text = chosenTime.overallTimeLabel()
+            update = true
             window.dismiss()
         }
 
@@ -163,23 +174,21 @@ class PopupTime : Popup() {
         return window
     }
 
-    private fun TextView.updateHour(txtChosenTime: TextView, btnTimeOfDay: ImageView, increment: Boolean = true) {
+    private fun TextView.updateHour(toggleTimeOfDay: ToggleButton, increment: Boolean = true) {
         // Update hour then overall time display
         chosenTime.updateHour(increment)
-        text = chosenTime.startTimeLabel()
-        txtChosenTime.text = chosenTime.overallTimeLabel()
-        btnTimeOfDay.updateTimeOfDayDisplay()
+        text = chosenTime.overallTimeLabel()
+        toggleTimeOfDay.updateTimeOfDayDisplay()
     }
-    private fun TextView.updateMin(txtChosenTime: TextView, increment: Boolean = true) {
+    private fun TextView.updateMin(increment: Boolean = true) {
         // Update min then overall time display
         chosenTime.updateMin(increment)
-        text = chosenTime.startTimeLabel()
-        txtChosenTime.text = chosenTime.overallTimeLabel()
+        text = chosenTime.overallTimeLabel()
     }
-    private fun TextView.updateDuration(txtChosenTime: TextView, increment: Boolean = true) {
+    private fun TextView.updateLength(toggleLength: ToggleButton, increment: Boolean = true) {
         chosenTime.updateDuration(increment)
-        text = chosenTime.durationAsString()
-        txtChosenTime.text = chosenTime.overallTimeLabel()
+        text = chosenTime.overallTimeLabel()
+        toggleLength.text = chosenTime.durationAsString()
     }
     private fun TextView.updateDelta(increment: Boolean = true) {
         Settings.updateTimeDelta(increment)
@@ -187,25 +196,16 @@ class PopupTime : Popup() {
         SaveData.saveTimeDelta(this.context)
     }
 
-    private fun View.updateDisplay() {
-        // Time
-        txtChosenTime.text = chosenTime.startTimeLabel()
-        txtChosenTime.text = chosenTime.overallTimeLabel()
-        // TimeOfDay
-        btnTimeOfDay.updateTimeOfDayDisplay()
-        // Duration
-        btnLength.text = chosenTime.durationAsString()
-        when (chosenTime.duration) {
-            0 -> btnLength.updateDrawableLeft(R.drawable.toggle_timer_off)
-            else -> btnLength.updateDrawableLeft(R.drawable.toggle_timer_on)
+    private fun ToggleButton.updateDurationDisplay() {
+        isChecked = when (chosenTime.duration) {
+            0 -> false
+            else -> true
         }
-        // TimeDelta
-        btnDelta.text = Settings.timeDeltaAsString()
     }
-    private fun ImageView.updateTimeOfDayDisplay() {
-        when (chosenTime.timeOfDay) {
-            TimeOfDay.AM -> setImageResource(R.drawable.ic_time_day)
-            TimeOfDay.PM -> setImageResource(R.drawable.ic_time_night)
+    private fun ToggleButton.updateTimeOfDayDisplay() {
+        isChecked = when (chosenTime.timeOfDay) {
+            TimeOfDay.AM -> true
+            TimeOfDay.PM -> false
         }
     }
 }

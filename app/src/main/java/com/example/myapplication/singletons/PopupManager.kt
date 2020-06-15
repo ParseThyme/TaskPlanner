@@ -25,20 +25,7 @@ object PopupManager {
         R.drawable.tag_3, R.drawable.tag_4, R.drawable.tag_5, R.drawable.tag_6
     )
 
-    private var time: PopupTime = PopupTime()
-    private var tag: PopupTag = PopupTag(tagsList)
-    private var date: PopupDate = PopupDate()
-
-    // Create relevant popups
-    fun timeEdit(attachTo: View, modify: TextView?, context: Context, edited: TaskTime) : PopupWindow {
-        return time.create(attachTo, modify, context, edited)
-    }
-
-    fun tagEdit(attachTo: View, modify: TextView?, context: Context, edited: Task) : PopupWindow {
-        return tag.create(attachTo, modify, context, edited)
-    }
-
-    fun dateEdit(attachTo: View, modify: TextView?, context: Context, edited: TaskDate) : PopupWindow {
-        return date.create(attachTo, modify, context, edited)
-    }
+    var time: PopupTime = PopupTime()
+    var tag: PopupTag = PopupTag(tagsList)
+    var date: PopupDate = PopupDate()
 }

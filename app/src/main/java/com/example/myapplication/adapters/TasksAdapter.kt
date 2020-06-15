@@ -101,7 +101,7 @@ class TasksAdapter(private val group: TaskGroup,
 
         private fun toggleTime(time: TaskTime) {
             // Time unallocated, hide display
-            if (!time.isValid()) {
+            if (!time.isUnset()) {
                 itemView.taskTime.visibility = View.GONE
                 return
             }

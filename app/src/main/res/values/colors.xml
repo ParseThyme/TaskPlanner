@@ -17,6 +17,6 @@
     <color name="iconTint">#555656</color>
     <color name="bottomBarText">#6B6B6B</color>
 
-    <color name="textColorOnWhiteBG">#757575</color>
+    <color name="textColorOnWhiteBG">#8a000000</color>
     <color name="textColorOnColoredBG">#FFFFFF</color>
 </resources>
