@@ -28,10 +28,8 @@ object Settings {
     var taskBaseColor: String = "#00000000"
 
     // Date / Calendar values
-    private const val defMaxWeeks: Int = 8                  // Default 8. Min 4? (At least 1 month away)
-    private const val defMaxDays: Int = defMaxWeeks / 7
-    var maxWeeks: Int = defMaxWeeks
-    var maxDays: Int = defMaxDays
+    private const val defMaxMonths: Int = 4
+    var maxMonths: Int = defMaxMonths
 
     // Layout
     private lateinit var parentRV: RecyclerView

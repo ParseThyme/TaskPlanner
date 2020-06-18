@@ -50,7 +50,7 @@
                 android:layout_marginRight="5dp"
                 app:cardBackgroundColor="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="@+id/cardApplyDate"
-                app:layout_constraintEnd_toStartOf="@+id/cardUpdateMonth"
+                app:layout_constraintEnd_toStartOf="@+id/cardApplyDate"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -59,10 +59,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_clickable"
-                    android:ems="5"
+                    android:ems="6"
                     android:gravity="center"
                     android:padding="5dp"
-                    android:text="Mo 29 May"
+                    android:text="Mo | 29 May"
                     android:textColor="@android:color/white"
                     app:drawableTint="@android:color/white" />
 
@@ -212,13 +212,12 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardUpdateMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                app:layout_constraintBottom_toBottomOf="@+id/cardApplyDate"
-                app:layout_constraintEnd_toStartOf="@+id/cardApplyDate"
-                app:layout_constraintTop_toTopOf="@+id/cardChosenDate">
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardChosenDate">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cardUpdateMonthLayout"
@@ -228,9 +227,9 @@
                     <ImageView
                         android:id="@+id/btnMonthNext"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
-                        android:padding="0dp"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -240,9 +239,9 @@
                     <ImageView
                         android:id="@+id/btnMonthPrev"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/bg_clickable"
-                        android:padding="0dp"
+                        android:padding="5dp"
                         android:tint="@color/iconTint"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -251,11 +250,11 @@
 
                     <TextView
                         android:id="@+id/txtMonth"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:ems="3"
                         android:gravity="center"
-                        android:text="May"
+                        android:text="December"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/btnMonthNext"
                         app:layout_constraintStart_toEndOf="@+id/btnMonthPrev"

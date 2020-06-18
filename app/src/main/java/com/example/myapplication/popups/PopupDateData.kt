@@ -4,12 +4,14 @@ import android.widget.TextView
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.singletons.Settings
 import com.example.myapplication.applyBackgroundColor
+import com.example.myapplication.singletons.AppData
 
 data class PopupDateDay(
     val taskDate: TaskDate,
     var label: String = "",
     var selected: Boolean = false
 )
+
 data class PopupDateWeek(
     val week: Week = Week.PAST,
     val days: ArrayList<PopupDateDay> = arrayListOf(),
@@ -37,20 +39,49 @@ class PopupDateData {
     fun getWeek(week: Int) : ArrayList<PopupDateDay> { return weeks[week].days }
     fun getMonth(month: Int) : Int { return months[month]!! }
 
-    fun outdated(): Boolean {
-        // Compare current first day in entries with actual first day of week
-        val firstEntry: TaskDate = weeks[0].days[0].taskDate
-        val firstDayOfWeek: TaskDate = today().firstDayOfWeek()
+    fun sunday(week: Int): PopupDateDay { return getDay(0, week) }
+    fun monday(week: Int): PopupDateDay { return getDay(1, week)  }
+    fun tuesday(week: Int): PopupDateDay { return getDay(2, week)  }
+    fun wednesday(week: Int): PopupDateDay { return getDay(3, week)  }
+    fun thursday(week: Int): PopupDateDay { return getDay(4, week)  }
+    fun friday(week: Int): PopupDateDay { return getDay(5, week)  }
+    fun saturday(week: Int): PopupDateDay { return getDay(6, week)  }
 
-        return (!firstEntry.same(firstDayOfWeek))
-    }
-    fun refreshEntries() {
-        weeks.clear()
-        months.clear()
-        createEntries()
+    fun checkOutdated() {
+        // Check first week starting from Sa, going backwards
+        /* [A]. If Sa is past date, week itself is outdated
+            Today = 13 (Su next week). Refresh entire list
+            [Su][Mo][Tu][We][Th][Fr][Sa]
+            [--][--][--][--][--][--][12]
+        */
+        if (saturday(0).taskDate.isPastDate()) {
+            weeks.clear()
+            months.clear()
+            createEntries()
+            AppData.firstDayOfWeek = sunday(0).taskDate
+            return
+        }
+
+        /* [B]. Otherwise update past dates with "-" label, when correctly labelled "-" reached, stop and exit
+            Today = 31 (Th). Need to update Tu, We to blank label
+            [Su][Mo][Tu][We][Th][Fr][Sa]
+            [--][--][29][30][31][01][02]
+            Week is always 7 days, [0] to [6]
+        */
+        for (day: Int in 6 downTo 0) {
+            val dayData: PopupDateDay = getDay(day, 0)
+            when {
+                dayData.taskDate.isPastDate() -> {
+
+                }
+                // Stop early when
+                dayData.label == "-" -> return
+            }
+        }
     }
 
     private fun createEntries() {
+      /*
         // Start date
         var currDate: TaskDate = today().firstDayOfWeek()
         val pastCount: Int = dateDiff(currDate, today())    // E.g. today = Wed. From Mon-Wed = 3
@@ -91,5 +122,6 @@ class PopupDateData {
 
         startMonth = today().month
         endMonth = weeks[weeks.lastIndex].month
+        */
     }
 }

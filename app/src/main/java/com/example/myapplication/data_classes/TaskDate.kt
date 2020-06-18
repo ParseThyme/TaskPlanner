@@ -15,7 +15,14 @@ data class TaskDate(
     var id: Int = 0,
     var day: Int = 0, var month: Int = 0, var year: Int = 0
 )
-
+// Override + function. E.g. today() + 7 -> today + 7 days
+operator fun TaskDate.plus(days: Int) : TaskDate {
+    // Test adding days together, if < 28, update id and day variable. Year and Month untouched
+    return when (day + days < 28) {
+        true  -> TaskDate(id + days, day + days, month, year)
+        false -> this.addPeriod(true, days)
+    }
+}
 fun today(): TaskDate {
     // Get calendar and add additional days, if addedDays == 0 then defaults to today's day
     val cal: Calendar = getInstance()
@@ -55,10 +62,11 @@ fun TaskDate.createID() {
     this.id = idFormat.format(cal.timeInMillis).toInt()
 }
 // ####################
-// Date Ranges, Weeks, Months
+// Date Ranges, Weeks, Months, Year
 // ####################
 enum class Week { PAST, THIS, NEXT, FORTNIGHT, FUTURE }
 
+fun TaskDate.yearAsString() : String { return year.toString() }
 fun TaskDate.getWeekNum() : Int { return (dateDiff(AppData.firstDayOfWeek, this)) / 7 }
 fun TaskDate.getWeek() : Week {
     val diff: Int = dateDiff(AppData.firstDayOfWeek, this)
@@ -95,15 +103,28 @@ fun Week.next(loop: Boolean = false) : Week {
     }
 }
 
-fun Int.monthAsString(): String {
-    return when (this) {
-        0 -> "Jan"      1 -> "Feb"      2 -> "Mar"      3 -> "Apr"
-        4 -> "May"      5 -> "Jun"      6 -> "Jul"      7 -> "Aug"
-        8 -> "Sep"      9 -> "Oct"      10 -> "Nov"     11 -> "Dec"
-        else -> "$this: invalid month"
+fun Int.monthAsString(labelSize: LabelSize): String {
+    when (labelSize) {
+        LabelSize.SHORT -> {
+            return when (this) {
+                0 -> "Jan"      1 -> "Feb"      2 -> "Mar"      3 -> "Apr"
+                4 -> "May"      5 -> "Jun"      6 -> "Jul"      7 -> "Aug"
+                8 -> "Sep"      9 -> "Oct"      10 -> "Nov"     11 -> "Dec"
+                else -> "$this: invalid month (S)"
+            }
+        }
+
+        LabelSize.NORMAL -> {
+            return when (this) {
+                0 -> "January"    1 -> "February"  2 -> "March"      3 -> "April"
+                4 -> "May"        5 -> "June"      6 -> "July"       7 -> "August"
+                8 -> "September"  9 -> "October"   10 -> "November"  11 -> "December"
+                else -> "$this: invalid month (N)"
+            }
+        }
     }
 }
-fun TaskDate.monthAsString(): String { return month.monthAsString() }
+fun TaskDate.monthAsString(labelSize: LabelSize): String { return month.monthAsString(labelSize) }
 
 fun TaskDate.same(date: TaskDate) : Boolean { return (day == date.day && month == date.month && year == date.year) }
 fun TaskDate.isPastDate() : Boolean { return dateDiff(today(), this) < 0 }
@@ -202,3 +223,5 @@ private fun getOrdinal(dayNum: Int) : String {
         }
     }
 }
+
+enum class LabelSize { SHORT, NORMAL }

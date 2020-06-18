@@ -39,7 +39,7 @@ fun View.applyBackgroundColor(color: String) {
     setBackgroundColor(Color.parseColor(color))
 }
 
-fun View.applyBackgroundColor(color: Int) {
+fun View.applyBackgroundColor(color: Int = Color.TRANSPARENT) {
     setBackgroundColor(color)
 }
 
