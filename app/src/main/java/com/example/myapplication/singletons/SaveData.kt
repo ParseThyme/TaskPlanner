@@ -2,6 +2,7 @@ package com.example.myapplication.singletons
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.myapplication.ViewLayout
 import com.example.myapplication.data_classes.GroupEntry
 import com.example.myapplication.debugMessagePrint
 import com.google.gson.Gson
@@ -96,6 +97,9 @@ object SaveData {
         editor.apply()
     }
     */
+
+    // https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
+    private inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
 }
 
 /*
@@ -125,6 +129,3 @@ fun loadBoolean(keyName: String) : Boolean? {
     return sharedPref.getBoolean(keyName, null)
 }
 */
-
-// https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
-inline fun <reified T> Gson.fromJson(json: String?): T = this.fromJson<T>(json, object: TypeToken<T>() {}.type)

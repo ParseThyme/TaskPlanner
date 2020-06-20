@@ -77,13 +77,11 @@ fun millisecondsToDays(milliseconds: Long): Int {
 }
 
 // https://stackoverflow.com/questions/42308580/kotlin-extension-for-next-enum-value-without-reflection
-/*
 inline fun <reified T: Enum<T>> T.next(): T {
  val values = enumValues<T>()
  val nextOrdinal = (ordinal + 1) % values.size
  return values[nextOrdinal]
 }
-*/
 
 /** ########## Tutorials: ##########
 - Add Item: https://blog.stylingandroid.com/recyclerview-animations-add-remove-items/

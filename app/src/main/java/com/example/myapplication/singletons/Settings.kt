@@ -5,10 +5,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.myapplication.ViewLayout
 import com.example.myapplication.adapters.TaskGroupAdapter
 import com.example.myapplication.recyclerviewdecoration.GridLayoutDecoration
 import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
 import kotlinx.android.synthetic.main.main_activity_view.*
+import java.util.*
 
 // ########## App settings ##########
 object Settings {
@@ -30,6 +32,7 @@ object Settings {
     // Date / Calendar values
     private const val defMaxMonths: Int = 4
     var maxMonths: Int = defMaxMonths
+    var startOfWeek: Int = Calendar.MONDAY
 
     // Layout
     private lateinit var parentRV: RecyclerView
@@ -144,6 +147,3 @@ object Settings {
         return result
     }
 }
-
-enum class Mode { START, ADD, SELECTION }
-enum class ViewLayout { LINEAR, GRID }

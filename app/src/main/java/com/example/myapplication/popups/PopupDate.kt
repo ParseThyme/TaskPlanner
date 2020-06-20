@@ -1,7 +1,6 @@
 package com.example.myapplication.popups
 
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,24 +9,22 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
-import com.example.myapplication.singletons.Settings
 import com.example.myapplication.data_classes.*
+import com.example.myapplication.singletons.Settings
 import kotlinx.android.synthetic.main.popup_date.view.*
 import kotlinx.android.synthetic.main.popup_date_day.view.*
-import kotlinx.android.synthetic.main.popup_saved_task_entry.view.*
 
 class PopupDate : Popup() {
     // Most recently chosen date, highlighted cell
     private var chosenDate: TaskDate = TaskDate()
-    private var chosenDayInWeekView: SelectedPopupDateDay = SelectedPopupDateDay()
     // Data/Information pertaining to weeks in popup created
-    private val data : PopupDateData = PopupDateData()
     private var startMonth = today().month
     private var endMonth = startMonth + Settings.maxMonths
 
     // Trackers
     private var currMonth: Int = 0
-    private var days: Int = months[currMonth]!!.days
+    private var currYear: Int = 0
+    private var days: Int = currMonth.monthLength(today().year)
     private lateinit var dateAdapter: PopupDateAdapter
     var update: Boolean = false
 
@@ -37,9 +34,12 @@ class PopupDate : Popup() {
 
         update = false // Apply changes if apply button pressed. Otherwise counts as exit
 
+        createMonthList()
+
         // 1. Get tracked variables
         chosenDate = edited.copy()             // Most recently selected date
         currMonth = chosenDate.month
+        currYear = today().year
 
         // If data outdated, refresh
         refreshData()
@@ -47,7 +47,7 @@ class PopupDate : Popup() {
         // Set displays
         // Text
         view.txtChosenDate.text = chosenDate.asStringShort()
-        view.txtMonth.text = chosenDate.monthAsString(LabelSize.SHORT)
+        view.txtMonth.text = chosenDate.monthLabel()
         view.rvPopupDateDays.apply {
             dateAdapter = PopupDateAdapter(days, view.txtChosenDate)
             layoutManager = GridLayoutManager(context, 7)
@@ -60,7 +60,7 @@ class PopupDate : Popup() {
             startMonth -> view.btnMonthPrev.visibility = View.INVISIBLE
               endMonth -> view.btnMonthNext.visibility = View.INVISIBLE
         }
-        view.btnMonthNext.setOnClickListener { view.txtMonth.monthNext(view.btnMonthPrev, view.btnMonthNext) }
+        view.btnMonthNext.setOnClickListener { view.monthNext() }
         view.btnMonthPrev.setOnClickListener { view.txtMonth.monthPrev(view.btnMonthPrev, view.btnMonthNext) }
 
         /*
@@ -82,73 +82,6 @@ class PopupDate : Popup() {
         // Match month to currently chosen month, copy over currWeek
         currMonth = chosenDate.month
         chosenDayInWeekView.week = currWeek
-
-        // 3. Setup Arrays
-        // [A]. Cell underneath, text updated
-        val updatedTextViews: ArrayList<TextView> = arrayListOf(
-            view.txtSun, view.txtMon, view.txtTue, view.txtWed, view.txtThu, view.txtFri, view.txtSat)
-
-        // 4. Setup text displays, based on current parameters
-        view.txtChosenDate.text = chosenDate.asStringShort()       // Date
-        view.txtWeek.text = chosenDate.weekAsString()              // Week
-        view.txtMonth.text = chosenDate.monthAsString()            // Month
-        setDayLabels(updatedTextViews, data.getWeek(currWeek))     // Days in week
-
-        // 5. Check whether we need to hide forward/backward buttons for both weeks/months
-        when (currWeek) {
-            0 ->       view.btnWeekPrev.visibility = View.INVISIBLE   // This week, hide backwards
-            endWeek -> view.btnWeekNext.visibility = View.INVISIBLE   // Final week, hide forwards
-        }
-        // If singular month, both prev/forward buttons set invisible
-        if (currMonth == data.startMonth) view.btnMonthPrev.visibility = View.INVISIBLE
-        if (currMonth == data.endMonth)   view.btnMonthNext.visibility = View.INVISIBLE
-
-        // 6. Setup onClick behaviours
-        // [A]. Mo - Su cells
-        view.layoutSun.setupDayClickListener(0, view.txtSun, view.txtChosenDate)
-        view.layoutMon.setupDayClickListener(1, view.txtMon, view.txtChosenDate)
-        view.layoutTue.setupDayClickListener(2, view.txtTue, view.txtChosenDate)
-        view.layoutWed.setupDayClickListener(3, view.txtWed, view.txtChosenDate)
-        view.layoutThu.setupDayClickListener(4, view.txtThu, view.txtChosenDate)
-        view.layoutFri.setupDayClickListener(5, view.txtFri, view.txtChosenDate)
-        view.layoutSat.setupDayClickListener(6, view.txtSat, view.txtChosenDate)
-
-        // [B]. Week
-        view.btnWeekNext.setOnClickListener {
-            // Increment week and update labels
-            currWeek++
-            view.txtWeek.updateWeekLabel()
-            setDayLabels(updatedTextViews, data.getWeek(currWeek))
-
-            // Check result
-            when (currWeek) {
-                // Week: 0 -> 1 (Enable back button)
-                1 -> view.btnWeekPrev.visibility = View.VISIBLE
-                // Week: secondLast -> last (disable forward button)
-                endWeek -> view.btnWeekNext.visibility = View.INVISIBLE
-            }
-
-            // Check if month needs to be updated
-            if (data.weeks[currWeek].month > currMonth)
-                view.txtMonth.monthNext(view.btnMonthPrev, view.btnMonthNext)
-        }
-        view.btnWeekPrev.setOnClickListener {
-            // Decrement week and update labels
-            currWeek--
-            view.txtWeek.updateWeekLabel()
-            setDayLabels(updatedTextViews, data.getWeek(currWeek))
-
-            // Check result
-            when (currWeek) {
-                // Week: 1 -> 0 (Disable back button)
-                0 -> view.btnWeekPrev.visibility = View.INVISIBLE
-                // Week: last -> secondLast (enable forward button)
-                (endWeek - 1) -> view.btnWeekNext.visibility = View.VISIBLE
-            }
-            // Check if month needs to be updated
-            if (data.weeks[currWeek].month < currMonth)
-                view.txtMonth.monthPrev(view.btnMonthPrev, view.btnMonthNext)
-        }
 
         view.btnResetDate.setOnClickListener {
             // Do nothing if today is chosen, otherwise
@@ -251,69 +184,15 @@ class PopupDate : Popup() {
         return window
     }
 
-    /*
-    private fun View.setupDayClickListener(dayIndex: Int, clickableDay: TextView, chosenDateView: TextView) {
-        setOnClickListener {
-            val clickedDay: PopupDateDay = data.getDay(dayIndex, currWeek)
-            // Two cases where nothing is done:
-            // [A]. Not selectable, label == "-".
-            // [B]. Already selected, highlighted and displayed above
-            if (clickedDay.label != "-" && !clickedDay.taskDate.same(chosenDate)) {
-                // Update label and selected date
-                chosenDate = clickedDay.taskDate
-                chosenDateView.text = clickedDay.taskDate.asStringShort()
-
-                // Update selected params: clear previous highlight, switch then highlight new cell view
-                chosenDayInWeekView.week = currWeek
-                chosenDayInWeekView.applyBackgroundColor(Color.WHITE)
-                chosenDayInWeekView.view = clickableDay
-                chosenDayInWeekView.applyBackgroundColor(Settings.highlightColor)
-            }
-        }
-    }
-    private fun setDayLabels(textViews: ArrayList<TextView>, dayData: ArrayList<PopupDateDay>) {
-        for (index: Int in 0..textViews.lastIndex) {
-            // Set string attached to each day label
-            textViews[index].text = dayData[index].label
-            // Highlight date yellow if selected
-            if (dayData[index].taskDate.same(chosenDate)) {
-                chosenDayInWeekView.view = textViews[index]
-                chosenDayInWeekView.applyBackgroundColor(Settings.highlightColor)
-            }
-        }
-    }
-
-    private fun View.toFirstWeek(textViews: ArrayList<TextView>, dayData: ArrayList<PopupDateDay>) {
-        // Set current week, month to first respectively
-        currWeek = 0
-        currMonth = data.weeks[currWeek].month
-
-        // Update week and month label displays
-        txtWeek.updateWeekLabel()
-        setDayLabels(textViews, dayData)
-        txtMonth.text = currMonth.monthAsString()
-
-        // Disable back buttons & re-enable forward
-        btnWeekPrev.visibility = View.INVISIBLE
-        btnMonthPrev.visibility = View.INVISIBLE
-        btnWeekNext.visibility = View.VISIBLE
-        btnMonthNext.visibility = View.VISIBLE
-    }
-    private fun TextView.updateWeekLabel() {
-        this.text = data.weeks[currWeek].week.asString()   // Update text display
-        chosenDayInWeekView.applyBackgroundColor(Color.WHITE)   // Unhighlight selectedCell
-    }
-    */
     private fun refreshData() {
         startMonth = today().month
         endMonth = startMonth + Settings.maxMonths
     }
 
-    private fun TextView.monthNext(btnMonthPrev: ImageView, btnMonthNext: ImageView) {
+    private fun View.monthNext() {
         currMonth++
         dateAdapter.updateMonth()
-        this.text = currMonth.monthAsString(LabelSize.SHORT)
-
+        txtMonth.text = currMonth.monthLabel()
         when {
             // startMonth -> startMonth + 1. Enable back button
             (currMonth == startMonth + 1) -> btnMonthPrev.visibility = View.VISIBLE
@@ -324,7 +203,7 @@ class PopupDate : Popup() {
     private fun TextView.monthPrev(btnMonthPrev: ImageView, btnMonthNext: ImageView) {
         currMonth--
         dateAdapter.updateMonth()
-        this.text = currMonth.monthAsString(LabelSize.SHORT)
+        text = currMonth.monthLabel()
 
         when {
             // startMonth + 1 -> startMonth. Disable back button
@@ -369,8 +248,8 @@ class PopupDate : Popup() {
                     else -> {
                         itemView.txtDay.text = day.toString()
                         itemView.txtDay.setOnClickListener {
-                            // Do nothing if already selected
-                            if (!(chosenDate.day == day && chosenDate.month == currMonth)) {
+                            // Do nothing if already selected or is past date
+                            if (selectable(day)) {
                                 // Update chosen date and textView display
                                 chosenDate.day = day
                                 chosenDate.month = currMonth
@@ -396,11 +275,22 @@ class PopupDate : Popup() {
                 selected = itemView
                 selected!!.applyBackgroundColor(Settings.highlightColor)
             }
+
+            private fun selectable(day: Int) : Boolean {
+                // Selectable when: Not past date and not already selected
+                return when {
+                    // 1. Starting month, check if past day clicked
+                    (currMonth == startMonth && day < today) -> false
+                    // 2. Already selected
+                    (chosenDate.month == currMonth && chosenDate.day == day) -> false
+                    else -> true
+                }
+            }
         }
 
         fun updateMonth() {
-            val oldCount: Int = dayCount            // Store copy of old day count
-            dayCount = months[currMonth]!!.days     // Get new day count
+            val oldCount: Int = dayCount                  // Store copy of old day count
+            dayCount = currMonth.monthLength(currYear)    // Get new day count
 
             // 1. Toggle days set as "-". Moving to/from start month. Days from day 1 to today - 1 need to be shown/hidden
             if (currMonth == startMonth + 1 || currMonth == startMonth) {

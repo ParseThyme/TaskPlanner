@@ -13,8 +13,6 @@ import com.example.myapplication.inflate
 import com.example.myapplication.singletons.AppData
 import com.example.myapplication.singletons.SaveData
 import com.example.myapplication.singletons.Settings
-import kotlinx.android.synthetic.main.main_activity_view.*
-import kotlinx.android.synthetic.main.main_topbar.view.*
 import kotlinx.android.synthetic.main.task_group_header.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.toggleFold
@@ -148,9 +146,8 @@ class TaskGroupAdapter(
             // Assign date label
             itemView.labelDate.text = group.date.asString()         // Day number + Month: 1st May
             itemView.labelDay.apply {                               // Day of week: Mo...Su
-                text = group.date.dayNameShort()
+                text = group.date.dayLabel()
                 // When day label clicked, call ActivityMain click listener function (De/Select entire group)
-                // setOnClickListener { if (group.isFoldedOut()) dateClicked(adapterPosition) }
                 setOnClickListener { if (group.expanded()) dateClicked(adapterPosition) }
             }
 

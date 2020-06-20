@@ -105,7 +105,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/labelMon"
+                            android:id="@+id/labelDay1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -118,7 +118,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/labelTue"
+                            android:id="@+id/labelDay2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -127,11 +127,11 @@
                             android:padding="5dp"
                             android:text="Tu"
                             android:textColor="@android:color/white"
-                            app:layout_constraintStart_toEndOf="@+id/labelMon"
+                            app:layout_constraintStart_toEndOf="@+id/labelDay1"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/labelWed"
+                            android:id="@+id/labelDay3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -140,11 +140,11 @@
                             android:padding="5dp"
                             android:text="We"
                             android:textColor="@android:color/white"
-                            app:layout_constraintStart_toEndOf="@+id/labelTue"
+                            app:layout_constraintStart_toEndOf="@+id/labelDay2"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/labelThu"
+                            android:id="@+id/labelDay4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -153,11 +153,11 @@
                             android:padding="5dp"
                             android:text="Th"
                             android:textColor="@android:color/white"
-                            app:layout_constraintStart_toEndOf="@+id/labelWed"
+                            app:layout_constraintStart_toEndOf="@+id/labelDay3"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/labelFri"
+                            android:id="@+id/labelDay5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -166,11 +166,11 @@
                             android:padding="5dp"
                             android:text="Fr"
                             android:textColor="@android:color/white"
-                            app:layout_constraintStart_toEndOf="@+id/labelThu"
+                            app:layout_constraintStart_toEndOf="@+id/labelDay4"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/labelSat"
+                            android:id="@+id/labelDay6"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -179,11 +179,11 @@
                             android:padding="5dp"
                             android:text="Sa"
                             android:textColor="@android:color/white"
-                            app:layout_constraintStart_toEndOf="@+id/labelFri"
+                            app:layout_constraintStart_toEndOf="@+id/labelDay5"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/labelSun"
+                            android:id="@+id/labelDay7"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@color/colorPrimary"
@@ -192,8 +192,9 @@
                             android:padding="5dp"
                             android:text="Su"
                             android:textColor="@android:color/white"
-                            app:layout_constraintStart_toEndOf="@+id/labelSat"
+                            app:layout_constraintStart_toEndOf="@+id/labelDay6"
                             app:layout_constraintTop_toTopOf="parent" />
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -203,7 +204,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dayLabelsLayout"
-                        tools:itemCount="5"
+                        tools:itemCount="6"
                         tools:listitem="@layout/popup_date_day" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
