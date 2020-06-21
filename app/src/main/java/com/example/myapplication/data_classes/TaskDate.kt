@@ -3,6 +3,7 @@ package com.example.myapplication.data_classes
 import com.example.myapplication.Week
 import com.example.myapplication.singletons.AppData
 import com.example.myapplication.millisecondsToDays
+import com.example.myapplication.monthsInYear
 import com.example.myapplication.singletons.Settings
 import java.util.*
 
@@ -101,16 +102,24 @@ fun TaskDate.firstDayOfWeek(): TaskDate {
     // Set calendar to specific day
     val cal: Calendar = Calendar.getInstance()
     cal.set(year, month, day)
-    // Get difference in days between it and StartOfWeek. Then move back to Mo by subtracting difference
-    val difference: Int = Settings.startOfWeek - cal.get(Calendar.DAY_OF_WEEK)
-    return this.plus(difference)
 
-    // Using Calendar.DAY_OF_WEEK: Su = 1, Mo = 2, Tu = 3, We = 4, Th = 5, Fr = 6, Sa = 7
-    // E.g. today = Fr, startOfWeek = Mo: difference = -4 (2 - 6)
+    // Get day of week based on taskDate
+    var dayOfWeek: Int = cal.get(Calendar.DAY_OF_WEEK)
+
+    // Cases depending on day in which week starts (Settings.startOfWeek):
+    // 1. Su, ends Sa: [Su][Mo][Tu][We][Th][Fr][Sa] -> [1][2][3][4][5][6][7]
+    // = Leave as is, calculations work out
+    // 2. Mo, ends Su: [Mo][Tu][We][Th][Fr][Sa][Su] -> [2][3][4][5][6][7][1]
+    // = Treat Sunday as day [8] instead of defined day [1]
+    if (Settings.startOfWeek == Calendar.MONDAY && dayOfWeek == Calendar.SUNDAY) dayOfWeek = 8
+
+    // Starting from dayOfWeek, go backwards to get start of week
+    return this.minus(dayOfWeek - Settings.startOfWeek)
 }
 
 fun TaskDate.getWeek() : Week {
     val diff: Int = dateDiff(AppData.firstDayOfWeek, this)
+    // println("Date diff: (${AppData.firstDayOfWeek.asStringShort()}, ${this.asStringShort()}) = $diff")
     return when {
         diff < 0 -> Week.PAST
         diff in 0..6 -> Week.THIS
@@ -148,41 +157,20 @@ fun Week.next(loop: Boolean = false) : Week {
 // ####################
 // Months
 // ####################
-fun TaskDate.toFirstDayOfMonth() {
-    day = 1
-    assignID()
+fun Int.getEndMonth(): Int {
+    return when (this !in Calendar.JANUARY..Calendar.DECEMBER) {
+        true -> {
+            println("[ERROR] invalid month $this")
+            -1
+        }
+        false -> (this + Settings.maxMonths) % monthsInYear
+    }
 }
-
 fun TaskDate.addMonths(months: Int = 1) : TaskDate {
     val cal: Calendar = Calendar.getInstance()
     cal.set(year, month, day)
     cal.add(Calendar.MONTH, months)
     return cal.toTaskDate()
-}
-
-fun Int.monthLength(year: Int) : Int {
-    // If checking Feb, test to see if leap year
-    val isLeapYear: Boolean = (year % 4 == 0)
-    if (isLeapYear && this == Calendar.FEBRUARY) return 29
-
-    return when (this) {
-        Calendar.JANUARY -> 31
-        Calendar.FEBRUARY -> 28
-        Calendar.MARCH -> 31
-        Calendar.APRIL -> 30
-        Calendar.MAY -> 31
-        Calendar.JUNE -> 30
-        Calendar.JULY -> 31
-        Calendar.AUGUST -> 31
-        Calendar.SEPTEMBER -> 30
-        Calendar.OCTOBER -> 31
-        Calendar.NOVEMBER -> 30
-        Calendar.DECEMBER -> 31
-        else -> {
-            println("Invalid Month: $this")
-            -1
-        }
-    }
 }
 
 fun TaskDate.monthLabel(abbreviated: Boolean = true) : String{ return this.month.monthLabel(abbreviated) }
@@ -219,6 +207,7 @@ operator fun TaskDate.plus(days: Int) : TaskDate {
     cal.add(Calendar.DATE, days)
     return cal.toTaskDate()
 }
+operator fun TaskDate.minus(days: Int) : TaskDate { return this.plus(-days) }
 
 private fun Calendar.toTaskDate(): TaskDate {
     // Convert Calendar set date to TaskDate format
@@ -235,11 +224,5 @@ fun dateDiff(from: TaskDate, to: TaskDate) : Int {
 
     return millisecondsToDays(d2 - d1)
 }
-// fun TaskDate.isPastDate() : Boolean { return dateDiff(today(), this) < 0 }
 
-fun TaskDate.isPastDate(): Boolean {
-    // Get reference to today()
-
-    // Check year
-    return false
-}
+fun TaskDate.isPastDate(): Boolean { return (this.id < today().id) }

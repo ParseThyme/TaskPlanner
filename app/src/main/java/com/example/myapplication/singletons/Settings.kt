@@ -12,6 +12,11 @@ import com.example.myapplication.recyclerviewdecoration.LinearLayoutDecoration
 import kotlinx.android.synthetic.main.main_activity_view.*
 import java.util.*
 
+/* Settings set as a singleton class, we only need one instance of it and we want to make it
+ * globally accessible
+ * https://blog.mindorks.com/how-to-create-a-singleton-class-in-kotlin
+ */
+
 // ########## App settings ##########
 object Settings {
     var deleteOldDates: Boolean = false
@@ -30,9 +35,10 @@ object Settings {
     var taskBaseColor: String = "#00000000"
 
     // Date / Calendar values
-    private const val defMaxMonths: Int = 4         // How many months to display (this month + x)
+    private const val defMaxMonths: Int = 6         // How many months to display (this month + x)
     var maxMonths: Int = defMaxMonths
     var startOfWeek: Int = Calendar.MONDAY
+    const val monthSize = 42                        // 6x7. 6 rows, 7 days per row
 
     // Layout
     private lateinit var parentRV: RecyclerView

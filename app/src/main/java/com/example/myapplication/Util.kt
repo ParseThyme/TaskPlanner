@@ -13,14 +13,13 @@ import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 
+// Definitions
 // Activity.main
 const val mainTitle = "Task Planner"
 const val defaultTimeMsg = "Set Time"
 
-/* Settings set as a singleton class, we only need one instance of it and we want to make it
- * globally accessible
- * https://blog.mindorks.com/how-to-create-a-singleton-class-in-kotlin
- */
+// TaskDate related
+const val monthsInYear = 12
 
 // ########## Shortcuts ##########
 // https://stackoverflow.com/questions/2461824/how-to-programmatically-set-maxlength-in-android-textview

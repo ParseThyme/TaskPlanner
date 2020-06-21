@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         // 5. Setup labels
         newTask.time.unset()
         titleBar.title.text = mainTitle                     // Main App name
-        addMode.txtSetDate.text = today().asStringShort()   // Starting date to be today at bottom bar
+        addMode.txtSetDate.text = newDate.asStringShort()   // Starting date to be today at bottom bar
         addMode.txtSetTime.text = defaultTimeMsg            // Set time to be blank
 
         // ToDo: Reorganize
