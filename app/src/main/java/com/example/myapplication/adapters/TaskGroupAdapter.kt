@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
+import com.example.myapplication.Week
 import com.example.myapplication.applyBackgroundColor
 import com.example.myapplication.data_classes.*
 import com.example.myapplication.inflate
@@ -18,7 +19,6 @@ import kotlinx.android.synthetic.main.task_group_rv.view.*
 import kotlinx.android.synthetic.main.task_group_rv.view.toggleFold
 import kotlin.math.abs
 import kotlin.math.sign
-
 
 class TaskGroupAdapter(
      private val taskGroupList: ArrayList<GroupEntry>,

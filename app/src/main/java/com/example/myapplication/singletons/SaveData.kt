@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.myapplication.ViewLayout
 import com.example.myapplication.data_classes.GroupEntry
-import com.example.myapplication.debugMessagePrint
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -48,7 +47,6 @@ object SaveData {
             Settings.timeDelta,
             context
         )
-        debugMessagePrint("Saved time delta")
     }
 
     private fun save(keyName: String, value: Int, context: Context) {

@@ -63,10 +63,6 @@ private fun TextView.updateDrawable(resource: Int, side: Side, tint: Int = R.col
     }
 }
 
-fun debugMessagePrint(message: String) {
-    Log.d("Test", message)
-}
-
 fun millisecondsToDays(milliseconds: Long): Int {
     /* 1. /1000 == ms to s
      * 2. /60   == s to m

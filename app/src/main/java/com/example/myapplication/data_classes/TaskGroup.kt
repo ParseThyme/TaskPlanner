@@ -1,7 +1,7 @@
 package com.example.myapplication.data_classes
 
-import android.view.View
 import com.example.myapplication.R
+import com.example.myapplication.Week
 import com.example.myapplication.singletons.AppData
 import kotlin.collections.ArrayList
 

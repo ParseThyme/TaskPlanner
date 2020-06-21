@@ -30,7 +30,7 @@ object Settings {
     var taskBaseColor: String = "#00000000"
 
     // Date / Calendar values
-    private const val defMaxMonths: Int = 4
+    private const val defMaxMonths: Int = 4         // How many months to display (this month + x)
     var maxMonths: Int = defMaxMonths
     var startOfWeek: Int = Calendar.MONDAY
 

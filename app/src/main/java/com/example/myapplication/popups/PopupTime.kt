@@ -8,7 +8,6 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import com.example.myapplication.R
 import com.example.myapplication.data_classes.*
-import com.example.myapplication.debugMessagePrint
 import com.example.myapplication.defaultTimeMsg
 import com.example.myapplication.singletons.SaveData
 import com.example.myapplication.singletons.Settings

@@ -22,19 +22,19 @@ class PopupDate : Popup() {
     private var endMonth = startMonth + Settings.maxMonths
 
     // Trackers
+    var update: Boolean = false
+
     private var currMonth: Int = 0
     private var currYear: Int = 0
     private var days: Int = currMonth.monthLength(today().year)
+    private var monthList: MutableMap<Int, ArrayList<TaskDate>> = createMonthList()
     private lateinit var dateAdapter: PopupDateAdapter
-    var update: Boolean = false
 
     fun create(edited: TaskDate, context: Context, attachTo: View, modify: TextView? = null) : PopupWindow {
         val window:PopupWindow = create(context, R.layout.popup_date)
         val view:View = window.contentView
 
         update = false // Apply changes if apply button pressed. Otherwise counts as exit
-
-        createMonthList()
 
         // 1. Get tracked variables
         chosenDate = edited.copy()             // Most recently selected date
@@ -49,7 +49,7 @@ class PopupDate : Popup() {
         view.txtChosenDate.text = chosenDate.asStringShort()
         view.txtMonth.text = chosenDate.monthLabel()
         view.rvPopupDateDays.apply {
-            dateAdapter = PopupDateAdapter(days, view.txtChosenDate)
+            dateAdapter = PopupDateAdapter(monthList[currMonth]!!, view.txtChosenDate)
             layoutManager = GridLayoutManager(context, 7)
             adapter = dateAdapter
         }
@@ -213,14 +213,10 @@ class PopupDate : Popup() {
         }
     }
 
-    // class PopupDateAdapter (private val taskList: ArrayList<PopupDateDay>, private val closeFn: (String) -> Unit)
-    inner class PopupDateAdapter (private var dayCount: Int, private val txtChosenDate: TextView)
+    inner class PopupDateAdapter (private var days: ArrayList<TaskDate>, private val txtChosenDate: TextView)
         : RecyclerView.Adapter<PopupDateAdapter.ViewHolder>() {
-        private var days: ArrayList<Int> = arrayListOf(
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-            24, 25, 26, 27, 28, 29, 30, 31)
 
-        override fun getItemCount(): Int { return dayCount }
+        override fun getItemCount(): Int { return days.size }
         override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(days[pos]) }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(parent.inflate(R.layout.popup_date_day))
@@ -232,6 +228,10 @@ class PopupDate : Popup() {
         // ToDo: Consider variable: clickable [T/F]
 
         inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+            fun bind(taskDate: TaskDate) {
+                itemView.txtDay.text = taskDate.day.toString()
+            }
+            /*
             fun bind(day: Int) {
                 // Highlight selected day
                 if (day == chosenDate.day && currMonth == chosenDate.month) updateHighlight()
@@ -242,7 +242,8 @@ class PopupDate : Popup() {
                     (day < today && currMonth == startMonth) -> itemView.txtDay.text = "-"
 
                     // 2. Completely hide unreachable days. E.g. day 30/31 for February (28/29 = max)
-                    (day > dayCount) -> itemView.txtDay.text = ""
+                    // (day > dayCount) -> itemView.txtDay.text = ""
+                    (day > days.size) -> itemView.txtDay.text = ""
 
                     // 3. Standard day, clickable and selectable
                     else -> {
@@ -258,7 +259,7 @@ class PopupDate : Popup() {
                                     true -> today().year + 1
                                     false -> today().year
                                 }
-                                chosenDate.createID()
+                                chosenDate.assignID()
                                 txtChosenDate.text = chosenDate.asStringShort()
 
                                 // Update highlight
@@ -286,9 +287,13 @@ class PopupDate : Popup() {
                     else -> true
                 }
             }
+            */
         }
 
         fun updateMonth() {
+            days = monthList[currMonth]!!
+            notifyDataSetChanged()
+            /*
             val oldCount: Int = dayCount                  // Store copy of old day count
             dayCount = currMonth.monthLength(currYear)    // Get new day count
 
@@ -320,6 +325,7 @@ class PopupDate : Popup() {
                 // Odd -> Even day month or vice versa
                 (dayCount == 31 || dayCount == 30) -> notifyItemChanged(days.lastIndex)
             }
+            */
         }
     }
 }

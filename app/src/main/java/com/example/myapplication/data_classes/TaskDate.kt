@@ -1,25 +1,24 @@
 package com.example.myapplication.data_classes
 
 import com.example.myapplication.Week
-import com.example.myapplication.debugMessagePrint
 import com.example.myapplication.singletons.AppData
 import com.example.myapplication.millisecondsToDays
 import com.example.myapplication.singletons.Settings
-import java.text.SimpleDateFormat
 import java.util.*
-
-// Add new task formats + variables
-// Link: https://developer.android.com/reference/kotlin/android/icu/text/SimpleDateFormat
-val idFormat = SimpleDateFormat("yyyyMMdd")
 
 // ####################
 // TaskDate
 // ####################
 
 data class TaskDate(
-    var id: Int = 0,
-    var day: Int = 0, var month: Int = 0, var year: Int = 0
+    var day: Int = 0, var month: Int = 0, var year: Int = 0,
+    var id: Int = 0
 )
+fun taskDate(day: Int, month: Int, year: Int) : TaskDate {
+    val newDate = TaskDate(day, month, year, 0)
+    newDate.assignID()
+    return newDate
+}
 fun today(): TaskDate { return Calendar.getInstance().toTaskDate() }
 
 fun TaskDate.replace(newDate: TaskDate) {
@@ -28,10 +27,18 @@ fun TaskDate.replace(newDate: TaskDate) {
     month = newDate.month
     year = newDate.year
 }
-fun TaskDate.createID() {
-    val cal: Calendar = Calendar.getInstance()
-    cal.set(year, month, day)
-    this.id = idFormat.format(cal.timeInMillis).toInt()
+fun TaskDate.assignID() {
+    // Construct ID in format: [YYYY][MM][DD]
+    // Month and Day needs extra 0 pre-appended for values < 10
+    val monthString: String = when (month < 10) {
+        true -> "0$month"
+        false -> "$month"
+    }
+    val dayString: String = when (day < 10) {
+        true -> "0$day"
+        false -> "$day"
+    }
+    id = "$year$monthString$dayString".toInt()
 }
 
 fun TaskDate.asStringShort(): String {
@@ -141,6 +148,11 @@ fun Week.next(loop: Boolean = false) : Week {
 // ####################
 // Months
 // ####################
+fun TaskDate.toFirstDayOfMonth() {
+    day = 1
+    assignID()
+}
+
 fun TaskDate.addMonths(months: Int = 1) : TaskDate {
     val cal: Calendar = Calendar.getInstance()
     cal.set(year, month, day)
@@ -148,13 +160,6 @@ fun TaskDate.addMonths(months: Int = 1) : TaskDate {
     return cal.toTaskDate()
 }
 
-fun TaskDate.firstDayOfMonth(): Int {
-    val cal: Calendar = Calendar.getInstance()
-    cal.set(year, month, 1)
-    return cal.get(Calendar.DAY_OF_WEEK)
-}
-
-fun TaskDate.monthLength() : Int { return month.monthLength(year) }
 fun Int.monthLength(year: Int) : Int {
     // If checking Feb, test to see if leap year
     val isLeapYear: Boolean = (year % 4 == 0)
@@ -174,7 +179,7 @@ fun Int.monthLength(year: Int) : Int {
         Calendar.NOVEMBER -> 30
         Calendar.DECEMBER -> 31
         else -> {
-            debugMessagePrint("Invalid Month: $this")
+            println("Invalid Month: $this")
             -1
         }
     }
@@ -216,10 +221,8 @@ operator fun TaskDate.plus(days: Int) : TaskDate {
 }
 
 private fun Calendar.toTaskDate(): TaskDate {
-    // Convert Calendar set date to TaskDate. Use ID for sorting.
-    // E.g. 12th Feb 2020 = 20200212 -> 2020 | 02 | 12 (YEAR|MONTH|DAY ordering)
-    val id: Int = idFormat.format(timeInMillis).toInt()
-    return TaskDate(id, get(Calendar.DAY_OF_MONTH), get(Calendar.MONTH), get(Calendar.YEAR))
+    // Convert Calendar set date to TaskDate format
+    return taskDate(get(Calendar.DAY_OF_MONTH), get(Calendar.MONTH), get(Calendar.YEAR))
 }
 
 fun dateDiff(from: TaskDate, to: TaskDate) : Int {
@@ -232,4 +235,11 @@ fun dateDiff(from: TaskDate, to: TaskDate) : Int {
 
     return millisecondsToDays(d2 - d1)
 }
-fun TaskDate.isPastDate() : Boolean { return dateDiff(today(), this) < 0 }
+// fun TaskDate.isPastDate() : Boolean { return dateDiff(today(), this) < 0 }
+
+fun TaskDate.isPastDate(): Boolean {
+    // Get reference to today()
+
+    // Check year
+    return false
+}
