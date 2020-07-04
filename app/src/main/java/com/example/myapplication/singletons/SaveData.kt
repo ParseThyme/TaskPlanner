@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.myapplication.ViewLayout
 import com.example.myapplication.data_classes.GroupEntry
+import com.example.myapplication.data_classes.Task
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -14,6 +15,7 @@ object SaveData {
     private const val keyTaskGroupList: String = "taskGroupList"
     private const val keyViewLayout: String = "mainLayout"
     private const val keyTimeDelta: String = "timeDelta"
+    private const val keyStoredTaskList: String = "savedTasks"
 
     // Saved preferences editor
     private fun Context.getEditor() : SharedPreferences.Editor {
@@ -33,20 +35,19 @@ object SaveData {
         editor.putString(keyTaskGroupList, json)
         editor.apply()
     }
+    fun saveStoredTaskList(storedTaskList: ArrayList<Task>, context: Context) {
+        val editor: SharedPreferences.Editor = context.getEditor()
+        val json: String = Gson().toJson(storedTaskList)
+
+        editor.putString(keyStoredTaskList, json)
+        editor.apply()
+    }
     // index(ordinal) of mainLayout
     fun saveLayout(context: Context) {
-        save(
-            keyViewLayout,
-            Settings.mainLayout.ordinal,
-            context
-        )
+        save(keyViewLayout, Settings.mainLayout.ordinal, context)
     }
     fun saveTimeDelta(context: Context) {
-        save(
-            keyTimeDelta,
-            Settings.timeDelta,
-            context
-        )
+        save(keyTimeDelta, Settings.timeDelta, context)
     }
 
     private fun save(keyName: String, value: Int, context: Context) {
@@ -65,8 +66,19 @@ object SaveData {
         val savedData: ArrayList<GroupEntry> = Gson().fromJson(json)
         // Check for existing data, if so return it
         return when (savedData.isNullOrEmpty()) {
-            true -> arrayListOf<GroupEntry>()               // No data exists, return new list
-            false -> savedData                              // Previous data found, return saved data
+            true -> arrayListOf()               // No data exists, return new list
+            false -> savedData                  // Previous data found, return saved data
+        }
+    }
+    fun loadStoredTaskList(context: Context) : ArrayList<Task> {
+        val sharedPref: SharedPreferences = context.getSharedPreferences(spName, Context.MODE_PRIVATE)
+        val json: String? = sharedPref.getString(keyStoredTaskList, null)
+        // Using util function to convert data to json
+        val savedData: ArrayList<Task> = Gson().fromJson(json)
+        // Check for existing data, if so return it
+        return when (savedData.isNullOrEmpty()) {
+            true -> arrayListOf()               // No data exists, return new list
+            false -> savedData                  // Previous data found, return saved data
         }
     }
     // When loading mainLayout, convert ordinal to appropriate layout enum value

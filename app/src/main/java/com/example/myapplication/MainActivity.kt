@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     // Data
     private var taskGroupList: ArrayList<GroupEntry> = ArrayList()
-    private var saveTask: Boolean = false
+    private var storedTasks: ArrayList<Task> = ArrayList()
 
     // Late initialized variables
     private lateinit var taskGroupAdapter: TaskGroupAdapter
@@ -72,28 +72,6 @@ class MainActivity : AppCompatActivity() {
         addMode.txtSetDate.text = newDate.asStringShort()   // Starting date to be today at bottom bar
         addMode.txtSetTime.text = defaultTimeMsg            // Set time to be blank
 
-        // ToDo: Reorganize
-        /*
-        val tasks: ArrayList<String> = arrayListOf(
-            "Task 1", "Task 2", "Task 3", "Task 4", "Task 5",
-            "Task 6", "Task 7", "Task 8", "Task 9", "Task 10")
-        */
-        val tasks: ArrayList<String> = arrayListOf()
-        when (tasks.size) {
-               0 -> addMode.toggleSavedTasksPopup.visibility = View.GONE
-            else -> addMode.toggleSavedTasksPopup.visibility = View.VISIBLE
-        }
-        val popupTasks = PopupSavedTasks(tasks)
-        addMode.toggleSavedTasksPopup.setOnClickListener {
-            // Open popup window, update icon as checked
-            addMode.toggleSavedTasksPopup.isChecked = true
-            val window: PopupWindow = popupTasks.create(addMode.txtTaskDesc, addMode.txtTaskDesc,
-                addMode.toggleSavedTasksPopup.context, newTask)
-            // Switch icon back to unchecked when window closed
-            window.setOnDismissListener { addMode.toggleSavedTasksPopup.isChecked = false }
-        }
-        // ToDo: END
-
         setMode(Mode.ADD)
     }
 
@@ -109,33 +87,67 @@ class MainActivity : AppCompatActivity() {
         // ##############################
         // BottomBar
         // ##############################
+        when (storedTasks.size) {
+               0 -> addMode.toggleSavedTasksPopup.visibility = View.GONE
+            else -> addMode.toggleSavedTasksPopup.visibility = View.VISIBLE
+        }
+
         // 1. Add Mode
         addMode.btnAddNewTask.setOnClickListener {
             // Get relevant values
-            val desc: String = addMode.txtTaskDesc.text.toString().trim()
-            val time: TaskTime = newTask.time.copy()
-            val date: TaskDate = newDate.copy()
-            val tag: Int = newTask.tag
-            val addedTask = Task(desc, tag, time)
+            val addedTask = Task(addMode.txtTaskDesc.text.toString().trim(),    // Description
+                            newTask.tag,                                        // Tag
+                            newTask.time.copy())                                // Time
 
             // Add new task to adapter
-            taskGroupAdapter.addTask(date, addedTask)
+            taskGroupAdapter.addTask(newDate.copy(), addedTask)
 
             // Reset text entry and time
-            addMode.txtTaskDesc.setText("")
             newTask.time.unset()
+            addMode.txtTaskDesc.setText("")
             addMode.txtSetTime.text = defaultTimeMsg
 
-            // Save changes
+            // Save change to list
             SaveData.saveTaskGroupList(taskGroupList, addMode.btnAddNewTask.context)
+
+            // Save task if Star toggled on
+            if (addMode.toggleStoreTask.isChecked) {
+                storedTasks.add(addedTask.copy())
+                SaveData.saveStoredTaskList(storedTasks, addMode.btnAddNewTask.context)
+
+                // First task saved. Show toggle arrow icon
+                if (storedTasks.size > 0) {
+                    addMode.toggleSavedTasksPopup.visibility = View.VISIBLE
+                }
+
+                addMode.toggleStoreTask.isChecked = false
+            }
+        }
+        addMode.toggleSavedTasksPopup.setOnClickListener {
+            // Open popup window, update icon as checked
+            addMode.toggleSavedTasksPopup.isChecked = true
+
+            val popupTasks = PopupSavedTasks()
+            val window: PopupWindow =
+                popupTasks.create(addMode.addTaskDescLayout, addMode.txtTaskDesc, newTask, storedTasks)
+
+            window.setOnDismissListener {
+                // When window closed reverse arrow icon back
+                addMode.toggleSavedTasksPopup.isChecked = false
+                // Check if storedTasks has been modified, if so save changes made
+                if (popupTasks.modified) {
+                    SaveData.saveStoredTaskList(storedTasks, addMode.toggleSavedTasksPopup.context)
+
+                    // If list is completely empty hide arrow
+                    if (storedTasks.size == 0)
+                        addMode.toggleSavedTasksPopup.visibility = View.GONE
+                }
+            }
         }
 
-        addMode.txtSetDate.setOnClickListener {
-            PopupManager.date.create(newDate, this, addMode, addMode.txtSetDate) }
-        addMode.txtSetTime.setOnClickListener {
-            PopupManager.time.create(newTask.time, this, addMode, addMode.txtSetTime) }
-        addMode.btnSetTag.setOnClickListener  {
-            PopupManager.tag.create(newTask, this, addMode, addMode.btnSetTag) }
+        addMode.txtSetDate.setOnClickListener { Popups.date.create(newDate, addMode, addMode.txtSetDate) }
+        addMode.txtSetTime.setOnClickListener { Popups.time.create(newTask.time, addMode, addMode.txtSetTime) }
+        addMode.btnSetTag.setOnClickListener  { Popups.tag.create(newTask, addMode, addMode.btnSetTag) }
 
         addMode.btnResetParams.setOnClickListener {
             // Reset all values (exclude text entry)
@@ -176,10 +188,11 @@ class MainActivity : AppCompatActivity() {
         selectMode.btnToDate.setOnClickListener {
             // 1. Create window, user selects new date
             // 2. Override date for selected tasks in adapter
-            val window: PopupWindow = PopupManager.date.create(selectModeDate, this, selectMode)
+            val window: PopupWindow =
+                Popups.date.create(selectModeDate, selectMode)
             window.setOnDismissListener {
                 // Apply changes to selected date when apply button pressed
-                if (PopupManager.date.update) {
+                if (Popups.date.update) {
                     taskGroupAdapter.selectedSetDate(selectModeDate)
                     setMode(Mode.ADD)
                     SaveData.saveTaskGroupList(taskGroupList, selectMode.btnToDate.context)
@@ -188,9 +201,10 @@ class MainActivity : AppCompatActivity() {
         }
         selectMode.btnToTime.setOnClickListener {
             val newTime = TaskTime()
-            val window: PopupWindow = PopupManager.time.create(newTime, this, selectMode)
+            val window: PopupWindow =
+                Popups.time.create(newTime, selectMode)
             window.setOnDismissListener {
-                if (PopupManager.time.update) {
+                if (Popups.time.update) {
                     taskGroupAdapter.selectedSetTime(newTime)
                     SaveData.saveTaskGroupList(taskGroupList, selectMode.btnToTime.context)
                 }
@@ -198,9 +212,10 @@ class MainActivity : AppCompatActivity() {
         }
         selectMode.btnToTag.setOnClickListener {
             val newTag = Task()
-            val window:PopupWindow = PopupManager.tag.create(newTag, this, selectMode)
+            val window:PopupWindow =
+                Popups.tag.create(newTag, selectMode)
             window.setOnDismissListener {
-                if (PopupManager.tag.update) {
+                if (Popups.tag.update) {
                     taskGroupAdapter.selectedSetTag(newTag.tag)
                     SaveData.saveTaskGroupList(taskGroupList, selectMode.btnToTag.context)
                 }
@@ -299,11 +314,14 @@ class MainActivity : AppCompatActivity() {
 
         // Load data
         taskGroupList = SaveData.loadTaskGroupList(applicationContext)
+        storedTasks = SaveData.loadStoredTaskList(applicationContext)
 
         // Load settings
-        Settings.init(
-            SaveData.loadLayout(applicationContext),
+        Settings.init(SaveData.loadLayout(applicationContext),
                       SaveData.loadTimeDelta(applicationContext))
+
+        // Store navigation bar size
+        AppData.navBarSize = getNavigationBarSize(applicationContext)!!
     }
 
     // ########## Utility ##########

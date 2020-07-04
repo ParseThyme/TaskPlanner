@@ -18,12 +18,12 @@ import kotlinx.android.synthetic.main.popup_tag_entry.view.*
 class PopupTag(private val tagsList: ArrayList<Int>) : Popup() {
     var update: Boolean = false
 
-    fun create(edited: Task, context: Context, attachTo: View, modify: TextView? = null): PopupWindow {
+    fun create(edited: Task, attachTo: View, modify: TextView? = null): PopupWindow {
         // Calculate number of icons per row. Ideally max is 10 per row.
         var spanCount: Int = Settings.tagRowSize
         if (tagsList.size < spanCount) spanCount = tagsList.size
 
-        val window: PopupWindow = create(context, R.layout.popup_tag)
+        val window: PopupWindow = create(attachTo.context, R.layout.popup_tag)
         val view: View = window.contentView
 
         update = false      // Input validation, true when tag chosen/removed, otherwise window clicked outside

@@ -2,16 +2,17 @@ package com.example.myapplication
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.drawable.Drawable
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.os.Build
+import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import java.lang.reflect.InvocationTargetException
+
 
 // Definitions
 // Activity.main
@@ -76,6 +77,53 @@ inline fun <reified T: Enum<T>> T.next(): T {
  val values = enumValues<T>()
  val nextOrdinal = (ordinal + 1) % values.size
  return values[nextOrdinal]
+}
+
+// Getting navigation bar size:
+// https://stackoverflow.com/questions/36514167/how-to-really-get-the-navigation-bar-height-in-android?lq=1
+
+fun getNavigationBarSize(context: Context): Point? {
+    val appUsableSize: Point = getAppUsableScreenSize(context)
+    val realScreenSize: Point = getRealScreenSize(context)
+
+    // navigation bar on the right
+    if (appUsableSize.x < realScreenSize.x) {
+        return Point(realScreenSize.x - appUsableSize.x, appUsableSize.y)
+    }
+
+    // navigation bar at the bottom
+    return if (appUsableSize.y < realScreenSize.y) {
+        Point(appUsableSize.x, realScreenSize.y - appUsableSize.y)
+    }
+    // navigation bar is not present
+    else Point()
+}
+
+fun getAppUsableScreenSize(context: Context): Point {
+    val windowManager =
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val display = windowManager.defaultDisplay
+    val size = Point()
+    display.getSize(size)
+    return size
+}
+
+fun getRealScreenSize(context: Context): Point {
+    val windowManager =
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val display = windowManager.defaultDisplay
+    val size = Point()
+    if (Build.VERSION.SDK_INT >= 17) {
+        display.getRealSize(size)
+    } else
+        try {
+            size.x = Display::class.java.getMethod("getRawWidth").invoke(display) as Int
+            size.y = Display::class.java.getMethod("getRawHeight").invoke(display) as Int
+        } catch (e: IllegalAccessException) {
+        } catch (e: InvocationTargetException) {
+        } catch (e: NoSuchMethodException) {
+        }
+    return size
 }
 
 /** ########## Tutorials: ##########

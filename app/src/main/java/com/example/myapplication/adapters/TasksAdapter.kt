@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.*
 import com.example.myapplication.data_classes.*
@@ -31,7 +32,7 @@ class TasksAdapter(private val group: TaskGroup,
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) { holder.bind(group.taskList[pos]) }
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        private val taskField = itemView.desc
+        private val taskField: TextView = itemView.desc
         private val editWindow = DialogEdit(itemView.context, updateSave)
 
         fun bind(task: Task) {
@@ -39,7 +40,7 @@ class TasksAdapter(private val group: TaskGroup,
             taskField.text = task.desc
 
             // Show/hide tag/time if allocated
-            toggleTag(task.tag)
+            itemView.taskTag.assignTag(task.tag)
             toggleTime(task.time)
 
             // Toggle selected icon based on state
@@ -86,18 +87,6 @@ class TasksAdapter(private val group: TaskGroup,
             when (isSelected) {
                  true -> taskField.applyBackgroundColor(Settings.highlightColor)
                 false -> taskField.applyBackgroundColor(Settings.taskBaseColor)
-            }
-        }
-
-        private fun toggleTag(tag: Int) {
-            when (tag == R.drawable.tag_base) {
-                // No tag, don't display anything
-                true -> itemView.taskTag.visibility = View.INVISIBLE
-                // Get image, set tag accordingly and display
-                false -> {
-                    itemView.taskTag.setImageResource(tag)
-                    itemView.taskTag.visibility = View.VISIBLE
-                }
             }
         }
 

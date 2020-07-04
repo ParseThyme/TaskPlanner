@@ -17,8 +17,8 @@ class PopupTime : Popup() {
     private var chosenTime: TaskTime = TaskTime(12, 0, TimeOfDay.PM, 0)
     var update: Boolean = false
 
-    fun create(edited: TaskTime, context: Context, attachTo: View, modify: TextView? = null) : PopupWindow {
-        val window:PopupWindow = create(context, R.layout.popup_time)
+    fun create(edited: TaskTime, attachTo: View, modify: TextView? = null) : PopupWindow {
+        val window:PopupWindow = create(attachTo.context, R.layout.popup_time)
         val view:View = window.contentView
 
         update = false // Apply changes if apply button pressed or remove time. Otherwise counts as exit

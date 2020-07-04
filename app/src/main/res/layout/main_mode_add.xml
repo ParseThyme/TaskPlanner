@@ -162,11 +162,11 @@
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/toggleSavedTasksPopup"
-                    app:layout_constraintStart_toEndOf="@+id/toggleSaveTask"
+                    app:layout_constraintStart_toEndOf="@+id/toggleStoreTask"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ToggleButton
-                    android:id="@+id/toggleSaveTask"
+                    android:id="@+id/toggleStoreTask"
                     style="@style/ToggleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

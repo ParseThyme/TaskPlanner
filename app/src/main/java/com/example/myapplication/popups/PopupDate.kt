@@ -32,8 +32,8 @@ class PopupDate : Popup() {
 
     private lateinit var dateAdapter: PopupDateAdapter
 
-    fun create(edited: TaskDate, context: Context, attachTo: View, modify: TextView? = null) : PopupWindow {
-        val window:PopupWindow = create(context, R.layout.popup_date)
+    fun create(edited: TaskDate, attachTo: View, modify: TextView? = null) : PopupWindow {
+        val window:PopupWindow = create(attachTo.context, R.layout.popup_date)
         val view:View = window.contentView
 
         update = false // Apply changes if apply button pressed. Otherwise counts as exit

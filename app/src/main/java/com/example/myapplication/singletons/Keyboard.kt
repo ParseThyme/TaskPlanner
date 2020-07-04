@@ -83,14 +83,11 @@ object Keyboard {
     fun open() {
         visible = true
         editText.requestFocus()
-        imm.toggleSoftInputFromWindow(
-            editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
+        imm.toggleSoftInputFromWindow(editText.windowToken, InputMethodManager.SHOW_FORCED, 0)
     }
 
     // https://support.honeywellaidc.com/s/article/Android-with-hardware-keyboard-force-show-hide-Soft-Keyboard-on-EditText
-    private fun hide() {
-        imm.hideSoftInputFromWindow(
-            editText.windowToken, 0) }
+    private fun hide() { imm.hideSoftInputFromWindow(editText.windowToken, 0) }
 
     private fun ImageButton.toggle(enabled: Boolean) {
         if (enabled) updateBtnColor(R.color.btnEnabled, this.context)

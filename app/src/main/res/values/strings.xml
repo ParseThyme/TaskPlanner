@@ -6,10 +6,10 @@
     <!-- Placeholder -->
     <string name="placeholderText">This is some placeholder text</string>
     <string name="placeholderTextLong">
-        Lea nushe ri Pishfa lehati Yelet kai shtnesa Valva safa luli\n
-        Teetha lethghraloo Shale nekrahoo Omnefla hayo vivga Anni doeksi shnahalan\n
-        Sho le thal hali Venio va hashalgha ulimishla Yele vlegha taiyelegfni\n
-        Ploshlogu tettna Lehakra Mishan disheru Ttisa luvivra naa
+        Lea nushe ri Pishfa lehati
+        \nYelet kai shtnesa Valva safa luli
+        \nTeetha lethghraloo Shale nekrahoo
+        \nOmnefla hayo vivga Anni doeksi shnahalan
     </string>
     <string name="placeholderTime">12:30am - 12:30pm</string>
     <string name="placeholderTimeShort">10:00am</string>
